@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module xmlns="http://thelia.net/schema/dic/module"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://thelia.net/schema/dic/module http://thelia.net/schema/dic/module/module-2_1.xsd">
+    <fullnamespace>Statistic\Statistic</fullnamespace>
+    <descriptive locale="en_US">
+        <title>Statistics management module</title>
+        <description>
+            This module allows the display of statistics about customers, general sales and products and detail sales
+            and products.
+        </description>
+    </descriptive>
+    <descriptive locale="fr_FR">
+        <title>Module de gestion des statistiques</title>
+        <description>
+            Ce module permet l'affichage de statistiques sur les clients, les ventes et produits en générale et les
+            ventes et produits en détail.
+        </description>
+    </descriptive>
+    <!-- <logo></logo> -->
+    <languages>
+        <language>en_US</language>
+        <language>fr_FR</language>
+    </languages>
+    <version>0.3</version>
+    <author>
+        <name>David Gros</name>
+        <email>dgros@openstudio.fr</email>
+    </author>
+    <type>classic</type>
+    <thelia>2.1.0</thelia>
+    <stability>other</stability>
+</module>

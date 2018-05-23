@@ -1,0 +1,55 @@
+{default_translation_domain domain='statistic.bo.default'}
+
+<div class="general-block-decorator dashboard">
+
+    <div class="title title-without-tabs clearfix">
+        <div class="col-sm-3">
+            {intl l='tool.panel.product.subtitle'}
+        </div>
+        <div class="col-sm-3">
+        <select id="category-select" class="col-sm-4 form-control">
+            <option value="">{intl l="tool.panel.product.selectCategory"}</option>
+            {loop type="category" name="category"}
+                <option value="{$ID}">{$TITLE}</option>
+            {/loop}
+        </select>
+        </div>
+        <div class="col-sm-3">
+
+        <select id="product-select" class="col-sm-4 form-control" data-url="{url path='/admin/module/statistic/product/list'}">
+            {*{loop type="product" name="product"}*}
+                {*<option value="{$REF}">{$TITLE}</option>*}
+            {*{/loop}*}
+        </select>
+            </div>
+        <div class="col-sm-2 input-group pull-right">
+            <span class="input-group-addon glyphicon glyphicon-calendar"></span>
+            <input type="text" class="form-control product-date-picker" id="selectedDate"/>
+        </div>
+    </div>
+
+
+    <div class="text-center clearfix">
+        <div class="btn-group">
+            <button type="button" class="btn btn-primary product-graph-select active"
+                    data-type="jqplot" data-toggle="jqplot-product"
+                    data-url="{url path='/admin/module/statistic/product/turnover'}"
+                    data-target="turnover-product">
+                <span>%</span>
+                {intl l="tool.panel.product.turnover.title"}
+            </button>
+            <button type="button" class="btn btn-success product-graph-select"
+                    data-type="jqplot" data-toggle="jqplot-product"
+                    data-url="{url path='/admin/module/statistic/product/sale'}"
+                    data-target="sales-product">
+                <span class="glyphicon glyphicon-euro"></span>
+                {intl l="tool.panel.product.sale.title"}
+            </button>
+        </div>
+        <hr/>
+        <div class="jqplot-content">
+            <div id="jqplot-product"></div>
+        </div>
+    </div>
+</div>
+

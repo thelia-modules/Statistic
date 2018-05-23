@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<routes xmlns="http://symfony.com/schema/routing"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://symfony.com/schema/routing http://symfony.com/schema/routing/routing-1.0.xsd">
+
+    <route id="statistic.tool.display" path="/admin/module/statistic/tool" methods="get">
+        <default key="_controller">Statistic\Controller\StatisticController::toolShow</default>
+    </route>
+
+    <!-- Customer Statistic -->
+
+    <route id="statistic.tool.customer.stat" path="/admin/module/statistic/customer/stats" methods="get">
+        <default key="_controller">Statistic\Controller\CustomerStatisticController::statisticAction</default>
+    </route>
+
+    <!-- General statistic -->
+
+    <route id="statistic.tool.general.average_quart" path="/admin/module/statistic/averageCart" methods="get">
+        <default key="_controller">Statistic\Controller\StatisticController::statAverageCartAction</default>
+    </route>
+
+    <route id="statistic.tool.general.best_sales" path="/admin/module/statistic/bestSales" methods="get">
+        <default key="_controller">Statistic\Controller\StatisticController::statBestSalesAction</default>
+    </route>
+
+    <route id="statistic.tool.general.discount_code" path="/admin/module/statistic/discountCode" methods="get">
+        <default key="_controller">Statistic\Controller\StatisticController::statDiscountCodeAction</default>
+    </route>
+
+    <route id="statistic.tool.general.means_transport" path="/admin/module/statistic/meansTransport" methods="get">
+        <default key="_controller">Statistic\Controller\StatisticController::statMeansTransportAction</default>
+    </route>
+
+    <route id="statistic.tool.general.means_payment" path="/admin/module/statistic/meansPayment" methods="get">
+        <default key="_controller">Statistic\Controller\StatisticController::statMeansPaymentAction</default>
+    </route>
+
+    <route id="statistic.tool.general.turnover" path="/admin/module/statistic/turnover" methods="get">
+        <default key="_controller">Statistic\Controller\StatisticController::statTurnoverAction</default>
+    </route>
+
+    <!-- Product statistic -->
+    <route id="statistic.tool.product.turnover" path="/admin/module/statistic/product/turnover" methods="get">
+        <default key="_controller">Statistic\Controller\ProductStatisticController::statTurnoverAction</default>
+    </route>
+
+    <route id="statistic.tool.product.sale" path="/admin/module/statistic/product/sale" methods="get">
+        <default key="_controller">Statistic\Controller\ProductStatisticController::statSaleAction</default>
+    </route>
+
+    <route id="statistic.tool.product.list" path="/admin/module/statistic/product/list" methods="get">
+        <default key="_controller">Statistic\Controller\ProductStatisticController::listProductAction</default>
+    </route>
+
+</routes>
