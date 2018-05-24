@@ -16,7 +16,6 @@ use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\Join;
 use Propel\Runtime\Propel;
 use Thelia\Core\HttpFoundation\Request;
-use Thelia\Model\Base\OrderStatusQuery;
 use Thelia\Model\CountryQuery;
 use Thelia\Model\CouponQuery;
 use Thelia\Model\Map\CouponTableMap;
@@ -44,6 +43,12 @@ class StatisticHandler
     const END_DAY_FORMAT = 'Y-m-d 23:59:59';
     const ALLOWED_STATUS = "not_paid,paid,processing,sent";
 
+    /**
+     * @param \DateTime $startDate
+     * @param \DateTime $endDate
+     * @return array
+     * @throws \Exception
+     */
     public function averageCart(\DateTime $startDate, \DateTime $endDate)
     {
         $po = $this->getMonthlySaleStats($startDate, $endDate);
@@ -62,6 +67,13 @@ class StatisticHandler
         return $result;
     }
 
+    /**
+     * @param Request $request
+     * @param \DateTime $startDate
+     * @param \DateTime $endDate
+     * @return array
+     * @throws \Propel\Runtime\Exception\PropelException
+     */
     public function bestSales(Request $request, \DateTime $startDate, \DateTime $endDate)
     {
         $query = $this->bestSalesQuery($startDate, $endDate);
@@ -77,9 +89,9 @@ class StatisticHandler
 
             $product = ProductQuery::create()
                 ->useProductSaleElementsQuery()
-                    ->filterById($pse['product_sale_elements_id'])
+                ->filterById($pse['product_sale_elements_id'])
                 ->endUse()
-            ->findOne();
+                ->findOne();
 
             if (null === $product) {
                 $product = ProductQuery::create()
@@ -98,10 +110,15 @@ class StatisticHandler
         return $result;
     }
 
+    /**
+     * @param \DateTime $startDate
+     * @param \DateTime $endDate
+     * @return array
+     * @throws \Propel\Runtime\Exception\PropelException
+     */
     public function discountCode(\DateTime $startDate, \DateTime $endDate)
     {
         $query = $this->discountCodeQuery($startDate, $endDate);
-        $q = $query->toString();
 
         $result = $query->find()->toArray();
 
@@ -109,28 +126,47 @@ class StatisticHandler
 
     }
 
+    /**
+     * @param \DateTime $startDate
+     * @param \DateTime $endDate
+     * @param $local
+     * @return array
+     * @throws \Propel\Runtime\Exception\PropelException
+     */
     public function meansTransport(\DateTime $startDate, \DateTime $endDate, $local)
     {
         $query = $this->meansTransportQuery($startDate, $endDate, $local);
-        $q = $query->toString();
+
         $result = $query->find()->toArray();
 
         return $result;
     }
 
+    /**
+     * @param \DateTime $startDate
+     * @param \DateTime $endDate
+     * @param $local
+     * @return array
+     * @throws \Propel\Runtime\Exception\PropelException
+     */
     public function meansPayment(\DateTime $startDate, \DateTime $endDate, $local)
     {
         $query = $this->meansPaymentQuery($startDate, $endDate, $local);
-        $q = $query->toString();
+
         $result = $query->find()->toArray();
 
         return $result;
     }
 
+    /**
+     * @param $year
+     * @return array
+     * @throws \Propel\Runtime\Exception\PropelException
+     */
     public function turnover($year)
     {
         $query = $this->turnoverQuery($year);
-        $q = $query->toString();
+
         $result = $query->find()->toArray('date');
 
         return $result;
@@ -139,13 +175,22 @@ class StatisticHandler
     // -----------------
     // Query methods
 
+    /**
+     * @param \DateTime $startDate
+     * @param \DateTime $endDate
+     * @return array
+     * @throws \Exception
+     */
     public function getMonthlySaleStats(\DateTime $startDate, \DateTime $endDate)
     {
         $result = array();
         /** @var \DateTime $date */
         for ($date = clone($startDate); $date <= $endDate; $date->add(new \DateInterval('P1D'))) {
-            $result[$date->format('Y-m-d')] = OrderQuery::getSaleStats($date->setTime(0, 0), $date->setTime(23, 59, 59),
-                false);
+            $result[$date->format('Y-m-d')] = OrderQuery::getSaleStats(
+                $date->setTime(0, 0),
+                $date->setTime(23, 59, 59),
+                false
+            );
         }
 
         return $result;
@@ -184,6 +229,7 @@ class StatisticHandler
      * @param \DateTime $endDate
      * @param int $limit
      * @return \Thelia\Model\OrderProductQuery
+     * @throws \Propel\Runtime\Exception\PropelException
      */
     public function bestSalesQuery(\DateTime $startDate, \DateTime $endDate, $limit = 20)
     {
@@ -191,26 +237,29 @@ class StatisticHandler
         $query = OrderProductQuery::create()
             ->limit($limit)
             ->withColumn("SUM(" . OrderProductTableMap::QUANTITY . ")", "total_sold")
-            ->withColumn("SUM( IF(" . OrderProductTableMap::WAS_IN_PROMO . ',' . OrderProductTableMap::PROMO_PRICE . ',' . OrderProductTableMap::PRICE . ") * " . OrderProductTableMap::QUANTITY . ")",
-                "total_ht")
-            ->addDescendingOrderByColumn("total_sold")
-            ->groupBy(OrderProductTableMap::PRODUCT_SALE_ELEMENTS_REF);
+            ->withColumn(
+                "SUM( IF(" . OrderProductTableMap::WAS_IN_PROMO . ',' . OrderProductTableMap::PROMO_PRICE . ',' . OrderProductTableMap::PRICE . ") * " . OrderProductTableMap::QUANTITY . ")",
+                "total_ht"
+            )
+            ->addDescendingOrderByColumn("total_sold");
+
+        $query->groupBy(OrderProductTableMap::PRODUCT_SALE_ELEMENTS_REF);
 
         // jointure de l'address de livraison pour le pays
         $query
             ->useOrderQuery()
-                ->useOrderAddressRelatedByDeliveryOrderAddressIdQuery()
-                ->endUse()
+            ->useOrderAddressRelatedByDeliveryOrderAddressIdQuery()
+            ->endUse()
             ->endUse()
         ;
 
         // filter with status
         $query
             ->useOrderQuery()
-                ->useOrderStatusQuery()
-                    ->filterByCode(explode(",",self::ALLOWED_STATUS), Criteria::IN)
+            ->useOrderStatusQuery()
+            ->filterByCode(explode(",", self::ALLOWED_STATUS), Criteria::IN)
             ->endUse()
-        ->endUse();
+            ->endUse();
 
         // filtrage sur la date
         $query
@@ -239,6 +288,12 @@ class StatisticHandler
 
     }
 
+    /**
+     * @param \DateTime $startDate
+     * @param \DateTime $endDate
+     * @return CouponQuery
+     * @throws \Propel\Runtime\Exception\PropelException
+     */
     public function discountCodeQuery(\DateTime $startDate, \DateTime $endDate)
     {
         $query = CouponQuery::create();
@@ -276,13 +331,20 @@ class StatisticHandler
         return $query;
     }
 
+    /**
+     * @param \DateTime $startDate
+     * @param \DateTime $endDate
+     * @param $local
+     * @return OrderQuery
+     * @throws \Propel\Runtime\Exception\PropelException
+     */
     public function meansTransportQuery(\DateTime $startDate, \DateTime $endDate, $local)
     {
         $query = OrderQuery::create();
 
         // filter with status
         $query->useOrderStatusQuery()
-            ->filterByCode(explode(",",self::ALLOWED_STATUS), Criteria::IN)
+            ->filterByCode(explode(",", self::ALLOWED_STATUS), Criteria::IN)
             ->endUse();
 
         // filtrage sur la date
@@ -313,13 +375,20 @@ class StatisticHandler
         return $query;
     }
 
+    /**
+     * @param \DateTime $startDate
+     * @param \DateTime $endDate
+     * @param $local
+     * @return OrderQuery
+     * @throws \Propel\Runtime\Exception\PropelException
+     */
     public function meansPaymentQuery(\DateTime $startDate, \DateTime $endDate, $local)
     {
         $query = OrderQuery::create();
 
         // filter with status
         $query->useOrderStatusQuery()
-                ->filterByCode(explode(",",self::ALLOWED_STATUS), Criteria::IN)
+            ->filterByCode(explode(",", self::ALLOWED_STATUS), Criteria::IN)
             ->endUse();
 
         // filtrage sur la date
@@ -351,6 +420,11 @@ class StatisticHandler
         return $query;
     }
 
+    /**
+     * @param $year
+     * @return OrderQuery
+     * @throws \Propel\Runtime\Exception\PropelException
+     */
     public function turnoverQuery($year)
     {
         $query = OrderQuery::create();
@@ -362,8 +436,14 @@ class StatisticHandler
 
         // jointure sur l'order product
         $orderTaxJoin = new Join();
-        $orderTaxJoin->addExplicitCondition(OrderProductTableMap::TABLE_NAME, 'ID', null,
-            OrderProductTaxTableMap::TABLE_NAME, 'ORDER_PRODUCT_ID', null);
+        $orderTaxJoin->addExplicitCondition(
+            OrderProductTableMap::TABLE_NAME,
+            'ID',
+            null,
+            OrderProductTaxTableMap::TABLE_NAME,
+            'ORDER_PRODUCT_ID',
+            null
+        );
         $orderTaxJoin->setJoinType(Criteria::LEFT_JOIN);
         $query
             ->innerJoinOrderProduct()
@@ -377,10 +457,14 @@ class StatisticHandler
 
         // ajout des colonnes de compte
         $query
-            ->withColumn("SUM((`order_product`.QUANTITY * IF(`order_product`.WAS_IN_PROMO,`order_product`.PROMO_PRICE,`order_product`.PRICE)))",
-                'TOTAL')
-            ->withColumn("SUM((`order_product`.QUANTITY * IF(`order_product`.WAS_IN_PROMO,`order_product_tax`.PROMO_AMOUNT,`order_product_tax`.AMOUNT)))",
-                'TAX')
+            ->withColumn(
+                "SUM((`order_product`.QUANTITY * IF(`order_product`.WAS_IN_PROMO,`order_product`.PROMO_PRICE,`order_product`.PRICE)))",
+                'TOTAL'
+            )
+            ->withColumn(
+                "SUM((`order_product`.QUANTITY * IF(`order_product`.WAS_IN_PROMO,`order_product_tax`.PROMO_AMOUNT,`order_product_tax`.AMOUNT)))",
+                'TAX'
+            )
             ->addAsColumn('date', "CONCAT(YEAR(order.created_at),'-',MONTH(order.created_at))");
 
 
