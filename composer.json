@@ -1,0 +1,13 @@
+{
+    "name": "thelia/statistic",
+    "type": "thelia-module",
+    "authors": [
+        {
+            "name": "David Gros",
+            "email": "dgros@openstudio.fr"
+        }
+    ],
+    "extra": {
+        "installer-name": "Statistic"
+    }
+}
