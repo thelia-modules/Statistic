@@ -432,7 +432,7 @@ class StatisticHandler
         // filtrage sur la date
         $query
             ->filterByStatusId([2,3,4], Criteria::IN)
-            ->where('YEAR(order.created_at) = ?', $year, \PDO::PARAM_STR);
+            ->where('YEAR(order.invoice_date) = ?', $year, \PDO::PARAM_STR);
 
         // jointure sur l'order product
         $orderTaxJoin = new Join();
@@ -451,8 +451,8 @@ class StatisticHandler
 
 
         // group by par mois
-        $query->addGroupByColumn('YEAR(order.created_at)');
-        $query->addGroupByColumn('MONTH(order.created_at)');
+        $query->addGroupByColumn('YEAR(order.invoice_date)');
+        $query->addGroupByColumn('MONTH(order.invoice_date)');
 
 
         // ajout des colonnes de compte
@@ -465,7 +465,7 @@ class StatisticHandler
                 "SUM((`order_product`.QUANTITY * IF(`order_product`.WAS_IN_PROMO,`order_product_tax`.PROMO_AMOUNT,`order_product_tax`.AMOUNT)))",
                 'TAX'
             )
-            ->addAsColumn('date', "CONCAT(YEAR(order.created_at),'-',MONTH(order.created_at))");
+            ->addAsColumn('date', "CONCAT(YEAR(order.invoice_date),'-',MONTH(order.invoice_date))");
 
 
         $query->select(array(
