@@ -4,7 +4,7 @@
 
 (function ($) {
     $(document).ready(function () {
-        var url = baseAdminUrl + '/module/statistic/customer/stats';
+        var url = baseAdminUrl + '/module/statistic/sale-day';
         var chartId = 'jqplot-general';
 
         var jQplotDate = new Date();

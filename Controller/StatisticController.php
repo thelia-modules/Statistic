@@ -14,6 +14,7 @@ namespace Statistic\Controller;
 
 use DateInterval;
 use Propel\Runtime\ActiveQuery\Criteria;
+use Statistic\Handler\StatisticHandler;
 use Statistic\Statistic;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Model\OrderQuery;
@@ -35,6 +36,47 @@ class StatisticController extends BaseAdminController
     public function toolShow()
     {
         return $this->render('statistic-tool');
+    }
+
+    public function statDaySalesAction()
+    {
+        $this->getRequest()->getSession()->save();
+
+        // récupération des paramètres
+        $month = $this->getRequest()->query->get('month', date('m'));
+        $year = $this->getRequest()->query->get('year', date('m'));
+
+        $startDate = new \DateTime($year . '-' . $month . '-01');
+        /** @var \DateTime $endDate */
+        $endDate = clone($startDate);
+        $endDate->add(new DateInterval('P' . (cal_days_in_month(CAL_GREGORIAN, $month, $year)-1) . 'D'));
+
+        $average = new \stdClass();
+        $average->color = '#adadad';
+
+        $numberOfDay = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+
+        $stats = array();
+        for ($day=1; $day<=$numberOfDay; $day++) {
+            $dayAmount = $this->getStatisticHandler()->getSaleStats(
+                new \DateTime(sprintf('%s-%s-%s', $year, $month, $day)),
+                new \DateTime(sprintf('%s-%s-%s', $year, $month, $day)),
+                true
+            );
+            $stats[] = array($day-1, $dayAmount);
+        }
+
+        $average->graph = $stats;
+
+        $data = new \stdClass();
+
+        $data->title = $this->getTranslator()->trans("Stats on %month/%year", array('%month' => $this->getRequest()->query->get('month', date('m')), '%year' => $this->getRequest()->query->get('year', date('Y'))));
+
+        $data->series = array(
+            $average,
+        );
+
+        return $this->jsonResponse(json_encode($data));
     }
 
     public function statAverageCartAction()
@@ -243,16 +285,16 @@ class StatisticController extends BaseAdminController
                 $endDate->add(new DateInterval('P' . (cal_days_in_month(CAL_GREGORIAN, $i, $year)-1) . 'D'));
 
                 $discount = OrderQuery::create()
-                    ->filterByInvoiceDate(sprintf("%s 00:00:00", $startDate->format('Y-m-d')), Criteria::GREATER_EQUAL)
-                    ->filterByInvoiceDate(sprintf("%s 23:59:59", $endDate->format('Y-m-d')), Criteria::LESS_EQUAL)
-                    ->filterByStatusId([2, 3, 4], Criteria::IN)
+                    ->filterByCreatedAt(sprintf("%s 00:00:00", $startDate->format('Y-m-d')), Criteria::GREATER_EQUAL)
+                    ->filterByCreatedAt(sprintf("%s 23:59:59", $endDate->format('Y-m-d')), Criteria::LESS_EQUAL)
+                    ->filterByStatusId(StatisticHandler::ALLOWED_STATUS_INT, Criteria::IN)
                     ->withColumn("SUM(`order`.discount)", 'DISCOUNT')
                     ->select('DISCOUNT')->findOne();
 
                 $postage = OrderQuery::create()
-                    ->filterByInvoiceDate(sprintf("%s 00:00:00", $startDate->format('Y-m-d')), Criteria::GREATER_EQUAL)
-                    ->filterByInvoiceDate(sprintf("%s 23:59:59", $endDate->format('Y-m-d')), Criteria::LESS_EQUAL)
-                    ->filterByStatusId([2, 3, 4], Criteria::IN)
+                    ->filterByCreatedAt(sprintf("%s 00:00:00", $startDate->format('Y-m-d')), Criteria::GREATER_EQUAL)
+                    ->filterByCreatedAt(sprintf("%s 23:59:59", $endDate->format('Y-m-d')), Criteria::LESS_EQUAL)
+                    ->filterByStatusId(StatisticHandler::ALLOWED_STATUS_INT, Criteria::IN)
                     ->withColumn("SUM(`order`.postage)", 'POSTAGE')
                     ->select('POSTAGE')->findOne();
 

@@ -12,7 +12,13 @@
 
     <div class="text-center clearfix">
         <div class="btn-group">
-            <button type="button" class="btn btn-primary general-graph-select active" role="group"
+            <button type="button" class="btn btn-default general-graph-select active" role="group"
+                    data-type="jqplot" data-toggle="jqplot-general"
+                    data-url="{url path='/admin/module/statistic/sale-day'}"
+                    data-target="saleday"><span
+                        class="glyphicon glyphicon-euro"></span> {intl l="tool.panel.general.saleDay"}
+            </button>
+            <button type="button" class="btn btn-primary general-graph-select" role="group"
                     data-type="jqplot" data-toggle="jqplot-general"
                     data-url="{url path='/admin/module/statistic/customer/stats'}"
                     data-target="registration"><span
@@ -35,18 +41,6 @@
                     data-url="{url path='/admin/module/statistic/discountCode'}"
                     data-target="discount-code"><span
                         class="glyphicon glyphicon-asterisk"></span> {intl l="tool.panel.general.discountCode.title"}
-            </button>
-            <button type="button" class="btn btn-info general-graph-select" role="group"
-                    data-type="table" data-toggle="table-general"
-                    data-url="{url path='/admin/module/statistic/meansTransport'}"
-                    data-target="means-transport"><span
-                        class="glyphicon glyphicon glyphicon-road"></span> {intl l="tool.panel.general.meansTransport.title"}
-            </button>
-            <button type="button" class="btn btn-info general-graph-select" role="group"
-                    data-type="table" data-toggle="table-general"
-                    data-url="{url path='/admin/module/statistic/meansPayment'}"
-                    data-target="means-payement"><span
-                        class="glyphicon glyphicon-euro"></span> {intl l="tool.panel.general.meansPayment.title"}
             </button>
             <button type="button" class="btn btn-default general-graph-select" role="group"
                     data-type="table,jqplot" data-toggle="table-general,jqplot-general"

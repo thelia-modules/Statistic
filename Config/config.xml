@@ -25,5 +25,9 @@
             <tag name="hook.event_listener" event="statistic.tab" type="back" method="onStatisticTab" />
             <tag name="hook.event_listener" event="statistic.footer.js" type="back" method="insertionJS" />
         </hook>
+
+        <hook id="statistic.hook.home.stats.back" class="Statistic\Hook\AdminStatsHook" scope="request">
+            <tag name="hook.event_listener" event="hook_home_stats" type="back"  method="onMainHomeAdmin" />
+        </hook>
     </hooks>
 </config>

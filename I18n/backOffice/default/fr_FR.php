@@ -15,6 +15,7 @@ return array(
                 'title' => 'Statistiques générales',
                 'subtitle' => 'Statistiques générales',
                 'averageCart' => 'Panier moyen',
+                'saleDay' => 'Chiffre d\'affaires journalier',
                 'bestSales' => array(
                     'name' => 'Nom',
                     'reference' => 'Référence',

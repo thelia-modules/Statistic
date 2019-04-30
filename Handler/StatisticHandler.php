@@ -41,7 +41,8 @@ class StatisticHandler
 {
     const START_DAY_FORMAT = 'Y-m-d 00:00:00';
     const END_DAY_FORMAT = 'Y-m-d 23:59:59';
-    const ALLOWED_STATUS = "not_paid,paid,processing,sent";
+    const ALLOWED_STATUS = "paid,processing,sent";
+    const ALLOWED_STATUS_INT = [2,3,4];
 
     /**
      * @param \DateTime $startDate
@@ -431,8 +432,8 @@ class StatisticHandler
 
         // filtrage sur la date
         $query
-            ->filterByStatusId([2,3,4], Criteria::IN)
-            ->where('YEAR(order.invoice_date) = ?', $year, \PDO::PARAM_STR);
+            ->filterByStatusId(self::ALLOWED_STATUS_INT, Criteria::IN)
+            ->where('YEAR(order.created_at) = ?', $year, \PDO::PARAM_STR);
 
         // jointure sur l'order product
         $orderTaxJoin = new Join();
@@ -451,8 +452,8 @@ class StatisticHandler
 
 
         // group by par mois
-        $query->addGroupByColumn('YEAR(order.invoice_date)');
-        $query->addGroupByColumn('MONTH(order.invoice_date)');
+        $query->addGroupByColumn('YEAR(order.created_at)');
+        $query->addGroupByColumn('MONTH(order.created_at)');
 
 
         // ajout des colonnes de compte
@@ -465,7 +466,7 @@ class StatisticHandler
                 "SUM((`order_product`.QUANTITY * IF(`order_product`.WAS_IN_PROMO,`order_product_tax`.PROMO_AMOUNT,`order_product_tax`.AMOUNT)))",
                 'TAX'
             )
-            ->addAsColumn('date', "CONCAT(YEAR(order.invoice_date),'-',MONTH(order.invoice_date))");
+            ->addAsColumn('date', "CONCAT(YEAR(order.created_at),'-',MONTH(order.created_at))");
 
 
         $query->select(array(
@@ -475,5 +476,59 @@ class StatisticHandler
         ));
 
         return $query;
+    }
+
+    public function getSaleStats(\DateTime $startDate, \DateTime $endDate, $includeShipping)
+    {
+        $orderTaxJoin = new Join();
+        $orderTaxJoin->addExplicitCondition(OrderProductTableMap::TABLE_NAME, 'ID', null, OrderProductTaxTableMap::TABLE_NAME, 'ORDER_PRODUCT_ID', null);
+        $orderTaxJoin->setJoinType(Criteria::LEFT_JOIN);
+
+        $query = self::baseSaleStats($startDate, $endDate, 'o')
+            ->innerJoinOrderProduct()
+            ->addJoinObject($orderTaxJoin)
+            ->withColumn("SUM((`order_product`.QUANTITY * IF(`order_product`.WAS_IN_PROMO,`order_product`.PROMO_PRICE,`order_product`.PRICE)))", 'TOTAL')
+            ->withColumn("SUM((`order_product`.QUANTITY * IF(`order_product`.WAS_IN_PROMO,`order_product_tax`.PROMO_AMOUNT,`order_product_tax`.AMOUNT)))", 'TAX')
+            ->select(['TOTAL', 'TAX'])
+        ;
+        $arrayAmount = $query->findOne();
+
+        $amount = $arrayAmount['TOTAL'] + $arrayAmount['TAX'];
+
+        if (null === $amount) {
+            $amount = 0;
+        }
+
+        $discountQuery = self::baseSaleStats($startDate, $endDate)
+            ->withColumn("SUM(`order`.discount)", 'DISCOUNT')
+            ->select('DISCOUNT')
+        ;
+
+        $discount = $discountQuery->findOne();
+
+        if (null === $discount) {
+            $discount = 0;
+        }
+
+        $amount = $amount - $discount;
+
+        if ($includeShipping) {
+            $query = self::baseSaleStats($startDate, $endDate)
+                ->withColumn("SUM(`order`.postage)", 'POSTAGE')
+                ->select('POSTAGE')
+            ;
+
+            $amount += $query->findOne();
+        }
+
+        return null === $amount ? 0 : round($amount, 2);
+    }
+
+    protected static function baseSaleStats(\DateTime $startDate, \DateTime $endDate, $modelAlias = null)
+    {
+        return OrderQuery::create($modelAlias)
+            ->filterByCreatedAt(sprintf("%s 00:00:00", $startDate->format('Y-m-d')), Criteria::GREATER_EQUAL)
+            ->filterByCreatedAt(sprintf("%s 23:59:59", $endDate->format('Y-m-d')), Criteria::LESS_EQUAL)
+            ->filterByStatusId(self::ALLOWED_STATUS_INT, Criteria::IN);
     }
 }

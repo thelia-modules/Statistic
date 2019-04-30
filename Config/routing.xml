@@ -20,6 +20,10 @@
         <default key="_controller">Statistic\Controller\StatisticController::statAverageCartAction</default>
     </route>
 
+    <route id="statistic.tool.general.day_sales" path="/admin/module/statistic/sale-day" methods="get">
+        <default key="_controller">Statistic\Controller\StatisticController::statDaySalesAction</default>
+    </route>
+
     <route id="statistic.tool.general.best_sales" path="/admin/module/statistic/bestSales" methods="get">
         <default key="_controller">Statistic\Controller\StatisticController::statBestSalesAction</default>
     </route>
