@@ -34,7 +34,7 @@
                 xaxis: {
                     borderColor: '#ccc',
                     ticks: [],
-                    tickOptions: {showGridline: false}
+                    tickOptions: {showGridline: false, showLabel: true}
                 },
                 yaxis: {
                     min: 0,
@@ -152,43 +152,51 @@
         }
 
         function initJqplotData(json) {
-            var series = [];
-            var seriesColors = [];
-            series.push(json.series[0].graph);
-            seriesColors.push(json.series[0].color);
-            var ticks = [];
+            if (json.series == undefined) {
+                 alert (json);
+            } else {
+                var series = [];
+                var seriesColors = [];
+                series.push(json.series[0].graph);
+                seriesColors.push(json.series[0].color);
+                var ticks = [];
 
-            // Number of days to display ( = graph.length in one serie)
-            if( typeof json.series[0].graphLabel === 'undefined' ){
-                var days = json.series[0].graph.length;
-                // Add days to xaxis
-                for (var i = 1; i < days+1; ++i) {
-                    ticks.push([i-1, i]);
-                }
+                console.log(json);
+                // Number of days to display ( = graph.length in one serie)
+                if (typeof json.series[0].graphLabel === 'undefined') {
+                    var days = json.series[0].graph.length;
+                    // Add days to xaxis
+                    for (var i = 1; i < days + 1; ++i) {
+                        ticks.push([ i - 1, i]);
+                    }
 
-            }else {
-                var days = json.series[0].graphLabel.length;
-                var val = json.series[0].graphLabel;
-                // Add days to xaxis
-                for (var i = 0; i < days; ++i) {
-                    ticks.push([i, val[i]]);
+                } else {
+                    var days = json.series[0].graphLabel.length;
+                    var val = json.series[0].graphLabel;
+                    // Add days to xaxis
+                    for (var i = 0; i < days; ++i) {
+                        ticks.push([i, val[i]]);
+                    }
                 }
+                jQPlotsOptions.axes.xaxis.ticks = ticks;
+
+                jQPlotsOptions.axes.xaxis.label = json.label;
+
+                // Graph title
+                jQPlotsOptions.title = json.title;
+
+                // Graph series colors
+                jQPlotsOptions.seriesColors = seriesColors;
+
+                return series;
             }
-            jQPlotsOptions.axes.xaxis.ticks = ticks;
-
-            // Graph title
-            jQPlotsOptions.title = json.title;
-
-            // Graph series colors
-            jQPlotsOptions.seriesColors = seriesColors;
-
-            return series;
         }
 
         function setDataTable(tableId) {
             $.ajax({
                 url: url + '?monthStart=' + monthStart  + '&yearStart=' + yearStart + '?monthEnd=' + monthEnd + '&yearEnd=' + yearEnd
             }).success(function (json) {
+
                 var table = document.getElementById(tableId);
                 table.innerHTML = "";
 
@@ -214,7 +222,7 @@
                         var cell = row.insertCell(-1).outerHTML = '<td class="text-left">'+line[key]+"</td>";
                     }
                 }
-                
+
                 if (data.length === 0) {
                     table.insertRow(-1).insertCell(-1).outerHTML = '<td class="text-left" colspan="99">Aucune donnée disponible.</td>';
                 }
