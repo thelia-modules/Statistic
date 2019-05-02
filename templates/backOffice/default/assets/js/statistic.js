@@ -16,8 +16,10 @@
         var type = "jqplot-general";
         var targetId = "registration";
         var date = new Date();
-        var month = date.getMonth()+1;
-        var year = date.getFullYear();
+        var monthStart = date.getMonth()+1;
+        var monthEnd = date.getMonth()+1;
+        var yearStart = date.getFullYear();
+        var yearEnd = date.getFullYear();
 
         //{literal}
 
@@ -65,13 +67,28 @@
             language: "fr"
         }).on('changeDate', function(e){
             date = e.date;
-            month = date.getMonth()+1;
-            year = date.getFullYear();
+            monthStart = date.getMonth()+1;
+            yearStart = date.getFullYear();
 
             updateContent();
         });
 
+        $('.date-picker-end').datepicker( {
+            format: 'mm/yyyy',
+            minViewMode: 1,
+            language: "fr"
+        }).on('changeDate', function(e){
+            date = e.date;
+            monthEnd = date.getMonth()+1;
+            yearEnd = date.getFullYear();
+
+            updateContent();
+        });
+
+
         $('.date-picker').datepicker('update', new Date());
+
+        $('.date-picker-end').datepicker('update', new Date());
 
         $('.general-graph-select').click(function (e) {
             type = this.dataset.type;
@@ -100,7 +117,7 @@
                 $('.jqplot-content').show();
                 $('#jqplot-general').css("width","100%");
                 
-                retrieveJQPlotJson(month, year);
+                retrieveJQPlotJson(monthStart, monthEnd, yearStart, yearEnd);
             } else {
                 $('.jqplot-content').hide();
 
@@ -119,9 +136,9 @@
             }
         }
 
-        function retrieveJQPlotJson(month, year, callback) {
+        function retrieveJQPlotJson(monthStart, monthEnd, yearStart, yearEnd, callback) {
 
-            $.getJSON(url, {month: month, year: year})
+            $.getJSON(url, {monthStart: monthStart, yearStart: yearStart, monthEnd: monthEnd, yearEnd: yearEnd})
                 .done(function (data) {
                     jQplotData = data;
                     jsonSuccessLoad();
@@ -168,7 +185,7 @@
 
         function setDataTable(tableId) {
             $.ajax({
-                url: url + '?month=' + month + '&year=' + year
+                url: url + '?monthStart=' + monthStart  + '&yearStart=' + yearStart + '?monthEnd=' + monthEnd + '&yearEnd=' + yearEnd
             }).success(function (json) {
                 var table = document.getElementById(tableId);
                 table.innerHTML = "";
