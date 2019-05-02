@@ -43,27 +43,38 @@ class StatisticController extends BaseAdminController
         $this->getRequest()->getSession()->save();
 
         // récupération des paramètres
-        $month = $this->getRequest()->query->get('month', date('m'));
-        $year = $this->getRequest()->query->get('year', date('m'));
+        $startMonth = $this->getRequest()->query->get('monthStart', date('m'));
+        $startYear = $this->getRequest()->query->get('yearStart', date('m'));
+        $endMonth = $this->getRequest()->query->get('monthEnd', date('m'));
+        $endYear = $this->getRequest()->query->get('yearEnd', date('m'));
 
-        $startDate = new \DateTime($year . '-' . $month . '-01');
+        $startDate = new \DateTime($startYear . '-' . $startMonth . '-01');
         /** @var \DateTime $endDate */
         $endDate = clone($startDate);
-        $endDate->add(new DateInterval('P' . (cal_days_in_month(CAL_GREGORIAN, $month, $year)-1) . 'D'));
+        $endDate->add(new DateInterval('P' . (cal_days_in_month(CAL_GREGORIAN, $endMonth, $endYear)-1) . 'D'));
 
         $average = new \stdClass();
         $average->color = '#adadad';
 
-        $numberOfDay = cal_days_in_month(CAL_GREGORIAN, $month, $year);
 
         $stats = array();
-        for ($day=1; $day<=$numberOfDay; $day++) {
-            $dayAmount = $this->getStatisticHandler()->getSaleStats(
-                new \DateTime(sprintf('%s-%s-%s', $year, $month, $day)),
-                new \DateTime(sprintf('%s-%s-%s', $year, $month, $day)),
-                true
-            );
-            $stats[] = array($day-1, $dayAmount);
+        $dayCount = 0;
+
+        for ($i=$startMonth; $i<=$endMonth; $i++)
+        {
+            $numberOfDay = cal_days_in_month(CAL_GREGORIAN, $i, $endYear);
+
+            for ($day=1; $day<=$numberOfDay; $day++) {
+
+                $dayCount ++;
+
+                $dayAmount = $this->getStatisticHandler()->getSaleStats(
+                    new \DateTime(sprintf('%s-%s-%s', $endYear, $i, $day)),
+                    new \DateTime(sprintf('%s-%s-%s', $endYear, $i, $day)),
+                    true
+                );
+                $stats[] = array($dayCount-1, $dayAmount);
+            }
         }
 
         $average->graph = $stats;
