@@ -48,15 +48,11 @@ class StatisticController extends BaseAdminController
         $endMonth = $this->getRequest()->query->get('monthEnd', date('m'));
         $endYear = $this->getRequest()->query->get('yearEnd', date('m'));
 
-        /*
         if($endMonth < $startMonth)
         {
-            $data = new \stdClass();
-            $data->title = $this->getTranslator()->trans("Error : End date or Start date is wrong");
-            $data->series = [];
-            return $this->jsonResponse(json_encode($data));
+            $error = $this->getTranslator()->trans( "Error : End month is incorrect." );
+            return $this->jsonResponse(json_encode($error));
         }
-        */
 
         $startDate = new \DateTime($startYear . '-' . $startMonth . '-01');
         /** @var \DateTime $endDate */
