@@ -48,6 +48,16 @@ class StatisticController extends BaseAdminController
         $endMonth = $this->getRequest()->query->get('monthEnd', date('m'));
         $endYear = $this->getRequest()->query->get('yearEnd', date('m'));
 
+        /*
+        if($endMonth < $startMonth)
+        {
+            $data = new \stdClass();
+            $data->title = $this->getTranslator()->trans("Error : End date or Start date is wrong");
+            $data->series = [];
+            return $this->jsonResponse(json_encode($data));
+        }
+        */
+
         $startDate = new \DateTime($startYear . '-' . $startMonth . '-01');
         /** @var \DateTime $endDate */
         $endDate = clone($startDate);
@@ -81,7 +91,14 @@ class StatisticController extends BaseAdminController
 
         $data = new \stdClass();
 
-        $data->title = $this->getTranslator()->trans("Stats on %month/%year", array('%month' => $this->getRequest()->query->get('month', date('m')), '%year' => $this->getRequest()->query->get('year', date('Y'))));
+        if ($startMonth === $endMonth)
+        {
+            $data->title = $this->getTranslator()->trans("Stats on %monthStart/%yearStart", array('%monthStart' => $this->getRequest()->query->get('monthStart', date('m')), '%yearStart' => $this->getRequest()->query->get('yearStart', date('Y'))));
+        }
+        else
+        {
+            $data->title = $this->getTranslator()->trans("Stats for beginning of %monthStart/%yearStart to end of %monthEnd/%yearEnd", array('%monthStart' => $this->getRequest()->query->get('monthStart', date('m')), '%yearStart' => $this->getRequest()->query->get('yearStart', date('Y')), '%monthEnd' => $this->getRequest()->query->get('monthEnd', date('m')), '%yearEnd' => $this->getRequest()->query->get('yearEnd', date('Y'))));
+        }
 
         $data->series = array(
             $average,
