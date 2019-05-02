@@ -7,8 +7,10 @@
         var url = baseAdminUrl + '/module/statistic/sale-day';
         var chartId = 'jqplot-general';
 
-        var jQplotDate = new Date();
-        jQplotDate.setDate(1); // Set day to 1 so we can add month without 30/31 days of month troubles.
+        var jQplotDateStart = new Date();
+        jQplotDateStart.setDate(1); // Set day to 1 so we can add month without 30/31 days of month troubles.
+        var jQplotDateEnd = new Date();
+        jQplotDateEnd.setDate(1);
         var jQplotData; // json data
         var jQPlotInstance; // global instance
 
@@ -99,7 +101,7 @@
         });
 
         // Get initial data Json
-        retrieveJQPlotJson(jQplotDate.getMonth()+1, jQplotDate.getFullYear());
+        retrieveJQPlotJson(jQplotDateStart.getMonth()+1,jQplotDateEnd.getMonth()+1, jQplotDateStart.getFullYear(),  jQplotDateEnd.getFullYear());
 
         $('.general-graph-select').click(function () {
             $(".general-graph-select").removeClass("active");
