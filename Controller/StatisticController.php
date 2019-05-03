@@ -47,24 +47,28 @@ class StatisticController extends BaseAdminController
         $startYear = $this->getRequest()->query->get('yearStart', date('m'));
         $endMonth = $this->getRequest()->query->get('monthEnd', date('m'));
         $endYear = $this->getRequest()->query->get('yearEnd', date('m'));
+        $ghostCurve = $this->getRequest()->query->get('ghostCurve');
 
+        // Vérification des paramètres, renvoie un message d'erreur si le mois de fin est incorrect
         if($startYear === $endYear && $endMonth < $startMonth)
         {
             $error = $this->getTranslator()->trans( "Error : End month is incorrect." );
             return $this->jsonResponse(json_encode($error));
         }
 
+        // Création date de début et date de fin
         $startDate = new \DateTime($startYear . '-' . $startMonth . '-01');
         /** @var \DateTime $endDate */
         $endDate = clone($startDate);
         $endDate->add(new DateInterval('P' . (cal_days_in_month(CAL_GREGORIAN, $endMonth, $endYear)-1) . 'D'));
 
+        // Création d'une classe pour stocker les données du graph
         $average = new \stdClass();
         $average->color = '#adadad';
 
-
-        $stats = array();
+        // Récupére les données pour chaques jours et les injecte dans un tableau
         $dayCount = 0;
+        $stats = array();
 
         if ($startYear !== $endYear)
         {
@@ -132,6 +136,7 @@ class StatisticController extends BaseAdminController
 
         $data = new \stdClass();
 
+        // En fonction du nombre de jours a analyser, definit si l'affichage se fait par jours ou par semaines
         if(count($stats) > 91)
         {
             $data->label = $this->getTranslator()->trans("Weeks");
@@ -163,7 +168,7 @@ class StatisticController extends BaseAdminController
             $data->label = $this->getTranslator()->trans("Days");
         }
 
-
+        // Change le titre en fonction de la période analysée
         if ($startMonth === $endMonth)
         {
             $data->title = $this->getTranslator()->trans("Stats on %monthStart/%yearStart", array('%monthStart' => $this->getRequest()->query->get('monthStart', date('m')), '%yearStart' => $this->getRequest()->query->get('yearStart', date('Y'))));
@@ -173,9 +178,106 @@ class StatisticController extends BaseAdminController
             $data->title = $this->getTranslator()->trans("Stats for beginning of %monthStart/%yearStart to end of %monthEnd/%yearEnd", array('%monthStart' => $this->getRequest()->query->get('monthStart', date('m')), '%yearStart' => $this->getRequest()->query->get('yearStart', date('Y')), '%monthEnd' => $this->getRequest()->query->get('monthEnd', date('m')), '%yearEnd' => $this->getRequest()->query->get('yearEnd', date('Y'))));
         }
 
-        $data->series = array(
+        $data->series[] = array(
             $average,
         );
+
+        // Récupére les données pour l'année precedente en comparaison et les injecte dans un tableau
+        if($ghostCurve === true)
+        {
+            // Création d'une classe pour stocker les données du graph
+            $average = new \stdClass();
+            $average->color = '#b2b2b2';
+
+            $dayCount = 0;
+            $stats = array();
+
+            $startYear = $startYear - 1;
+            $endYear = $endYear - 1;
+
+            if ($startYear !== $endYear) {
+                for ($i = $startYear; $i <= $endYear; $i++) {
+                    if ($i < $endYear) {
+                        for ($j = $startMonth; $j <= 12; $j++) {
+                            $numberOfDay = cal_days_in_month(CAL_GREGORIAN, $j, $startYear);
+
+                            for ($day = 1; $day <= $numberOfDay; $day++) {
+
+                                $dayCount++;
+
+                                $dayAmount = $this->getStatisticHandler()->getSaleStats(
+                                    new \DateTime(sprintf('%s-%s-%s', $startYear, $j, $day)),
+                                    new \DateTime(sprintf('%s-%s-%s', $startYear, $j, $day)),
+                                    true
+                                );
+                                $stats[] = array($dayCount - 1, $dayAmount);
+                            }
+                        }
+                    } else {
+                        for ($k = 1; $k <= $endMonth; $k++) {
+                            $numberOfDay = cal_days_in_month(CAL_GREGORIAN, $k, $endYear);
+
+                            for ($day = 1; $day <= $numberOfDay; $day++) {
+
+                                $dayCount++;
+
+                                $dayAmount = $this->getStatisticHandler()->getSaleStats(
+                                    new \DateTime(sprintf('%s-%s-%s', $endYear, $k, $day)),
+                                    new \DateTime(sprintf('%s-%s-%s', $endYear, $k, $day)),
+                                    true
+                                );
+                                $stats[] = array($dayCount - 1, $dayAmount);
+                            }
+                        }
+                    }
+                }
+            } else {
+                for ($i = $startMonth; $i <= $endMonth; $i++) {
+                    $numberOfDay = cal_days_in_month(CAL_GREGORIAN, $i, $endYear);
+
+                    for ($day = 1; $day <= $numberOfDay; $day++) {
+
+                        $dayCount++;
+
+                        $dayAmount = $this->getStatisticHandler()->getSaleStats(
+                            new \DateTime(sprintf('%s-%s-%s', $endYear, $i, $day)),
+                            new \DateTime(sprintf('%s-%s-%s', $endYear, $i, $day)),
+                            true
+                        );
+                        $stats[] = array($dayCount - 1, $dayAmount);
+                    }
+                }
+            }
+
+            // En fonction du nombre de jours a analyser, definit si l'affichage se fait par jours ou par semaines
+            if (count($stats) > 91) {
+                $count = 0;
+                $weekAmount = 0;
+                $weekCount = 0;
+                $statsByWeek = array();
+
+                foreach ($stats as $stat) {
+                    $count++;
+                    $dayAmount = $stat[1];
+                    $weekAmount = $weekAmount + $dayAmount;
+
+                    if ($count == 7) {
+                        $weekCount++;
+                        $statsByWeek[] = array($weekCount - 1, $weekAmount);
+                        $count = 0;
+                        $weekAmount = 0;
+                    }
+                }
+
+                $average->graph = $statsByWeek;
+            } else {
+                $average->graph = $stats;
+            }
+
+            $data->series[] = array(
+                $average,
+            );
+        }
 
         return $this->jsonResponse(json_encode($data));
     }
