@@ -180,10 +180,7 @@ class CustomerStatisticController extends BaseAdminController
             $data->label = $this->getTranslator()->trans("Days");
         }
 
-        $data->series = array(
-            $newCustomerSeries,
-            //$firstOrderSeries,
-        );
+        $data->series[] = $newCustomerSeries;
 
         // Récupére les données pour l'année precedente en comparaison et les injecte dans un tableau
         if($ghostCurve === "true")
@@ -294,9 +291,8 @@ class CustomerStatisticController extends BaseAdminController
                 $data->label = $this->getTranslator()->trans("Days");
             }
 
-            $data->seriesGhost = array(
-                $newCustomerSeries,
-            );
+            $data->series[] = $newCustomerSeries;
+
         }
 
         $json = json_encode($data);
