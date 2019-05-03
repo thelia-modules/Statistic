@@ -84,12 +84,12 @@ class StatisticController extends BaseAdminController
 
                             $dayCount ++;
 
-                            $dayAmount = $this->getStatisticHandler()->getSaleStats(
+                            $dailyAmount = $this->getStatisticHandler()->getSaleStats(
                                 new \DateTime(sprintf('%s-%s-%s', $startYear, $j, $day)),
                                 new \DateTime(sprintf('%s-%s-%s', $startYear, $j, $day)),
                                 true
                             );
-                            $stats[] = array($dayCount-1, $dayAmount);
+                            $stats[] = array($dayCount-1, $dailyAmount);
                         }
                     }
                 }
@@ -103,12 +103,12 @@ class StatisticController extends BaseAdminController
 
                             $dayCount ++;
 
-                            $dayAmount = $this->getStatisticHandler()->getSaleStats(
+                            $dailyAmount = $this->getStatisticHandler()->getSaleStats(
                                 new \DateTime(sprintf('%s-%s-%s', $endYear, $k, $day)),
                                 new \DateTime(sprintf('%s-%s-%s', $endYear, $k, $day)),
                                 true
                             );
-                            $stats[] = array($dayCount-1, $dayAmount);
+                            $stats[] = array($dayCount-1, $dailyAmount);
                         }
                     }
                 }
@@ -124,12 +124,12 @@ class StatisticController extends BaseAdminController
 
                     $dayCount ++;
 
-                    $dayAmount = $this->getStatisticHandler()->getSaleStats(
+                    $dailyAmount = $this->getStatisticHandler()->getSaleStats(
                         new \DateTime(sprintf('%s-%s-%s', $endYear, $i, $day)),
                         new \DateTime(sprintf('%s-%s-%s', $endYear, $i, $day)),
                         true
                     );
-                    $stats[] = array($dayCount-1, $dayAmount);
+                    $stats[] = array($dayCount-1, $dailyAmount);
                 }
             }
         }
@@ -140,23 +140,23 @@ class StatisticController extends BaseAdminController
         if(count($stats) > 91)
         {
             $data->label = $this->getTranslator()->trans("Weeks");
-            $count = 0;
-            $weekAmount = 0;
+            $dayCount = 1;
+            $weeklyAmount = 0;
             $weekCount = 0;
             $statsByWeek = array();
 
             foreach ($stats as $stat)
             {
-                $count ++;
-                $dayAmount = $stat[1];
-                $weekAmount = $weekAmount +$dayAmount;
+                $dayCount ++;
+                $dailyAmount = $stat[1];
+                $weeklyAmount = $weeklyAmount +$dailyAmount;
 
-                if ($count == 7)
+                if ($dayCount == 7)
                 {
                     $weekCount ++;
-                    $statsByWeek[] = array($weekCount-1, $weekAmount);
-                    $count = 0;
-                    $weekAmount = 0;
+                    $statsByWeek[] = array($weekCount-1, $weeklyAmount);
+                    $dayCount = 0;
+                    $weeklyAmount = 0;
                 }
             }
 
@@ -205,12 +205,12 @@ class StatisticController extends BaseAdminController
 
                                 $dayCount++;
 
-                                $dayAmount = $this->getStatisticHandler()->getSaleStats(
+                                $dailyAmount = $this->getStatisticHandler()->getSaleStats(
                                     new \DateTime(sprintf('%s-%s-%s', $startYear, $j, $day)),
                                     new \DateTime(sprintf('%s-%s-%s', $startYear, $j, $day)),
                                     true
                                 );
-                                $stats[] = array($dayCount - 1, $dayAmount);
+                                $stats[] = array($dayCount - 1, $dailyAmount);
                             }
                         }
                     } else {
@@ -221,12 +221,12 @@ class StatisticController extends BaseAdminController
 
                                 $dayCount++;
 
-                                $dayAmount = $this->getStatisticHandler()->getSaleStats(
+                                $dailyAmount = $this->getStatisticHandler()->getSaleStats(
                                     new \DateTime(sprintf('%s-%s-%s', $endYear, $k, $day)),
                                     new \DateTime(sprintf('%s-%s-%s', $endYear, $k, $day)),
                                     true
                                 );
-                                $stats[] = array($dayCount - 1, $dayAmount);
+                                $stats[] = array($dayCount - 1, $dailyAmount);
                             }
                         }
                     }
@@ -239,33 +239,33 @@ class StatisticController extends BaseAdminController
 
                         $dayCount++;
 
-                        $dayAmount = $this->getStatisticHandler()->getSaleStats(
+                        $dailyAmount = $this->getStatisticHandler()->getSaleStats(
                             new \DateTime(sprintf('%s-%s-%s', $endYear, $i, $day)),
                             new \DateTime(sprintf('%s-%s-%s', $endYear, $i, $day)),
                             true
                         );
-                        $stats[] = array($dayCount - 1, $dayAmount);
+                        $stats[] = array($dayCount - 1, $dailyAmount);
                     }
                 }
             }
 
             // En fonction du nombre de jours a analyser, definit si l'affichage se fait par jours ou par semaines
             if (count($stats) > 91) {
-                $count = 0;
-                $weekAmount = 0;
+                $dayCount = 0;
+                $weeklyAmount = 0;
                 $weekCount = 0;
                 $statsByWeek = array();
 
                 foreach ($stats as $stat) {
-                    $count++;
-                    $dayAmount = $stat[1];
-                    $weekAmount = $weekAmount + $dayAmount;
+                    $dayCount++;
+                    $dailyAmount = $stat[1];
+                    $weeklyAmount = $weeklyAmount + $dailyAmount;
 
-                    if ($count == 7) {
+                    if ($dayCount == 7) {
                         $weekCount++;
-                        $statsByWeek[] = array($weekCount - 1, $weekAmount);
-                        $count = 0;
-                        $weekAmount = 0;
+                        $statsByWeek[] = array($weekCount - 1, $weeklyAmount);
+                        $dayCount = 0;
+                        $weeklyAmount = 0;
                     }
                 }
 
