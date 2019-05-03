@@ -178,7 +178,7 @@ class StatisticController extends BaseAdminController
             $data->title = $this->getTranslator()->trans("Stats for beginning of %monthStart/%yearStart to end of %monthEnd/%yearEnd", array('%monthStart' => $this->getRequest()->query->get('monthStart', date('m')), '%yearStart' => $this->getRequest()->query->get('yearStart', date('Y')), '%monthEnd' => $this->getRequest()->query->get('monthEnd', date('m')), '%yearEnd' => $this->getRequest()->query->get('yearEnd', date('Y'))));
         }
 
-        $data->series[] = array(
+        $data->series = array(
             $average,
         );
 
@@ -274,7 +274,7 @@ class StatisticController extends BaseAdminController
                 $average->graph = $stats;
             }
 
-            $data->series[] = array(
+            $data->seriesGhost = array(
                 $average,
             );
         }
