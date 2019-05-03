@@ -183,7 +183,7 @@ class StatisticController extends BaseAdminController
         );
 
         // Récupére les données pour l'année precedente en comparaison et les injecte dans un tableau
-        if($ghostCurve === true)
+        if($ghostCurve === "true")
         {
             // Création d'une classe pour stocker les données du graph
             $average = new \stdClass();
