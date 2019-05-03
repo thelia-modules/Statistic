@@ -49,12 +49,7 @@ class StatisticController extends BaseAdminController
         $endYear = $this->getRequest()->query->get('yearEnd', date('m'));
         $ghostCurve = $this->getRequest()->query->get('ghostCurve');
 
-        // Vérification des paramètres, renvoie un message d'erreur si le mois de fin est incorrect
-        if($startYear === $endYear && $endMonth < $startMonth)
-        {
-            $error = $this->getTranslator()->trans( "Error : End month is incorrect." );
-            return $this->jsonResponse(json_encode($error));
-        }
+
 
         // Création date de début et date de fin
         $startDate = new \DateTime($startYear . '-' . $startMonth . '-01');
@@ -178,7 +173,7 @@ class StatisticController extends BaseAdminController
             $data->title = $this->getTranslator()->trans("Stats for beginning of %monthStart/%yearStart to end of %monthEnd/%yearEnd", array('%monthStart' => $this->getRequest()->query->get('monthStart', date('m')), '%yearStart' => $this->getRequest()->query->get('yearStart', date('Y')), '%monthEnd' => $this->getRequest()->query->get('monthEnd', date('m')), '%yearEnd' => $this->getRequest()->query->get('yearEnd', date('Y'))));
         }
 
-        $data->series[] = array(
+        $data->series = array(
             $average,
         );
 
@@ -274,7 +269,7 @@ class StatisticController extends BaseAdminController
                 $average->graph = $stats;
             }
 
-            $data->series[] = array(
+            $data->seriesGhostCurve = array(
                 $average,
             );
         }
@@ -557,6 +552,16 @@ class StatisticController extends BaseAdminController
             $this->couponsServices[$serviceId] = $this->getContainer()->get($serviceId);
         }
         return $this->couponsServices[$serviceId];
+    }
+
+    protected function checkDates($startMonth, $startYear, $endMonth, $endYear)
+    {
+        // Vérification des paramètres, renvoie un message d'erreur si le mois de fin est incorrect
+        if($startYear === $endYear && $endMonth < $startMonth)
+        {
+            $error = $this->getTranslator()->trans( "Error : End month is incorrect." );
+            return $this->jsonResponse(json_encode($error));
+        }
     }
 
 }
