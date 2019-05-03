@@ -41,11 +41,18 @@
                     tickOptions: { showGridline: true, showMark: false, showLabel: true, shadow: false }
                 }
             },
-            seriesDefaults: {
-                lineWidth: 3,
-                shadow: false,
-                markerOptions: { shadow: false, style: 'filledCircle', size: 12 }
-            },
+            series: [
+                {
+                    lineWidth: 3,
+                    shadow: false,
+                    markerOptions: { shadow: false, style: 'filledCircle', size: 12 }
+                },
+                {
+                    lineWidth: 3,
+                    shadow: false,
+                    markerOptions: { shadow: false, style: 'x', size: 12 }
+                }
+            ],
             grid: {
                 background: '#FFF',
                 shadow: false,
@@ -169,27 +176,32 @@
             } else {
                 var series = [];
                 var seriesColors = [];
-                series.push(json.series[0].graph);
-                seriesColors.push(json.series[0].color);
-                var ticks = [];
+                for (var j = 0; j < json.series.length; j++) {
+                    series.push(json.series[j].graph);
+                    seriesColors.push(json.series[j].color);
+                    var ticks = [];
 
 
-                // Number of days to display ( = graph.length in one serie)
-                if (typeof json.series[0].graphLabel === 'undefined') {
-                    var days = json.series[0].graph.length;
-                    // Add days to xaxis
-                    for (var i = 1; i < days + 1; ++i) {
-                        ticks.push([i - 1, i]);
-                    }
+                    // Number of days to display ( = graph.length in one serie)
 
-                } else {
-                    var days = json.series[0].graphLabel.length;
-                    var val = json.series[0].graphLabel;
-                    // Add days to xaxis
-                    for (var i = 0; i < days; ++i) {
-                        ticks.push([i, val[i]]);
+                    if (typeof json.series[j].graphLabel === 'undefined') {
+                        var days = json.series[j].graph.length;
+                        // Add days to xaxis
+                        for (var i = 1; i < days + 1; ++i) {
+                            ticks.push([i - 1, i]);
+                        }
+
+                    } else {
+                        var days = json.series[j].graphLabel.length;
+                        var val = json.series[j].graphLabel;
+                        // Add days to xaxis
+                        for (var i = 0; i < days; ++i) {
+                            ticks.push([i, val[i]]);
+                        }
                     }
                 }
+
+
                 jQPlotsOptions.axes.xaxis.ticks = ticks;
 
                 jQPlotsOptions.axes.xaxis.label = json.label;
@@ -253,6 +265,7 @@
             if (jQPlotInstance) {
                 jQPlotInstance.destroy();
             }
+            console.log(series);
             jQPlotInstance = $.jqplot(chartId, series, jQPlotsOptions);
 
             $(window).bind('resize', function (event, ui) {
