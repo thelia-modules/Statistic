@@ -184,6 +184,8 @@ class StatisticHandler
      */
     public function getMonthlySaleStats(\DateTime $startDate, \DateTime $endDate)
     {
+        $endDate->setTime(23, 59, 59);
+
         $result = array();
         /** @var \DateTime $date */
         for ($date = clone($startDate); $date <= $endDate; $date->add(new \DateInterval('P1D'))) {

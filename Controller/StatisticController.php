@@ -72,21 +72,21 @@ class StatisticController extends BaseAdminController
 
         if ($startYear !== $endYear)
         {
-            for ($i=$startYear; $i<=$endYear; $i++)
+            for ($year=$startYear; $year<=$endYear; $year++)
             {
-                if ($i < $endYear)
+                if ($year < $endYear)
                 {
-                    for ($j=$startMonth; $j<=12; $j++)
+                    for ($month=$startMonth; $month<=12; $month++)
                     {
-                        $numberOfDay = cal_days_in_month(CAL_GREGORIAN, $j, $startYear);
+                        $numberOfDay = cal_days_in_month(CAL_GREGORIAN, $month, $year);
 
                         for ($day=1; $day<=$numberOfDay; $day++) {
 
                             $dayCount ++;
 
                             $dailyAmount = $this->getStatisticHandler()->getSaleStats(
-                                new \DateTime(sprintf('%s-%s-%s', $startYear, $j, $day)),
-                                new \DateTime(sprintf('%s-%s-%s', $startYear, $j, $day)),
+                                new \DateTime(sprintf('%s-%s-%s', $startYear, $month, $day)),
+                                new \DateTime(sprintf('%s-%s-%s', $startYear, $month, $day)),
                                 true
                             );
                             $stats[] = array($dayCount-1, $dailyAmount);
@@ -95,17 +95,17 @@ class StatisticController extends BaseAdminController
                 }
                 else
                 {
-                    for ($k=1; $k<=$endMonth; $k++)
+                    for ($month=1; $month<=$endMonth; $month++)
                     {
-                        $numberOfDay = cal_days_in_month(CAL_GREGORIAN, $k, $endYear);
+                        $numberOfDay = cal_days_in_month(CAL_GREGORIAN, $month, $endYear);
 
                         for ($day=1; $day<=$numberOfDay; $day++) {
 
                             $dayCount ++;
 
                             $dailyAmount = $this->getStatisticHandler()->getSaleStats(
-                                new \DateTime(sprintf('%s-%s-%s', $endYear, $k, $day)),
-                                new \DateTime(sprintf('%s-%s-%s', $endYear, $k, $day)),
+                                new \DateTime(sprintf('%s-%s-%s', $endYear, $month, $day)),
+                                new \DateTime(sprintf('%s-%s-%s', $endYear, $month, $day)),
                                 true
                             );
                             $stats[] = array($dayCount-1, $dailyAmount);
@@ -116,17 +116,17 @@ class StatisticController extends BaseAdminController
         }
         else
         {
-            for ($i=$startMonth; $i<=$endMonth; $i++)
+            for ($month=$startMonth; $month<=$endMonth; $month++)
             {
-                $numberOfDay = cal_days_in_month(CAL_GREGORIAN, $i, $endYear);
+                $numberOfDay = cal_days_in_month(CAL_GREGORIAN, $month, $endYear);
 
                 for ($day=1; $day<=$numberOfDay; $day++) {
 
                     $dayCount ++;
 
                     $dailyAmount = $this->getStatisticHandler()->getSaleStats(
-                        new \DateTime(sprintf('%s-%s-%s', $endYear, $i, $day)),
-                        new \DateTime(sprintf('%s-%s-%s', $endYear, $i, $day)),
+                        new \DateTime(sprintf('%s-%s-%s', $endYear, $month, $day)),
+                        new \DateTime(sprintf('%s-%s-%s', $endYear, $month, $day)),
                         true
                     );
                     $stats[] = array($dayCount-1, $dailyAmount);
@@ -284,22 +284,147 @@ class StatisticController extends BaseAdminController
 
     public function statAverageCartAction()
     {
-        // récupération des paramètres
-        $month = $this->getRequest()->query->get('month', date('m'));
-        $year = $this->getRequest()->query->get('year', date('m'));
+        $this->getRequest()->getSession()->save();
 
-        $startDate = new \DateTime($year . '-' . $month . '-01');
+        // récupération des paramètres
+        $startMonth = $this->getRequest()->query->get('monthStart', date('m'));
+        $startYear = $this->getRequest()->query->get('yearStart', date('m'));
+        $endMonth = $this->getRequest()->query->get('monthEnd', date('m'));
+        $endYear = $this->getRequest()->query->get('yearEnd', date('m'));
+        $ghostCurve = $this->getRequest()->query->get('ghostCurve');
+
+        // Vérification des paramètres, renvoie un message d'erreur si le mois de fin est incorrect
+        if($startYear === $endYear && $endMonth < $startMonth)
+        {
+            $error = $this->getTranslator()->trans( "Error : End month is incorrect." );
+            return $this->jsonResponse(json_encode($error));
+        }
+
+        // Création date de début et date de fin
+        $startDate = new \DateTime($startYear . '-' . $startMonth . '-01');
         /** @var \DateTime $endDate */
         $endDate = clone($startDate);
-        $endDate->add(new DateInterval('P' . (cal_days_in_month(CAL_GREGORIAN, $month, $year)-1) . 'D'));
+        $endDate->add(new DateInterval('P' . (cal_days_in_month(CAL_GREGORIAN, $endMonth, $endYear)-1) . 'D'));
 
         $average = new \stdClass();
         $average->color = '#5cb85c';
-        $average->graph = $this->getStatisticHandler()->averageCart($startDate, $endDate);
+
+        // Récupére les données pour chaques jours et les injecte dans un tableau
+        $dayCount = 0;
+        $stats = array();
+
+        if ($startYear !== $endYear)
+        {
+            for ($year=$startYear; $year<=$endYear; $year++)
+            {
+                if ($year < $endYear)
+                {
+                    for ($month=$startMonth; $month<=12; $month++)
+                    {
+                        // Création date de début et date de fin
+                        $monthStartDate = new \DateTime($year . '-' . $month . '-01');
+                        /** @var \DateTime $endDate */
+                        $monthEndDate = clone($monthStartDate);
+                        $monthEndDate->add(new DateInterval('P' . (cal_days_in_month(CAL_GREGORIAN, $month, $year)-1) . 'D'));
+
+                        $values = $this->getStatisticHandler()->averageCart($monthStartDate, $monthEndDate);
+
+                        foreach ($values as $value)
+                        {
+                            $dayCount ++;
+
+                            $stats[] = array($dayCount-1, $value[1]);
+                        }
+                    }
+                }
+                else
+                {
+                    for ($month=1; $month<=$endMonth; $month++)
+                    {
+                        // Création date de début et date de fin
+                        $monthStartDate = new \DateTime($year . '-' . $month . '-01');
+                        /** @var \DateTime $endDate */
+                        $monthEndDate = clone($monthStartDate);
+                        $monthEndDate->add(new DateInterval('P' . (cal_days_in_month(CAL_GREGORIAN, $month, $year)-1) . 'D'));
+
+                        $values = $this->getStatisticHandler()->averageCart($monthStartDate, $monthEndDate);
+
+                        foreach ($values as $value)
+                        {
+                            $dayCount ++;
+
+                            $stats[] = array($dayCount-1, $value[1]);
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            for ($month=$startMonth; $month<=$endMonth; $month++)
+            {
+                // Création date de début et date de fin
+                $monthStartDate = new \DateTime($endYear . '-' . $month . '-01');
+                /** @var \DateTime $endDate */
+                $monthEndDate = clone($monthStartDate);
+                $monthEndDate->add(new DateInterval('P' . (cal_days_in_month(CAL_GREGORIAN, $month, $endYear)-1) . 'D'));
+
+                $values = $this->getStatisticHandler()->averageCart($monthStartDate, $monthEndDate);
+
+                foreach ($values as $value)
+                {
+                    $dayCount ++;
+
+                    $stats[] = array($dayCount-1, $value[1]);
+                }
+            }
+        }
+
+        $average->graph = $stats;
 
         $data = new \stdClass();
 
-        $data->title = $this->getTranslator()->trans("Stats on %month/%year", array('%month' => $this->getRequest()->query->get('month', date('m')), '%year' => $this->getRequest()->query->get('year', date('Y'))));
+        // En fonction du nombre de jours a analyser, definit si l'affichage se fait par jours ou par semaines
+        if(count($stats) > 91)
+        {
+            $data->label = $this->getTranslator()->trans("Weeks");
+            $dayCount = 1;
+            $weeklyAmount = 0;
+            $weekCount = 0;
+            $statsByWeek = array();
+
+            foreach ($stats as $stat)
+            {
+                $dayCount ++;
+                $dailyAmount = $stat[1];
+                $weeklyAmount = $weeklyAmount +$dailyAmount;
+
+                if ($dayCount == 7)
+                {
+                    $weekCount ++;
+                    $statsByWeek[] = array($weekCount-1, $weeklyAmount);
+                    $dayCount = 0;
+                    $weeklyAmount = 0;
+                }
+            }
+
+            $average->graph = $statsByWeek;
+        }
+        else
+        {
+            $average->graph = $stats;
+            $data->label = $this->getTranslator()->trans("Days");
+        }
+
+        // Change le titre en fonction de la période analysée
+        if ($startMonth === $endMonth)
+        {
+            $data->title = $this->getTranslator()->trans("Stats on %monthStart/%yearStart", array('%monthStart' => $this->getRequest()->query->get('monthStart', date('m')), '%yearStart' => $this->getRequest()->query->get('yearStart', date('Y'))));
+        }
+        else
+        {
+            $data->title = $this->getTranslator()->trans("Stats for beginning of %monthStart/%yearStart to end of %monthEnd/%yearEnd", array('%monthStart' => $this->getRequest()->query->get('monthStart', date('m')), '%yearStart' => $this->getRequest()->query->get('yearStart', date('Y')), '%monthEnd' => $this->getRequest()->query->get('monthEnd', date('m')), '%yearEnd' => $this->getRequest()->query->get('yearEnd', date('Y'))));
+        }
 
         $data->series = array(
             $average,
