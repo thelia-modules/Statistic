@@ -1,9 +1,10 @@
 <div class="general-block-decorator dashboard">
 
     <div class="title title-without-tabs clearfix">
-        <div class="col-sm-8">
+        <div class="col-sm-6">
             {intl l='tool.panel.general.subtitle'}
         </div>
+        
         <div class="col-sm-2 input-group pull-right">
             <span class="input-group-addon glyphicon glyphicon-calendar"></span>
             <input id="selectedDateEnd" type="text" class="form-control date-picker-end"/>
@@ -12,7 +13,11 @@
             <span class="input-group-addon glyphicon glyphicon-calendar"></span>
             <input id="selectedDate" type="text" class="form-control date-picker"/>
         </div>
-
+    </div>
+    
+    <div class="col-sm-2 input-group pull-right">
+        <span>Année précédente</span>
+        <input id="ghostCheck" type="checkbox" class="form-control ghostCheck"/>
     </div>
 
     <div class="text-center clearfix">
