@@ -34,6 +34,16 @@ class CustomerStatisticController extends BaseAdminController
             return $response;
         }
 
+        /* first order */
+        /*
+        $firstOrderSeries = new \stdClass();
+        $firstOrderSeries->color = $this->getRequest()->query->get('first_orders_color', '#5bc0de');
+        $firstOrderSeries->data = OrderQuery::getFirstOrdersStats(
+            $this->getRequest()->query->get('month', date('m')),
+            $this->getRequest()->query->get('year', date('Y'))
+            );
+        */
+
         // récupération des paramètres
         $startMonth = $this->getRequest()->query->get('monthStart', date('m'));
         $startYear = $this->getRequest()->query->get('yearStart', date('m'));
@@ -169,13 +179,6 @@ class CustomerStatisticController extends BaseAdminController
             $newCustomerSeries->graph = $stats;
             $data->label = $this->getTranslator()->trans("Days");
         }
-//        /* first order */
-//        $firstOrderSeries = new \stdClass();
-//        $firstOrderSeries->color = $this->getRequest()->query->get('first_orders_color', '#5bc0de');
-//        $firstOrderSeries->data = OrderQuery::getFirstOrdersStats(
-//            $this->getRequest()->query->get('month', date('m')),
-//            $this->getRequest()->query->get('year', date('Y'))
-//        );
 
         $data->series = array(
             $newCustomerSeries,
@@ -259,7 +262,6 @@ class CustomerStatisticController extends BaseAdminController
                 }
             }
 
-            // En fonction du nombre de jours a analyser, definit si l'affichage se fait par jours ou par semaines
             // En fonction du nombre de jours a analyser, definit si l'affichage se fait par jours ou par semaines
             if(count($stats) > 91)
             {
