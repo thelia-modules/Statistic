@@ -49,7 +49,12 @@ class StatisticController extends BaseAdminController
         $endYear = $this->getRequest()->query->get('yearEnd', date('m'));
         $ghostCurve = $this->getRequest()->query->get('ghostCurve');
 
-
+        // Vérification des paramètres, renvoie un message d'erreur si le mois de fin est incorrect
+        if($startYear === $endYear && $endMonth < $startMonth)
+        {
+            $error = $this->getTranslator()->trans( "Error : End month is incorrect." );
+            return $this->jsonResponse(json_encode($error));
+        }
 
         // Création date de début et date de fin
         $startDate = new \DateTime($startYear . '-' . $startMonth . '-01');
@@ -269,7 +274,7 @@ class StatisticController extends BaseAdminController
                 $average->graph = $stats;
             }
 
-            $data->seriesGhostCurve = array(
+            $data->seriesGhost = array(
                 $average,
             );
         }
@@ -552,16 +557,6 @@ class StatisticController extends BaseAdminController
             $this->couponsServices[$serviceId] = $this->getContainer()->get($serviceId);
         }
         return $this->couponsServices[$serviceId];
-    }
-
-    protected function checkDates($startMonth, $startYear, $endMonth, $endYear)
-    {
-        // Vérification des paramètres, renvoie un message d'erreur si le mois de fin est incorrect
-        if($startYear === $endYear && $endMonth < $startMonth)
-        {
-            $error = $this->getTranslator()->trans( "Error : End month is incorrect." );
-            return $this->jsonResponse(json_encode($error));
-        }
     }
 
 }
