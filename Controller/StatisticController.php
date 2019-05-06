@@ -438,56 +438,69 @@ class StatisticController extends BaseAdminController
             $startYear = $startYear - 1;
             $endYear = $endYear - 1;
 
-            if ($startYear !== $endYear) {
-                for ($i = $startYear; $i <= $endYear; $i++) {
-                    if ($i < $endYear) {
-                        for ($j = $startMonth; $j <= 12; $j++) {
-                            $numberOfDay = cal_days_in_month(CAL_GREGORIAN, $j, $startYear);
+            if ($startYear !== $endYear)
+            {
+                for ($year=$startYear; $year<=$endYear; $year++)
+                {
+                    if ($year < $endYear)
+                    {
+                        for ($month=$startMonth; $month<=12; $month++)
+                        {
+                            // Création date de début et date de fin
+                            $monthStartDate = new \DateTime($year . '-' . $month . '-01');
+                            /** @var \DateTime $endDate */
+                            $monthEndDate = clone($monthStartDate);
+                            $monthEndDate->add(new DateInterval('P' . (cal_days_in_month(CAL_GREGORIAN, $month, $year)-1) . 'D'));
 
-                            for ($day = 1; $day <= $numberOfDay; $day++) {
+                            $values = $this->getStatisticHandler()->averageCart($monthStartDate, $monthEndDate);
 
-                                $dayCount++;
+                            foreach ($values as $value)
+                            {
+                                $dayCount ++;
 
-                                $dailyAmount = $this->getStatisticHandler()->getSaleStats(
-                                    new \DateTime(sprintf('%s-%s-%s', $startYear, $j, $day)),
-                                    new \DateTime(sprintf('%s-%s-%s', $startYear, $j, $day)),
-                                    true
-                                );
-                                $stats[] = array($dayCount - 1, $dailyAmount);
+                                $stats[] = array($dayCount-1, $value[1]);
                             }
                         }
-                    } else {
-                        for ($k = 1; $k <= $endMonth; $k++) {
-                            $numberOfDay = cal_days_in_month(CAL_GREGORIAN, $k, $endYear);
+                    }
+                    else
+                    {
+                        for ($month=1; $month<=$endMonth; $month++)
+                        {
+                            // Création date de début et date de fin
+                            $monthStartDate = new \DateTime($year . '-' . $month . '-01');
+                            /** @var \DateTime $endDate */
+                            $monthEndDate = clone($monthStartDate);
+                            $monthEndDate->add(new DateInterval('P' . (cal_days_in_month(CAL_GREGORIAN, $month, $year)-1) . 'D'));
 
-                            for ($day = 1; $day <= $numberOfDay; $day++) {
+                            $values = $this->getStatisticHandler()->averageCart($monthStartDate, $monthEndDate);
 
-                                $dayCount++;
+                            foreach ($values as $value)
+                            {
+                                $dayCount ++;
 
-                                $dailyAmount = $this->getStatisticHandler()->getSaleStats(
-                                    new \DateTime(sprintf('%s-%s-%s', $endYear, $k, $day)),
-                                    new \DateTime(sprintf('%s-%s-%s', $endYear, $k, $day)),
-                                    true
-                                );
-                                $stats[] = array($dayCount - 1, $dailyAmount);
+                                $stats[] = array($dayCount-1, $value[1]);
                             }
                         }
                     }
                 }
-            } else {
-                for ($i = $startMonth; $i <= $endMonth; $i++) {
-                    $numberOfDay = cal_days_in_month(CAL_GREGORIAN, $i, $endYear);
+            }
+            else
+            {
+                for ($month=$startMonth; $month<=$endMonth; $month++)
+                {
+                    // Création date de début et date de fin
+                    $monthStartDate = new \DateTime($endYear . '-' . $month . '-01');
+                    /** @var \DateTime $endDate */
+                    $monthEndDate = clone($monthStartDate);
+                    $monthEndDate->add(new DateInterval('P' . (cal_days_in_month(CAL_GREGORIAN, $month, $endYear)-1) . 'D'));
 
-                    for ($day = 1; $day <= $numberOfDay; $day++) {
+                    $values = $this->getStatisticHandler()->averageCart($monthStartDate, $monthEndDate);
 
-                        $dayCount++;
+                    foreach ($values as $value)
+                    {
+                        $dayCount ++;
 
-                        $dailyAmount = $this->getStatisticHandler()->getSaleStats(
-                            new \DateTime(sprintf('%s-%s-%s', $endYear, $i, $day)),
-                            new \DateTime(sprintf('%s-%s-%s', $endYear, $i, $day)),
-                            true
-                        );
-                        $stats[] = array($dayCount - 1, $dailyAmount);
+                        $stats[] = array($dayCount-1, $value[1]);
                     }
                 }
             }
