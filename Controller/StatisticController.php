@@ -14,9 +14,12 @@ namespace Statistic\Controller;
 
 use DateInterval;
 use Propel\Runtime\ActiveQuery\Criteria;
+use SoColissimo\Form\ImportForm;
+use function Sodium\add;
 use Statistic\Handler\StatisticHandler;
 use Statistic\Statistic;
 use Thelia\Controller\Admin\BaseAdminController;
+use Thelia\Core\HttpFoundation\JsonResponse;
 use Thelia\Model\OrderQuery;
 use Thelia\Tools\MoneyFormat;
 
@@ -280,8 +283,6 @@ class StatisticController extends BaseAdminController
 
     public function statAverageCartAction()
     {
-        $this->getRequest()->getSession()->save();
-
         // récupération des paramètres
         $startMonth = $this->getRequest()->query->get('monthStart', date('m'));
         $startYear = $this->getRequest()->query->get('yearStart', date('m'));
@@ -529,13 +530,23 @@ class StatisticController extends BaseAdminController
     public function statBestSalesAction()
     {
         // récupération des paramètres
-        $month = $this->getRequest()->query->get('month', date('m'));
-        $year = $this->getRequest()->query->get('year', date('m'));
+        $startMonth = $this->getRequest()->query->get('monthStart', date('m'));
+        $startYear = $this->getRequest()->query->get('yearStart', date('m'));
+        $endMonth = $this->getRequest()->query->get('monthEnd', date('m'));
+        $endYear = $this->getRequest()->query->get('yearEnd', date('m'));
 
-        $startDate = new \DateTime($year . '-' . $month . '-01');
+        // Vérification des paramètres, renvoie un message d'erreur si le mois de fin est incorrect
+        if($startYear === $endYear && $endMonth < $startMonth)
+        {
+            $error = $this->getTranslator()->trans( "Error : End month is incorrect." );
+            return $this->jsonResponse(json_encode($error));
+        }
+
+        // Création date de début et date de fin
+        $startDate = new \DateTime($startYear . '-' . $startMonth . '-01');
         /** @var \DateTime $endDate */
         $endDate = clone($startDate);
-        $endDate->add(new DateInterval('P' . (cal_days_in_month(CAL_GREGORIAN, $month, $year)-1) . 'D'));
+        $endDate->add(new DateInterval('P' . (cal_days_in_month(CAL_GREGORIAN, $endMonth, $endYear)-1) . 'D'));
 
         $bestSales = new \stdClass();
         $bestSales->color = '#5cb85c';
@@ -546,7 +557,83 @@ class StatisticController extends BaseAdminController
             'total_ht' => $this->getTranslator()->trans('tool.panel.general.bestSales.totalHT', [], Statistic::BO_MESSAGE_DOMAIN),
             'total_ttc' => $this->getTranslator()->trans('tool.panel.general.bestSales.totalTTC', [], Statistic::BO_MESSAGE_DOMAIN),
         );
-        $bestSales->table = $this->getStatisticHandler()->bestSales($this->getRequest(), $startDate, $endDate);
+
+        if ($startYear !== $endYear)
+        {
+            for ($year=$startYear; $year<=$endYear; $year++)
+            {
+                if ($year < $endYear)
+                {
+                    for ($month=$startMonth; $month<=12; $month++)
+                    {
+                        // Création date de début et date de fin
+                        $monthStartDate = new \DateTime($year . '-' . $month . '-01');
+                        /** @var \DateTime $endDate */
+                        $monthEndDate = clone($monthStartDate);
+                        $monthEndDate->add(new DateInterval('P' . (cal_days_in_month(CAL_GREGORIAN, $month, $year)-1) . 'D'));
+
+                        $result = $this->getStatisticHandler()->bestSales($this->getRequest(), $monthStartDate, $monthEndDate);
+                        $results[] = array($result);
+                    }
+                }
+                else
+                {
+                    for ($month=1; $month<=$endMonth; $month++)
+                    {
+                        // Création date de début et date de fin
+                        $monthStartDate = new \DateTime($year . '-' . $month . '-01');
+                        /** @var \DateTime $endDate */
+                        $monthEndDate = clone($monthStartDate);
+                        $monthEndDate->add(new DateInterval('P' . (cal_days_in_month(CAL_GREGORIAN, $month, $year)-1) . 'D'));
+
+                        $result = $this->getStatisticHandler()->bestSales($this->getRequest(), $monthStartDate, $monthEndDate);
+                        $results[] = array($result);
+                    }
+                }
+            }
+        }
+        else
+        {
+            for ($month=$startMonth; $month<=$endMonth; $month++)
+            {
+                // Création date de début et date de fin
+                $monthStartDate = new \DateTime($endYear . '-' . $month . '-01');
+                /** @var \DateTime $endDate */
+                $monthEndDate = clone($monthStartDate);
+                $monthEndDate->add(new DateInterval('P' . (cal_days_in_month(CAL_GREGORIAN, $month, $endYear)-1) . 'D'));
+
+                $result = $this->getStatisticHandler()->bestSales($this->getRequest(), $monthStartDate, $monthEndDate);
+                $results[] = array($result);
+            }
+        }
+
+        $finalResult = [];
+
+        foreach ($results as $result)
+        {
+            foreach ($result as $value)
+            {
+                foreach ($value as $item)
+                {
+                    if (array_key_exists($item['product_ref'], $finalResult))
+                    {
+                        $totalHT = $item['total_ht'] + $finalResult[$item['product_ref']]['total_ht'];
+                        $totalTTC = $item['total_ttc'] + $finalResult[$item['product_ref']]['total_ttc'];
+                        $finalResult[$item['product_ref']]['total_sold'] = $item['total_sold'] + $finalResult[$item['product_ref']]['total_sold'];
+
+                        $finalResult[$item['product_ref']]['total_ht'] = ''. $totalHT .' €';
+
+                        $finalResult[$item['product_ref']]['total_ttc'] = ''. $totalTTC .' €';
+                    }
+                    else
+                    {
+                        $finalResult[$item['product_ref']] = $item;
+                    }
+                }
+            }
+        }
+
+        $bestSales->table = $finalResult;
 
         $data = new \stdClass();
         $data->series = array(
@@ -563,32 +650,123 @@ class StatisticController extends BaseAdminController
     public function statDiscountCodeAction()
     {
         // récupération des paramètres
-        $month = $this->getRequest()->query->get('month', date('m'));
-        $year = $this->getRequest()->query->get('year', date('m'));
+        $startMonth = $this->getRequest()->query->get('monthStart', date('m'));
+        $startYear = $this->getRequest()->query->get('yearStart', date('m'));
+        $endMonth = $this->getRequest()->query->get('monthEnd', date('m'));
+        $endYear = $this->getRequest()->query->get('yearEnd', date('m'));
 
-        $startDate = new \DateTime($year . '-' . $month . '-01');
-        /** @var \DateTime $endDate */
-        $endDate = clone($startDate);
-        $endDate->add(new DateInterval('P' . (cal_days_in_month(CAL_GREGORIAN, $month, $year)-1) . 'D'));
+        // Vérification des paramètres, renvoie un message d'erreur si le mois de fin est incorrect
+        if($startYear === $endYear && $endMonth < $startMonth)
+        {
+            $error = $this->getTranslator()->trans( "Error : End month is incorrect." );
+            return $this->jsonResponse(json_encode($error));
+        }
 
         $discount = new \stdClass();
-        $result = $this->getStatisticHandler()->discountCode($startDate, $endDate);
-        foreach( $result as &$coupon ){
-            /** @var \Thelia\Coupon\Type\CouponInterface $couponService */
-            $couponService = $this->getSpecificCouponService($coupon['type']);
-            $coupon['rule'] = $couponService->getName();
+
+        if ($startYear !== $endYear)
+        {
+            for ($year=$startYear; $year<=$endYear; $year++)
+            {
+                if ($year < $endYear)
+                {
+                    for ($month=$startMonth; $month<=12; $month++)
+                    {
+                        // Création date de début et date de fin
+                        $startDate = new \DateTime($year . '-' . $month . '-01');
+                        /** @var \DateTime $endDate */
+                        $endDate = clone($startDate);
+                        $endDate->add(new DateInterval('P' . (cal_days_in_month(CAL_GREGORIAN, $month, $year)-1) . 'D'));
+
+                        $result = $this->getStatisticHandler()->discountCode($startDate, $endDate);
+
+                        foreach( $result as $coupon ){
+                            /** @var \Thelia\Coupon\Type\CouponInterface $couponService */
+                            $couponService = $this->getSpecificCouponService($coupon['type']);
+                            $coupon['rule'] = $couponService->getName();
+                        }
+
+                        $results[] = array($result);
+                    }
+                }
+                else
+                {
+                    for ($month=1; $month<=$endMonth; $month++)
+                    {
+                        // Création date de début et date de fin
+                        $startDate = new \DateTime($year . '-' . $month . '-01');
+                        /** @var \DateTime $endDate */
+                        $endDate = clone($startDate);
+                        $endDate->add(new DateInterval('P' . (cal_days_in_month(CAL_GREGORIAN, $month, $year)-1) . 'D'));
+
+                        $result = $this->getStatisticHandler()->discountCode($startDate, $endDate);
+
+                        foreach( $result as $coupon ){
+                            /** @var \Thelia\Coupon\Type\CouponInterface $couponService */
+                            $couponService = $this->getSpecificCouponService($coupon['type']);
+                            $coupon['rule'] = $couponService->getName();
+                        }
+
+                        $results[] = array($result);
+                    }
+                }
+            }
         }
-        $discount->table = $result;
+        else
+        {
+            for ($month=$startMonth; $month<=$endMonth; $month++)
+            {
+                // Création date de début et date de fin
+                $startDate = new \DateTime($endYear . '-' . $month . '-01');
+                /** @var \DateTime $endDate */
+                $endDate = clone($startDate);
+                $endDate->add(new DateInterval('P' . (cal_days_in_month(CAL_GREGORIAN, $month, $endYear)-1) . 'D'));
+
+                $result = $this->getStatisticHandler()->discountCode($startDate, $endDate);
+
+                foreach( $result as $coupon ){
+                    /** @var \Thelia\Coupon\Type\CouponInterface $couponService */
+                    $couponService = $this->getSpecificCouponService($coupon['type']);
+                    $coupon['rule'] = $couponService->getName();
+                }
+
+                $results[] = array($result);
+            }
+        }
+
+        $finalResult = [];
+
+        foreach ($results as $result)
+        {
+            foreach ($result as $value)
+            {
+                foreach ($value as $item)
+                {
+                    if (array_key_exists($item['code'], $finalResult))
+                    {
+                        $finalResult[$item['code']]['total'] = $item['total'] + $finalResult[$item['code']]['total'];
+                    }
+                    else
+                    {
+                        if ($item['total'] != 0)
+                        {
+                            $finalResult[$item['code']] = $item;
+                        }
+                    }
+                }
+            }
+        }
+
         $discount->thead = array(
             'code' => $this->getTranslator()->trans('tool.panel.general.discountCode.code',[], Statistic::BO_MESSAGE_DOMAIN),
             'rule' => $this->getTranslator()->trans('tool.panel.general.discountCode.rule',[], Statistic::BO_MESSAGE_DOMAIN),
             'total' => $this->getTranslator()->trans('tool.panel.general.discountCode.nbUse',[], Statistic::BO_MESSAGE_DOMAIN),
         );
 
+        $discount->table = $finalResult;
+
         $data = new \stdClass();
-        $data->series = array(
-            $discount,
-        );
+        $data->series = array($discount);
 
         return $this->jsonResponse(json_encode($data));
     }
@@ -669,8 +847,7 @@ class StatisticController extends BaseAdminController
         setlocale (LC_TIME, 'fr_FR.utf8','fra');
 
         // récupération des paramètres
-        $month = $this->getRequest()->query->get('month', date('m'));
-        $year = $this->getRequest()->query->get('year', date('m'));
+        $year = $this->getRequest()->query->get('yearEnd', date('m'));
 
         $turnover = new \stdClass();
         $result =  $this->getStatisticHandler()->turnover($year);
@@ -741,7 +918,7 @@ class StatisticController extends BaseAdminController
             'TTCWithoutShippping' => $this->getTranslator()->trans('tool.panel.general.turnover.TTCWithoutShippping', [], Statistic::BO_MESSAGE_DOMAIN),
         );
         $data = new \stdClass();
-        $data->title = $this->getTranslator()->trans("Stats on %year", array('%year' => $this->getRequest()->query->get('year', date('Y'))), "statistic");
+        $data->title = $this->getTranslator()->trans("Stats on %year", array('%year' => $this->getRequest()->query->get('yearEnd', date('Y'))), "statistic");
 
         $data->series = array(
             $turnover
