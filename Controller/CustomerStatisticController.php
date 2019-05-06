@@ -52,7 +52,7 @@ class CustomerStatisticController extends BaseAdminController
         $ghostCurve = $this->getRequest()->query->get('ghostCurve');
 
         // Vérification des paramètres, renvoie un message d'erreur si le mois de fin est incorrect
-        if($startYear === $endYear && $endMonth < $startMonth)
+        if($startYear === $endYear && $endMonth < $startMonth || $startYear > $endYear)
         {
             $error = $this->getTranslator()->trans( "Error : End month is incorrect." );
             return $this->jsonResponse(json_encode($error));
