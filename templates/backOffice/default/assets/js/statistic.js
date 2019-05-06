@@ -34,7 +34,8 @@
                 xaxis: {
                     borderColor: '#ccc',
                     ticks: [],
-                    tickOptions: { showGridline: false, showLabel: true }
+                    tickOptions: { showGridline: false, showLabel: true },
+
                 },
                 yaxis: {
                     min: 0,
@@ -75,11 +76,11 @@
             minViewMode: 1,
             language: "fr"
         }).on('changeDate', function (e) {
-            date = e.date;
-            monthStart = date.getMonth() + 1;
-            yearStart = date.getFullYear();
-
+            dateStart = e.date;
+            monthStart = dateStart.getMonth() + 1;
+            yearStart = dateStart.getFullYear();
             updateContent();
+
         });
 
         $('.date-picker-end').datepicker({
@@ -87,10 +88,9 @@
             minViewMode: 1,
             language: "fr"
         }).on('changeDate', function (e) {
-            date = e.date;
-            monthEnd = date.getMonth() + 1;
-            yearEnd = date.getFullYear();
-
+            dateEnd = e.date;
+            monthEnd = dateEnd.getMonth() + 1;
+            yearEnd = dateEnd.getFullYear();
             updateContent();
         });
 
@@ -172,8 +172,10 @@
 
         function initJqplotData(json) {
             if (json.series == undefined) {
-                alert(json);
+                $('.jqplot-content').html(`<div class="alert alert-danger">${json}</div>`);
+
             } else {
+                $('.jqplot-content').html(`<div id="jqplot-general"></div>`);
                 var series = [];
                 var seriesColors = [];
                 for (var j = 0; j < json.series.length; j++) {
@@ -188,6 +190,7 @@
                         var days = json.series[j].graph.length;
                         // Add days to xaxis
                         for (var i = 1; i < days + 1; ++i) {
+
                             ticks.push([i - 1, i]);
                         }
 
@@ -218,7 +221,7 @@
 
         function setDataTable(tableId) {
             $.ajax({
-                url: url + '?monthStart=' + monthStart + '&yearStart=' + yearStart + '?monthEnd=' + monthEnd + '&yearEnd=' + yearEnd + '&gosthCurve=' + ghostCurve
+                url: url + '?monthStart=' + monthStart + '&yearStart=' + yearStart + '&monthEnd=' + monthEnd + '&yearEnd=' + yearEnd + '&ghosthCurve=' + ghostCurve
             }).success(function (json) {
 
                 var table = document.getElementById(tableId);
@@ -265,7 +268,7 @@
             if (jQPlotInstance) {
                 jQPlotInstance.destroy();
             }
-            console.log(series);
+
             jQPlotInstance = $.jqplot(chartId, series, jQPlotsOptions);
 
             $(window).bind('resize', function (event, ui) {
