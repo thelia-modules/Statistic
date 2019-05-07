@@ -4,36 +4,34 @@
 
 (function ($) {
     $(document).ready(function () {
-        var productDatedate = new Date();
-        var productUrl = baseAdminUrl + '/module/statistic/product/turnover';
-        var id = "jqplot-product";
-        var jQPlotInstanceProduct; // global instance
-        var productDate = new Date();
+        let productUrl = baseAdminUrl + '/module/statistic/product/turnover';
+        let id = "jqplot-product";
+        let jQPlotInstanceProduct; // global instance
+        let productDate = new Date();
+        let productyear = new Date();
 
         $('.product-date-picker').datepicker({
             format: 'yyyy',
-            minViewMode: 1,
+            ViewMode: "years",
+            minViewMode: "years",
             language: "fr"
         }).on('changeDate', function (e) {
             productDate = e.date;
             productyear = productDate.getFullYear();
-            var url = $('.product-graph-select').data("url");
-
             setDataPlot(productUrl, id);
         });
 
         $('.product-date-picker').datepicker('update', new Date());
 
-
         function setDataPlot(url, chartId) {
 
-            var jQplotDate = productDate;
+            let jQplotDate = productDate;
             jQplotDate.setDate(1); // Set day to 1 so we can add month without 30/31 days of month troubles.
-            var jQplotData; // json data
+            let jQplotData; // json data
 
             //{literal}
 
-            var jQPlotsOptions = {
+            let jQPlotsOptions = {
                 animate: true,
                 axesDefaults: {
                     tickOptions: { showMark: true, showGridline: true }
@@ -73,7 +71,7 @@
             };
 
             // Get initial data Json
-            var ref = $('#product-select').val();
+            let ref = $('#product-select').val();
             retrieveJQPlotJson(ref, jQplotDate.getMonth() + 1, jQplotDate.getFullYear());
 
             $('[data-toggle="' + chartId + '"]').click(function () {
@@ -106,25 +104,25 @@
             }
 
             function initJqplotData(json) {
-                var series = [];
-                var ticks = [];
-                var seriesColors = [];
+                let series = [];
+                let ticks = [];
+                let seriesColors = [];
                 series.push(json.series[0].graph);
                 seriesColors.push(json.series[0].color);
 
                 // Number of days to display ( = graph.length in one serie)
                 if (typeof json.series[0].graphLabel === 'undefined') {
-                    var days = json.series[0].graph.length;
+                    let months = json.series[0].graph.length;
                     // Add days to xaxis
-                    for (var i = 0; i < days; ++i) {
+                    for (let i = 0; i < months; ++i) {
                         ticks.push([i - 1, i]);
                     }
 
                 } else {
-                    var days = json.series[0].graphLabel.length;
-                    var val = json.series[0].graphLabel;
+                    let months = json.series[0].graphLabel.length;
+                    let val = json.series[0].graphLabel;
                     // Add days to xaxis
-                    for (var i = 0; i < days; ++i) {
+                    for (let i = 0; i < months; ++i) {
                         ticks.push([i, val[i]]);
                     }
                 }
@@ -146,7 +144,7 @@
             function jsonSuccessLoad() {
 
                 // Init jQPlot
-                var series = initJqplotData(jQplotData);
+                let series = initJqplotData(jQplotData);
 
                 // Start jQPlot
                 if (jQPlotInstanceProduct) {
@@ -162,7 +160,7 @@
         }
 
         $('.product-graph-select').click(function (e) {
-            var type = this.dataset.type;
+            let type = this.dataset.type;
             $('.product-graph-select').removeClass('active');
             $(this).toggleClass('active');
             productUrl = this.dataset.url;
@@ -179,16 +177,15 @@
 
         // Modification de la liste des produits par catégories
         $('#category-select').change(function (e) {
-            var url = $('#product-select').data('url');
+            let url = $('#product-select').data('url');
             $.ajax({
                 url: url + '?category=' + this.value
             }).success(function (data) {
 
-                var i = 0;
-                $select = $('#product-select');
+                let $select = $('#product-select');
                 $select.html('<option value="">Produit...</option>');
-                for (var k in data) {
-                    var prod = data[k];
+                for (let k in data) {
+                    let prod = data[k];
                     $select.append('<option value=' + prod["Ref"] + '>' + prod["i18n_TITLE"] + '</option>')
                 }
             });
