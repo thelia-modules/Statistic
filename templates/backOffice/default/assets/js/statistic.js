@@ -235,7 +235,7 @@
                 var titles = json.series[0].thead;
                 for (var key in titles) {
                     keys.push(key);
-                    var cell = row.insertCell(-1).outerHTML = '<th class="text-left">' + titles[key] + "</th>";
+                    var cell = row.insertCell(-1).outerHTML = '<th class="text-left">' + titles[key] + '</button></th>';
                 }
 
                 // Ajout des données
@@ -253,6 +253,7 @@
                 if (data.length === 0) {
                     table.insertRow(-1).insertCell(-1).outerHTML = '<td class="text-left" colspan="99">Aucune donnée disponible.</td>';
                 }
+
             })
         }
 
@@ -275,5 +276,9 @@
                 jQPlotInstance.replot({ resetAxes: true });
             });
         }
+
+
+
+
     });
 })(jQuery);
