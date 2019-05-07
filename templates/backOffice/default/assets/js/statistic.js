@@ -235,7 +235,7 @@
                 var titles = json.series[0].thead;
                 for (var key in titles) {
                     keys.push(key);
-                    var cell = row.insertCell(-1).outerHTML = '<th class="text-left">' + titles[key] + '</button></th>';
+                    var cell = row.insertCell(-1).outerHTML = '<th class="text-left">' + titles[key] + '</th>';
                 }
 
                 // Ajout des données

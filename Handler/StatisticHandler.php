@@ -103,8 +103,9 @@ class StatisticHandler
                 $calc->load($product, $country);
                 $totalHt = $pse['total_ht'];
 
-                $pse['total_ht'] = MoneyFormat::getInstance($request)->formatByCurrency($totalHt);
-                $pse['total_ttc'] = MoneyFormat::getInstance($request)->formatByCurrency($calc->getTaxedPrice($totalHt));
+                // Must return numeric value to be sorted later
+                $pse['total_ht'] = $totalHt;
+                $pse['total_ttc'] = $calc->getTaxedPrice($totalHt);
             }
         }
 

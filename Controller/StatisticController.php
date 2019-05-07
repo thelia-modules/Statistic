@@ -632,11 +632,9 @@ class StatisticController extends BaseAdminController
                 {
                     if (array_key_exists($item['product_ref'], $finalResult))
                     {
-                        $totalHT = $item['total_ht'] + $finalResult[$item['product_ref']]['total_ht'];
-                        $totalTTC = $item['total_ttc'] + $finalResult[$item['product_ref']]['total_ttc'];
+                        $finalResult[$item['product_ref']]['total_ht'] = $item['total_ht'] + $finalResult[$item['product_ref']]['total_ht'];
+                        $finalResult[$item['product_ref']]['total_ttc'] = $item['total_ttc'] + $finalResult[$item['product_ref']]['total_ttc'];
                         $finalResult[$item['product_ref']]['total_sold'] = $item['total_sold'] + $finalResult[$item['product_ref']]['total_sold'];
-                        $finalResult[$item['product_ref']]['total_ht'] = MoneyFormat::getInstance($this->getRequest())->formatByCurrency($totalHT);
-                        $finalResult[$item['product_ref']]['total_ttc'] = MoneyFormat::getInstance($this->getRequest())->formatByCurrency($totalTTC);
                     }
                     else
                     {
@@ -649,6 +647,12 @@ class StatisticController extends BaseAdminController
         // Sort array
         $keys = array_column($finalResult, 'total_ttc');
         array_multisort($keys, SORT_DESC, $finalResult);
+
+        foreach ($finalResult as $key => $item)
+        {
+            $finalResult[$key]['total_ht'] = MoneyFormat::getInstance($this->getRequest())->formatByCurrency($item['total_ht']);
+            $finalResult[$key]['total_ttc'] = MoneyFormat::getInstance($this->getRequest())->formatByCurrency($item['total_ttc']);
+        }
 
         $bestSales->table = $finalResult;
 
