@@ -646,6 +646,10 @@ class StatisticController extends BaseAdminController
             }
         }
 
+        // Sort array
+        $keys = array_column($finalResult, 'total_ttc');
+        array_multisort($keys, SORT_DESC, $finalResult);
+
         $bestSales->table = $finalResult;
 
         $data = new \stdClass();
@@ -775,6 +779,10 @@ class StatisticController extends BaseAdminController
             'rule' => $this->getTranslator()->trans('tool.panel.general.discountCode.rule',[], Statistic::BO_MESSAGE_DOMAIN),
             'total' => $this->getTranslator()->trans('tool.panel.general.discountCode.nbUse',[], Statistic::BO_MESSAGE_DOMAIN),
         );
+
+        // Sort array
+        $keys = array_column($finalResult, 'total');
+        array_multisort($keys, SORT_DESC, $finalResult);
 
         $discount->table = $finalResult;
 
