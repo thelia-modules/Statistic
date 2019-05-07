@@ -45,13 +45,13 @@ class ProductStatisticController extends BaseAdminController
     {
         // récupération des paramètres
         $productRef = $this->getRequest()->query->get('ref', '');
-        $month = $this->getRequest()->query->get('month', date('m'));
         $year = $this->getRequest()->query->get('year', date('m'));
 
         $turnover = new \stdClass();
         $result = $this->getProductStatisticHandler()->turnover($productRef, $year);
         $graph = array();
         $graphLabel = array();
+
         for ($i = 1; $i <= 12; ++$i) {
             $date = new \DateTime($year.'-'.$i);
             if( !isset($result[$date->format('Y-n')])) {
@@ -61,6 +61,7 @@ class ProductStatisticController extends BaseAdminController
             }
             $graphLabel[] = $date->format('M');
         }
+
         $turnover->color ='#f39922';
         $turnover->graph = $graph;
         $turnover->graphLabel = $graphLabel;

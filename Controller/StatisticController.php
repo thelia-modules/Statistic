@@ -526,7 +526,9 @@ class StatisticController extends BaseAdminController
                 }
 
                 $average->graph = $statsByWeek;
-            } else {
+            }
+            else
+            {
                 $average->graph = $stats;
             }
 
@@ -633,10 +635,8 @@ class StatisticController extends BaseAdminController
                         $totalHT = $item['total_ht'] + $finalResult[$item['product_ref']]['total_ht'];
                         $totalTTC = $item['total_ttc'] + $finalResult[$item['product_ref']]['total_ttc'];
                         $finalResult[$item['product_ref']]['total_sold'] = $item['total_sold'] + $finalResult[$item['product_ref']]['total_sold'];
-
-                        $finalResult[$item['product_ref']]['total_ht'] = ''. $totalHT .' €';
-
-                        $finalResult[$item['product_ref']]['total_ttc'] = ''. $totalTTC .' €';
+                        $finalResult[$item['product_ref']]['total_ht'] = MoneyFormat::getInstance($this->getRequest())->formatByCurrency($totalHT);
+                        $finalResult[$item['product_ref']]['total_ttc'] = MoneyFormat::getInstance($this->getRequest())->formatByCurrency($totalTTC);
                     }
                     else
                     {
