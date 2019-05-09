@@ -1,3 +1,9 @@
+This project as been updated and completed by Romain Petit and Clément Hériter during their internship
+
+### New features : 
+* The period can now be extended to several months, beyond ninety days results will be displayed by weeks.
+* Add possibility to compare statistics from previous year.
+
 === en_US ===
 # Statistic 
 Show statistic of customer, sales and products. It also provides the Hook to insert other statistics.
