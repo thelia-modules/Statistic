@@ -44,32 +44,45 @@ class ProductStatisticController extends BaseAdminController
     public function statTurnoverAction()
     {
         // récupération des paramètres
-        $productRef = $this->getRequest()->query->get('ref', '');
-        $month = $this->getRequest()->query->get('month', date('m'));
+        $productRef = $this->getRequest()->query->get('ref', '141_4_91359672');
         $year = $this->getRequest()->query->get('year', date('m'));
+        $year2 = $this->getRequest()->query->get('year2', date('m'));
 
         $turnover = new \stdClass();
-        $result = $this->getProductStatisticHandler()->turnover($productRef, $year);
+        $turnover2 = new \stdClass();
+        $results = array();
+        $results[0] = $this->getProductStatisticHandler()->turnover($productRef, $year);
+        $results[1] = $this->getProductStatisticHandler()->turnover($productRef, $year2);
         $graph = array();
         $graphLabel = array();
-        for ($i = 1; $i <= 12; ++$i) {
-            $date = new \DateTime($year.'-'.$i);
-            if( !isset($result[$date->format('Y-n')])) {
-                $graph[] = [$i-1, 0];
-            }else{
-                $graph[] = [$i-1, floatval($result[$date->format('Y-n')]['percent'])];
+        $productYear = $year;
+        foreach ($results as $index => $result){
+            for ($i = 1; $i <= 12; ++$i) {
+                $date = new \DateTime($productYear.'-'.$i);
+                if( !isset($result[$date->format('Y-n')])) {
+                    $graph[$index][] = [$i-1, 0];
+                }else{
+                    $graph[$index][] = [$i-1, floatval($result[$date->format('Y-n')]['percent'])];
+                }
+                $graphLabel[$index][] = $date->format('M');
             }
-            $graphLabel[] = $date->format('M');
+            $productYear = $year2;
         }
-        $turnover->color ='#f39922';
-        $turnover->graph = $graph;
-        $turnover->graphLabel = $graphLabel;
+
+        $turnover->color ='#ff0000';
+        $turnover->graph = $graph[0];
+        $turnover->graphLabel = $graphLabel[0];
+
+        $turnover2->color ='#f39922';
+        $turnover2->graph = $graph[1];
+        $turnover2->graphLabel = $graphLabel[1];
 
         $data = new \stdClass();
-        $data->title = $this->getTranslator()->trans("Stats on %year", array('%year' => $this->getRequest()->query->get('year', date('Y'))), "statistic");
+        $data->title = $this->getTranslator()->trans("Stats on %startYear and %endYear", array('%startYear' => $year, '%endYear' => $year2), "statistic");
 
         $data->series = array(
-            $turnover
+            $turnover,
+            $turnover2
         );
 
         return $this->jsonResponse(json_encode($data));
@@ -78,32 +91,44 @@ class ProductStatisticController extends BaseAdminController
     public function statSaleAction()
     {
         // récupération des paramètres
-        $productId = $this->getRequest()->query->get('ref', '');
-        $month = $this->getRequest()->query->get('month', date('m'));
+        $productId = $this->getRequest()->query->get('ref', '141_4_91359672');
         $year = $this->getRequest()->query->get('year', date('m'));
+        $year2 = $this->getRequest()->query->get('year2', date('m'));
 
         $sale = new \stdClass();
-        $result = $this->getProductStatisticHandler()->sale($productId, $year);
+        $sale2 = new \stdClass();
+        $results[0] = $this->getProductStatisticHandler()->sale($productId, $year);
+        $results[1] = $this->getProductStatisticHandler()->sale($productId, $year2);
         $graph = array();
         $graphLabel = array();
-        for ($i = 1; $i <= 12; ++$i) {
-            $date = new \DateTime($year.'-'.$i);
-            if( !isset($result[$date->format('Y-n')])) {
-                $graph[] = [$i-1, 0];
-            }else{
-                $graph[] = [$i-1, intval($result[$date->format('Y-n')]['total'])];
+        $productYear = $year;
+        foreach ($results as $index => $result) {
+            for ($i = 1; $i <= 12; ++$i) {
+                $date = new \DateTime($productYear . '-' . $i);
+                if (!isset($result[$date->format('Y-n')])) {
+                    $graph[$index][] = [$i - 1, 0];
+                } else {
+                    $graph[$index][] = [$i - 1, intval($result[$date->format('Y-n')]['total'])];
+                }
+                $graphLabel[$index][] = $date->format('M');
             }
-            $graphLabel[] = $date->format('M');
+            $productYear = $year2;
         }
-        $sale->color = '#5cb85c';
-        $sale->graph = $graph;
-        $sale->graphLabel = $graphLabel;
+
+        $sale->color = '#38ADFE';
+        $sale->graph = $graph[0];
+        $sale->graphLabel = $graphLabel[0];
+
+        $sale2->color = '#5cb85c';
+        $sale2->graph = $graph[1];
+        $sale2->graphLabel = $graphLabel[1];
 
         $data = new \stdClass();
-        $data->title = $this->getTranslator()->trans("Stats on %year", array('%year' => $this->getRequest()->query->get('year', date('Y'))), "statistic");
+        $data->title = $this->getTranslator()->trans("Stats on %startYear and %endYear", array('%startYear' => $year, '%endYear' => $year2), "statistic");
 
         $data->series = array(
-            $sale
+            $sale,
+            $sale2
         );
 
         return $this->jsonResponse(json_encode($data));

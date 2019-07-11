@@ -9,6 +9,10 @@
         var id = "jqplot-product";
         var jQPlotInstanceProduct; // global instance
         var productDate = new Date();
+        var productDate2 = new Date();
+        var productyear = productDate.getFullYear();
+        var productyear2 = productDate2.getFullYear();
+        var type ="";
 
         $('.product-date-picker').datepicker( {
             format: 'yyyy',
@@ -17,7 +21,17 @@
         }).on('changeDate', function(e){
             productDate = e.date;
             productyear = productDate.getFullYear();
-            var url =  $('.product-graph-select').data("url");
+
+            setDataPlot(productUrl, id);
+        });
+
+        $('.product-date-picker2').datepicker( {
+            format: 'yyyy',
+            minViewMode: "years",
+            language: "fr"
+        }).on('changeDate', function(e){
+            productDate2 = e.date;
+            productyear2 = productDate2.getFullYear();
 
             setDataPlot(productUrl, id);
         });
@@ -68,32 +82,20 @@
                         //return jQPlotsOptions.axes.xaxis.ticks[pointIndex][1] + ': ' + plot.data[seriesIndex][pointIndex][1];
                         return Math.round(plot.data[seriesIndex][pointIndex][1]);
                     }
+                },
+                legend:{
+                    show: true
                 }
             };
 
             // Get initial data Json
             var ref = $('#product-select').val();
-            retrieveJQPlotJson(ref, jQplotDate.getMonth() + 1, jQplotDate.getFullYear());
+            retrieveJQPlotJson(ref, productyear, productyear2);
 
-            $('[data-toggle="' + chartId + '"]').click(function () {
 
-                $(this).toggleClass('active');
-                jsonSuccessLoad();
+            function retrieveJQPlotJson(productRef, productyear, productyear2, callback) {
 
-            });
-
-            $('.js-stats-change-month').click(function (e) {
-                $('.js-stats-change-month').attr('disabled', true);
-                jQplotDate.setMonth(parseInt(jQplotDate.getMonth()) + parseInt($(this).data('month-offset')));
-                retrieveJQPlotJson(jQplotDate.getMonth() + 1, jQplotDate.getFullYear(), function () {
-                    $('.js-stats-change-month').attr('disabled', false);
-                });
-
-            });
-
-            function retrieveJQPlotJson(productRef, month, productyear, callback) {
-
-                $.getJSON(url, {ref: productRef, month: month, year: productyear})
+                $.getJSON(url, {ref: productRef, year: productyear, year2: productyear2})
                     .done(function (data) {
                         jQplotData = data;
                         jsonSuccessLoad();
@@ -108,8 +110,10 @@
                 var series = [];
                 var ticks = [];
                 var seriesColors = [];
-                series.push(json.series[0].graph);
-                seriesColors.push(json.series[0].color);
+                for (var i = 0; i<json.series.length ;i++ ){
+                    series.push(json.series[i].graph);
+                    seriesColors.push(json.series[i].color);
+                }
 
                 // Number of days to display ( = graph.length in one serie)
                 if( typeof json.series[0].graphLabel === 'undefined' ){
@@ -134,6 +138,8 @@
 
                 // Graph series colors
                 jQPlotsOptions.seriesColors = seriesColors;
+
+                jQPlotsOptions.legend.labels = [productyear, productyear2];
 
                 return series;
             }
@@ -161,16 +167,12 @@
         }
 
         $('.product-graph-select').click(function (e) {
-            var type = this.dataset.type;
-            $('.product-graph-select').removeClass('active');
-            $(this).toggleClass('active');
-            productUrl = this.dataset.url;
-            if (type.indexOf('jqplot')!==-1) {
-                if( type.indexOf(',')!==-1){
-                    id = this.dataset.toggle.split(',')[1];
-                }else{
-                    id = this.dataset.toggle;
-                }
+            if (!$(this).hasClass('active')){
+                type = this.dataset.type;
+                $('.product-graph-select').removeClass('active');
+                $(this).toggleClass('active');
+                productUrl = this.dataset.url;
+                id = this.dataset.toggle;
                 $('.jqplot-content').show();
                 setDataPlot(productUrl, id);
             }

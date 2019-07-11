@@ -12,10 +12,11 @@
 
 namespace Statistic\Controller;
 
+use Statistic\Statistic;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Core\Security\AccessManager;
-use Thelia\Model\CustomerQuery;
-use Thelia\Model\OrderQuery;
+
+
 
 /**
  * Class CustomerStatisticController
@@ -33,26 +34,36 @@ class CustomerStatisticController extends BaseAdminController
             return $response;
         }
 
+        $startDay = $this->getRequest()->query->get('startDay', date('d'));
+        $startMonth = $this->getRequest()->query->get('startMonth', date('m'));
+        $startYear = $this->getRequest()->query->get('startYear', date('Y'));
+
+        $endDay = $this->getRequest()->query->get('endDay', date('d'));
+        $endMonth = $this->getRequest()->query->get('endMonth', date('m'));
+        $endYear = $this->getRequest()->query->get('endYear', date('Y'));
+
         $data = new \stdClass();
 
-        $data->title = $this->getTranslator()->trans("Stats on %month/%year", array('%month' => $this->getRequest()->query->get('month', date('m')), '%year' => $this->getRequest()->query->get('year', date('Y'))));
-
-
-        /* new customers */
-        $newCustomerSeries = new \stdClass();
-        $newCustomerSeries->color = $this->getRequest()->query->get('customers_color', '#f39922');
-        $newCustomerSeries->graph = CustomerQuery::getMonthlyNewCustomersStats(
-            $this->getRequest()->query->get('month', date('m')),
-            $this->getRequest()->query->get('year', date('Y'))
+        $data->title = $this->getTranslator()->trans(
+            "Stats between %startDay/%startMonth/%startYear and %endDay/%endMonth/%endYear", array(
+            '%startDay' => $startDay,
+            '%startMonth' => $startMonth,
+            '%startYear' => $startYear,
+            '%endDay' => $endDay,
+            '%endMonth' => $endMonth,
+            '%endYear' => $endYear
+        ), "statistic"
         );
 
-//        /* first order */
-//        $firstOrderSeries = new \stdClass();
-//        $firstOrderSeries->color = $this->getRequest()->query->get('first_orders_color', '#5bc0de');
-//        $firstOrderSeries->data = OrderQuery::getFirstOrdersStats(
-//            $this->getRequest()->query->get('month', date('m')),
-//            $this->getRequest()->query->get('year', date('Y'))
-//        );
+        $startDate = new \DateTime($startYear.'-'.$startMonth.'-'.$startDay);
+        $endDate = new \DateTime($endYear.'-'.$endMonth.'-'.$endDay);
+
+        $result = $this->getCustomerStatHandler()->getNewCustomersStats($startDate, $endDate);
+
+        $newCustomerSeries = new \stdClass();
+        $newCustomerSeries->color = $this->getRequest()->query->get('customers_color', '#f39922');
+        $newCustomerSeries->graphLabel = $result['label'];
+        $newCustomerSeries->graph = $result['stats'];
 
         $data->series = array(
             $newCustomerSeries,
@@ -62,5 +73,17 @@ class CustomerStatisticController extends BaseAdminController
         $json = json_encode($data);
 
         return $this->jsonResponse($json);
+    }
+
+    /** @var Statistic/Handler/CustomerStatHandler */
+    protected $customerStatHandler;
+
+    protected function getCustomerStatHandler()
+    {
+        if (!isset($this->customerStatHandler)) {
+            $this->customerStatHandler = $this->getContainer()->get('statistic.handler.customer');
+        }
+
+        return $this->customerStatHandler;
     }
 }

@@ -15,9 +15,10 @@
 
         var type = "jqplot-general";
         var targetId = "registration";
-        var date = new Date();
-        var month = date.getMonth()+1;
-        var year = date.getFullYear();
+        var dataTarget = "";
+        var startDate = new Date();
+        startDate.setMonth(startDate.getMonth() - 1)
+        var endDate = new Date();
 
         //{literal}
 
@@ -40,7 +41,7 @@
             seriesDefaults: {
                 lineWidth: 3,
                 shadow: false,
-                markerOptions: {shadow: false, style: 'filledCircle', size: 12}
+                markerOptions: {shadow: false, style: 'filledCircle', size: 6}
             },
             grid: {
                 background: '#FFF',
@@ -56,25 +57,38 @@
                     //return jQPlotsOptions.axes.xaxis.ticks[pointIndex][1] + ': ' + plot.data[seriesIndex][pointIndex][1];
                     return Math.round(plot.data[seriesIndex][pointIndex][1]);
                 }
+            },
+            legend: {
+                show: false
             }
         };
 
         $('.date-picker').datepicker( {
-            format: 'mm/yyyy',
-            minViewMode: 1,
+            format: 'dd/mm/yyyy',
+            minViewMode: 0,
             language: "fr"
         }).on('changeDate', function(e){
-            date = e.date;
-            month = date.getMonth()+1;
-            year = date.getFullYear();
+            startDate = e.date;
 
             updateContent();
         });
 
-        $('.date-picker').datepicker('update', new Date());
+        $('.end-date-picker').datepicker( {
+            format: 'dd/mm/yyyy',
+            minViewMode: 0,
+            language: "fr"
+        }).on('changeDate', function(e){
+            endDate = e.date;
+
+            updateContent();
+        });
+
+        $('.date-picker').datepicker('update', startDate);
+        $('.end-date-picker').datepicker('update', endDate);
 
         $('.general-graph-select').click(function (e) {
             type = this.dataset.type;
+            dataTarget = this.dataset.target;
             targetId = this.dataset.toggle;
             url = this.dataset.url;
 
@@ -82,36 +96,30 @@
         });
 
         // Get initial data Json
-        retrieveJQPlotJson(jQplotDate.getMonth()+1, jQplotDate.getFullYear());
+        retrieveJQPlotJson(startDate, endDate);
 
         $('.general-graph-select').click(function () {
             $(".general-graph-select").removeClass("active");
             $(this).toggleClass('active');
+            document.getElementById('table-title').innerHTML = "";
+            document.getElementById('table-title2').innerHTML = "";
+            document.getElementById('table-general').innerHTML = "";
+            document.getElementById('table-general2').innerHTML = "";
             jsonSuccessLoad();
         });
 
         function updateContent() {
             if (type.indexOf('jqplot')!==-1) {
-                if( type.indexOf(',')!==-1){
-                    id = targetId.split(',')[1];
-                }else{
-                    id = targetId;
-                }
                 $('.jqplot-content').show();
                 $('#jqplot-general').css("width","100%");
-                
-                retrieveJQPlotJson(month, year);
+                retrieveJQPlotJson(startDate, endDate);
             } else {
                 $('.jqplot-content').hide();
 
             }
             
             if (type.indexOf('table')!==-1) {
-                if( type.indexOf(',')!==-1){
-                    id = targetId.split(',')[0];
-                }else{
-                    id = targetId;
-                }
+                var id = targetId.split(',');
                 $('.table-content').css("display","block");
                 setDataTable(id)
             } else {
@@ -119,9 +127,16 @@
             }
         }
 
-        function retrieveJQPlotJson(month, year, callback) {
+        function retrieveJQPlotJson(startDate, endDate, callback) {
 
-            $.getJSON(url, {month: month, year: year})
+            $.getJSON(url, {
+                startDay: startDate.getDate(),
+                startMonth: startDate.getMonth()+1,
+                startYear: startDate.getFullYear(),
+                endDay: endDate.getDate(),
+                endMonth: endDate.getMonth()+1,
+                endYear: endDate.getFullYear()
+            })
                 .done(function (data) {
                     jQplotData = data;
                     jsonSuccessLoad();
@@ -135,8 +150,10 @@
         function initJqplotData(json) {
             var series = [];
             var seriesColors = [];
-            series.push(json.series[0].graph);
-            seriesColors.push(json.series[0].color);
+            for(i = 0; i<json.series.length; i++){
+                series.push(json.series[i].graph);
+                seriesColors.push(json.series[i].color);
+            }
             var ticks = [];
 
             // Number of days to display ( = graph.length in one serie)
@@ -150,10 +167,14 @@
             }else {
                 var days = json.series[0].graphLabel.length;
                 var val = json.series[0].graphLabel;
+                var mod = Math.floor(days/33 +1);
                 // Add days to xaxis
                 for (var i = 0; i < days; ++i) {
-                    ticks.push([i, val[i]]);
+                    if (i % mod === 0){
+                        ticks.push([val[i][0], val[i][1]]);
+                    }
                 }
+                ticks.push([days-1,''])
             }
             jQPlotsOptions.axes.xaxis.ticks = ticks;
 
@@ -163,41 +184,62 @@
             // Graph series colors
             jQPlotsOptions.seriesColors = seriesColors;
 
+            if (series.length > 1){
+                jQPlotsOptions.legend.show = true;
+                jQPlotsOptions.legend.labels = [startDate.getFullYear(), endDate.getFullYear()];
+            }
+            else {
+                jQPlotsOptions.legend.show = false;
+            }
+
             return series;
         }
 
         function setDataTable(tableId) {
             $.ajax({
-                url: url + '?month=' + month + '&year=' + year
+                url: url +
+                '?startDay=' + startDate.getDate() +
+                '&startMonth=' + (startDate.getMonth()+1) +
+                '&startYear=' + startDate.getFullYear() +
+                '&endDay=' + endDate.getDate() +
+                '&endMonth=' + (endDate.getMonth()+1) +
+                '&endYear=' + endDate.getFullYear()
             }).success(function (json) {
-                var table = document.getElementById(tableId);
-                table.innerHTML = "";
-
-                var head = table.createTHead();
-
-                var keys = [];
-                // Ajout des header
-                var row = head.insertRow(0);
-                var titles = json.series[0].thead;
-                for (var key in titles) {
-                    keys.push(key);
-                    var cell = row.insertCell(-1).outerHTML = '<th class="text-left">'+titles[key]+"</th>";
-                }
-
-                // Ajout des données
-                var body = table.appendChild(document.createElement('tbody'));
-                var data = json.series[0].table;
-                for(var idx in data){
-                    var line = data[idx];
-                    var row = table.insertRow(-1);
-                    for(var k in keys){
-                        var key = keys[k];
-                        var cell = row.insertCell(-1).outerHTML = '<td class="text-left">'+line[key]+"</td>";
+                for (i= 0; i < tableId.length; i++){
+                    if (tableId.length > 1){
+                        document.getElementById('table-title').innerHTML = startDate.getFullYear();
+                        document.getElementById('table-title2').innerHTML = endDate.getFullYear();
                     }
-                }
-                
-                if (data.length === 0) {
-                    table.insertRow(-1).insertCell(-1).outerHTML = '<td class="text-left" colspan="99">Aucune donnée disponible.</td>';
+                    var table = document.getElementById(tableId[i]);
+                    table.innerHTML = "";
+
+                    var head = table.createTHead();
+                    var keys = [];
+                    // Ajout des header
+                    var row = head.insertRow(0);
+                    var titles = json.series[i].thead;
+                    for (var key in titles) {
+                        keys.push(key);
+                        var cell = row.insertCell(-1);
+                        cell.innerHTML = titles[key];
+                    }
+
+                    // Ajout des données
+                    var body = table.appendChild(document.createElement('tbody'));
+                    var data = json.series[i].table;
+                    for(var idx in data){
+                        var line = data[idx];
+                        var row = table.insertRow(-1);
+                        for(var k in keys){
+                            var key = keys[k];
+                            var cell = row.insertCell(-1);
+                            cell.innerHTML = line[key];
+                        }
+                    }
+
+                    if (data.length === 0) {
+                        table.insertRow(-1).insertCell(-1).outerHTML = '<td class="text-left" colspan="99">Aucune donnée disponible.</td>';
+                    }
                 }
             })
         }

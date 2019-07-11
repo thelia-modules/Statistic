@@ -7,7 +7,9 @@
         <div class="col-sm-2 input-group pull-right">
             <span class="input-group-addon glyphicon glyphicon-calendar"></span>
             <input id="selectedDate" type="text" class="form-control date-picker"/>
+            <input id="selectedEndDate" type="text" class="form-control end-date-picker"/>
         </div>
+
     </div>
 
     <div class="text-center clearfix">
@@ -16,43 +18,43 @@
                     data-type="jqplot" data-toggle="jqplot-general"
                     data-url="{url path='/admin/module/statistic/customer/stats'}"
                     data-target="registration"><span
-                        class="glyphicon glyphicon-user"></span> {intl l="tool.panel.customer.newCustomer"}
+                    class="glyphicon glyphicon-user"></span> {intl l="tool.panel.customer.newCustomer"}
             </button>
             <button type="button" class="btn btn-success general-graph-select" role="group"
                     data-type="jqplot" data-toggle="jqplot-general"
                     data-url="{url path='/admin/module/statistic/averageCart'}"
                     data-target="average-cart"><span
-                        class="glyphicon glyphicon-shopping-cart"></span> {intl l="tool.panel.general.averageCart"}
+                    class="glyphicon glyphicon-shopping-cart"></span> {intl l="tool.panel.general.averageCart"}
             </button>
             <button type="button" class="btn btn-success general-graph-select" role="group"
                     data-type="table" data-toggle="table-general"
                     data-url="{url path='/admin/module/statistic/bestSales'}"
                     data-target="best-sales"><span
-                        class="glyphicon glyphicon-thumbs-up"></span> {intl l="tool.panel.general.bestSales.title"}
+                    class="glyphicon glyphicon-thumbs-up"></span> {intl l="tool.panel.general.bestSales.title"}
             </button>
             <button type="button" class="btn btn-success general-graph-select" role="group"
                     data-type="table" data-toggle="table-general"
                     data-url="{url path='/admin/module/statistic/discountCode'}"
                     data-target="discount-code"><span
-                        class="glyphicon glyphicon-asterisk"></span> {intl l="tool.panel.general.discountCode.title"}
+                    class="glyphicon glyphicon-asterisk"></span> {intl l="tool.panel.general.discountCode.title"}
             </button>
             <button type="button" class="btn btn-info general-graph-select" role="group"
                     data-type="table" data-toggle="table-general"
                     data-url="{url path='/admin/module/statistic/meansTransport'}"
                     data-target="means-transport"><span
-                        class="glyphicon glyphicon glyphicon-road"></span> {intl l="tool.panel.general.meansTransport.title"}
+                    class="glyphicon glyphicon glyphicon-road"></span> {intl l="tool.panel.general.meansTransport.title"}
             </button>
             <button type="button" class="btn btn-info general-graph-select" role="group"
                     data-type="table" data-toggle="table-general"
                     data-url="{url path='/admin/module/statistic/meansPayment'}"
                     data-target="means-payement"><span
-                        class="glyphicon glyphicon-euro"></span> {intl l="tool.panel.general.meansPayment.title"}
+                    class="glyphicon glyphicon-euro"></span> {intl l="tool.panel.general.meansPayment.title"}
             </button>
             <button type="button" class="btn btn-default general-graph-select" role="group"
-                    data-type="table,jqplot" data-toggle="table-general,jqplot-general"
+                    data-type="table,jqplot" data-toggle="table-general,table-general2"
                     data-url="{url path='/admin/module/statistic/turnover'}"
                     data-target="turnover"><span
-                        class="glyphicon glyphicon-euro"></span> {intl l="tool.panel.general.turnover.title"}
+                    class="glyphicon glyphicon-euro"></span> {intl l="tool.panel.general.turnover.title"}
             </button>
         </div>
         <hr/>
@@ -60,7 +62,12 @@
             <div id="jqplot-general"></div>
         </div>
         <div class="table-content">
+            <h2 id="table-title" class="text-center"></h2>
             <table id="table-general" class="table">
+                <tbody></tbody>
+            </table>
+            <h2 id="table-title2" class="text-center"></h2>
+            <table id="table-general2" class="table">
                 <tbody></tbody>
             </table>
         </div>

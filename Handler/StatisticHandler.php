@@ -55,13 +55,14 @@ class StatisticHandler
         $order = $this->getMonthlyOrdersStats($startDate, $endDate);
 
         $result = array();
-
+        $result['stats'] = array();
+        $result['label'] = array();
+        $i = 0;
         foreach ($po as $date => $gold) {
             $key = explode('-', $date);
-            $result[$key[2] - 1] = array(
-                $key[2] - 1,
-                $gold && isset($order[$date]) ? $gold / $order[$date] : 0
-            );
+            array_push($result['stats'],array($i, $gold && isset($order[$date]) ? $gold / $order[$date] : 0));
+            array_push($result['label'], array($i,$key[2] . '/' . $key[1]));
+            $i++;
         }
 
         return $result;
@@ -475,5 +476,78 @@ class StatisticHandler
         ));
 
         return $query;
+    }
+
+    /**
+     * @param $year
+     * @return array
+     * @throws \Exception
+     * @throws \Propel\Runtime\Exception\PropelException
+     */
+    public function getTurnoverYear($year){
+
+        $result =  $this->turnover($year);
+
+        $table = array();
+        $graph = array();
+        $month = array();
+        for ($i = 1; $i <= 12; ++$i) {
+            $date = new \DateTime($year.'-'.$i);
+            if(!isset($result[$date->format('Y-n')])){
+                $table[$i] = array(
+                    'TTCWithShippping' => 0,
+                    'TTCWithoutShippping' => 0
+                );
+                $graph[] = array(
+                    $i - 1,
+                    0
+                );
+            }else{
+                $tmp = $result[$date->format('Y-n')];
+
+                //Get first day of month
+                $startDate = new \DateTime($year . '-' . $i . '-01');
+                /** @var \DateTime $endDate */
+
+                //Get last day of month (first + total of month day -1)
+                $endDate = clone($startDate);
+                $endDate->add(new \DateInterval('P' . (cal_days_in_month(CAL_GREGORIAN, $i, $year)-1) . 'D'));
+
+                $discount = OrderQuery::create()
+                    ->filterByCreatedAt(sprintf("%s 00:00:00", $startDate->format('Y-m-d')), Criteria::GREATER_EQUAL)
+                    ->filterByCreatedAt(sprintf("%s 23:59:59", $endDate->format('Y-m-d')), Criteria::LESS_EQUAL)
+                    ->filterByStatusId([2, 3, 4], Criteria::IN)
+                    ->withColumn("SUM(`order`.discount)", 'DISCOUNT')
+                    ->select('DISCOUNT')->findOne();
+
+                $postage = OrderQuery::create()
+                    ->filterByCreatedAt(sprintf("%s 00:00:00", $startDate->format('Y-m-d')), Criteria::GREATER_EQUAL)
+                    ->filterByCreatedAt(sprintf("%s 23:59:59", $endDate->format('Y-m-d')), Criteria::LESS_EQUAL)
+                    ->filterByStatusId([2, 3, 4], Criteria::IN)
+                    ->withColumn("SUM(`order`.postage)", 'POSTAGE')
+                    ->select('POSTAGE')->findOne();
+
+                if (null === $discount) {
+                    $discount = 0;
+                }
+
+                // We want the HT turnover instead of TTC
+                $table[$i] = array(
+                    'TTCWithShippping' => round($tmp['TOTAL'] + $postage - $discount, 2), //round($tmp['TOTAL'] + $tmp['TAX'] + $postage - $discount, 2),
+                    'TTCWithoutShippping' => round($tmp['TOTAL'] - $discount, 2) //round($tmp['TOTAL'] + $tmp['TAX'] - $discount, 2)
+                );
+                $graph[] = array(
+                    $i - 1,
+                    // We just want the HT turnover here
+                    intval($tmp['TOTAL'] - $discount) //intval($tmp['TOTAL']+$tmp['TAX'] - $discount)
+                );
+            }
+            $month[] = array($i-1,$date->format('M'));
+            $table[$i]['month'] = $date->format('M');
+        }
+        $result['graph'] = $graph;
+        $result['month'] = $month;
+        $result['table'] = $table;
+        return $result;
     }
 }

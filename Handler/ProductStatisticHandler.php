@@ -51,7 +51,6 @@ class ProductStatisticHandler
 
     public function sale($productRef, $year){
         $query = $this->saleQuery($productRef, $year);
-        $q = $query->toString();
         $result = $query->find()->toArray('date');
         return $result;
     }
@@ -64,7 +63,6 @@ class ProductStatisticHandler
     {
         $query = $this->statisticHandler->turnoverQuery($year);
         $query->where('order_product.product_ref = ?',$productRef, \PDO::PARAM_STR);
-        $q = $query->toString();
 
         return $query;
     }
