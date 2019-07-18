@@ -3,7 +3,11 @@
 return array(
     'tool' => array(
         'title' => 'Statistiques',
-
+        'day' => 'Jour',
+        'month' => 'Mois',
+        'year' => 'Année',
+        'from' => 'Du',
+        'to' => 'Au',
         'panel'=> array(
             'customer' => array(
                 'title' => 'Clients',
@@ -47,6 +51,9 @@ return array(
                     'month' => 'Mois',
                     'title' => 'Chiffre d\'affaires annuel',
                 ),
+                'revenue'=> array(
+                    'title'=> 'Ventes'
+                )
             ),
             'product' => array(
                 'title' => 'Détail par produit',
@@ -58,6 +65,9 @@ return array(
                     'title' => 'Nombre de ventes'
                 ),
                 'selectCategory' => 'Sélectionnez une catégorie',
+            ),
+            'annual' => array(
+                'title' => 'Statistiques annuelles',
             )
         )
     )

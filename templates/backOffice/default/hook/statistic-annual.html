@@ -1,0 +1,23 @@
+<div class="general-block-decorator dashboard">
+
+    <div class="text-center clearfix">
+        <div class="btn-group">
+            <button type="button" class="btn btn-default annual-graph-select" role="group"
+                    data-type="jqplot" data-toggle="jqplot-annual"
+                    data-url="{url path='/admin/module/statistic/turnover'}"
+                    data-target="turnover">
+                <span class="glyphicon glyphicon-euro"></span> {intl l="tool.panel.general.turnover.title"}
+            </button>
+        </div>
+    </div>
+    <div class="col-sm-2 input-group pull-right">
+        <span class="input-group-addon glyphicon glyphicon-calendar"></span>
+        <input id="annualSelectedDate" type="text" class="form-control annual-date-picker"/>
+        <input id="annualSelectedDate2" type="text" class="form-control annual-date-picker2"/>
+    </div>
+
+    <hr/>
+    <div class="jqplot-content">
+        <div id="jqplot-annual"></div>
+    </div>
+</div>

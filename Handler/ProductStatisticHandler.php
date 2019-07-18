@@ -13,6 +13,7 @@
 namespace Statistic\Handler;
 
 use Propel\Runtime\ActiveQuery\Criteria;
+use Statistic\Statistic;
 use Thelia\Model\OrderProductQuery;
 
 
@@ -75,7 +76,7 @@ class ProductStatisticHandler
         $query
             ->useOrderQuery()
                 ->useOrderStatusQuery()
-                    ->filterByCode(explode(",",StatisticHandler::ALLOWED_STATUS), Criteria::IN)
+                    ->filterById(explode(',',Statistic::getConfigValue('order_types')), Criteria::IN)
                 ->endUse()
             ->endUse();
 

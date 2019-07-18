@@ -4,7 +4,7 @@
 
 (function ($) {
     $(document).ready(function () {
-        var url = baseAdminUrl + '/module/statistic/customer/stats';
+        var url = baseAdminUrl + '/module/statistic/revenue';
         var chartId = 'jqplot-general';
 
         var jQplotDate = new Date();
@@ -19,8 +19,8 @@
         var startDate = new Date();
         startDate.setMonth(startDate.getMonth() - 1)
         var endDate = new Date();
+        var ghost = 0;
 
-        //{literal}
 
         var jQPlotsOptions = {
             animate: false,
@@ -55,7 +55,7 @@
                 tooltipContentEditor: function (str, seriesIndex, pointIndex, plot) {
                     // Return axis value : data value
                     //return jQPlotsOptions.axes.xaxis.ticks[pointIndex][1] + ': ' + plot.data[seriesIndex][pointIndex][1];
-                    return Math.round(plot.data[seriesIndex][pointIndex][1]);
+                    return Math.round(plot.data[seriesIndex][pointIndex][1]*100)/100;
                 }
             },
             legend: {
@@ -87,32 +87,83 @@
         $('.end-date-picker').datepicker('update', endDate);
 
         $('.general-graph-select').click(function (e) {
-            type = this.dataset.type;
-            dataTarget = this.dataset.target;
-            targetId = this.dataset.toggle;
-            url = this.dataset.url;
-
-            updateContent();
+            if (!$(this).hasClass("active")){
+                type = this.dataset.type;
+                dataTarget = this.dataset.target;
+                targetId = this.dataset.toggle;
+                url = this.dataset.url;
+                $(".general-graph-select").removeClass("active");
+                $(this).toggleClass('active');
+                updateContent();
+            }
         });
 
         // Get initial data Json
         retrieveJQPlotJson(startDate, endDate);
 
-        $('.general-graph-select').click(function () {
-            $(".general-graph-select").removeClass("active");
-            $(this).toggleClass('active');
-            document.getElementById('table-title').innerHTML = "";
-            document.getElementById('table-title2').innerHTML = "";
-            document.getElementById('table-general').innerHTML = "";
-            document.getElementById('table-general2').innerHTML = "";
-            jsonSuccessLoad();
+        $('#select-day-scale').click(function () {
+            startDate = new Date();
+            endDate = new Date();
+            setScale();
+
         });
+        $('#select-month-scale').click(function () {
+            startDate = new Date();
+            startDate.setMonth(startDate.getMonth() - 1);
+            endDate = new Date();
+            setScale();
+        });
+        $('#select-year-scale').click(function () {
+            startDate = new Date();
+            startDate.setFullYear(startDate.getFullYear() - 1);
+            endDate = new Date();
+            setScale();
+        });
+        $('#select-last-day-scale').click(function () {
+            startDate = new Date();
+            startDate.setDate(startDate.getDate() - 1);
+            endDate = new Date(startDate.getTime());
+            setScale();
+        });
+        $('#select-last-month-scale').click(function () {
+            startDate = new Date();
+            startDate.setMonth(startDate.getMonth() - 2);
+            endDate = new Date();
+            endDate.setMonth(endDate.getMonth() - 1);
+            setScale();
+        });
+        $('#select-last-year-scale').click(function () {
+            startDate = new Date();
+            startDate.setFullYear(startDate.getFullYear() - 2);
+            endDate = new Date();
+            endDate.setFullYear(endDate.getFullYear() - 1);
+            setScale();
+        });
+
+        $('#add-ghost-curve').click(function () {
+            ghost = ghost === 0 ? 1: 0;
+
+            if ($(this).hasClass("active")){
+                $(this).removeClass("active");
+            }
+            else {
+                $(this).toggleClass('active');
+            }
+            updateContent();
+        });
+
+        function setScale() {
+            $('.date-picker').datepicker('update', startDate);
+            $('.end-date-picker').datepicker('update', endDate);
+
+            updateContent();
+        }
 
         function updateContent() {
             if (type.indexOf('jqplot')!==-1) {
                 $('.jqplot-content').show();
                 $('#jqplot-general').css("width","100%");
-                retrieveJQPlotJson(startDate, endDate);
+                retrieveJQPlotJson(startDate, endDate, ghost);
             } else {
                 $('.jqplot-content').hide();
 
@@ -127,15 +178,19 @@
             }
         }
 
-        function retrieveJQPlotJson(startDate, endDate, callback) {
+        function retrieveJQPlotJson(startDate, endDate, ghost, callback) {
 
+            if (typeof ghost === 'undefined'){
+                ghost = 0;
+            }
             $.getJSON(url, {
                 startDay: startDate.getDate(),
                 startMonth: startDate.getMonth()+1,
                 startYear: startDate.getFullYear(),
                 endDay: endDate.getDate(),
                 endMonth: endDate.getMonth()+1,
-                endYear: endDate.getFullYear()
+                endYear: endDate.getFullYear(),
+                ghost: ghost
             })
                 .done(function (data) {
                     jQplotData = data;
@@ -186,7 +241,7 @@
 
             if (series.length > 1){
                 jQPlotsOptions.legend.show = true;
-                jQPlotsOptions.legend.labels = [startDate.getFullYear(), endDate.getFullYear()];
+                jQPlotsOptions.legend.labels = [startDate.getFullYear(), startDate.getFullYear()-1];
             }
             else {
                 jQPlotsOptions.legend.show = false;

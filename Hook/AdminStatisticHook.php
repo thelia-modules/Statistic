@@ -37,6 +37,11 @@ class AdminStatisticHook extends BaseHook
                 'tab_nav_title' => $this->trans('tool.panel.product.title', [], Statistic::BO_MESSAGE_DOMAIN),
                 'content' => $this->render('hook/statistic-product.html')
             ))
+            ->add(array(
+                'tab_id' => 'anual-statistic',
+                'tab_nav_title' => $this->trans('tool.panel.annual.title', [], Statistic::BO_MESSAGE_DOMAIN),
+                'content' => $this->render('hook/statistic-annual.html')
+            ))
         ;
 
     }
@@ -60,5 +65,8 @@ class AdminStatisticHook extends BaseHook
 
         $productJs = $this->addJS('assets/js/statistic-product.js');
         $event->add($productJs);
+
+        $annualJs = $this->addJS('assets/js/statistic-annual.js');
+        $event->add($annualJs);
     }
 }

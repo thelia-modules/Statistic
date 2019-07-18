@@ -28,11 +28,17 @@ class CustomerStatisticController extends BaseAdminController
 
     const RESOURCE_CODE = "admin.home";
 
+    /**
+     * @return mixed|\Thelia\Core\HttpFoundation\Response
+     * @throws \Exception
+     */
     public function statisticAction()
     {
         if (null !== $response = $this->checkAuth(self::RESOURCE_CODE, array(), AccessManager::VIEW)) {
             return $response;
         }
+
+        $ghost = $this->getRequest()->query->get('ghost');
 
         $startDay = $this->getRequest()->query->get('startDay', date('d'));
         $startMonth = $this->getRequest()->query->get('startMonth', date('m'));
@@ -58,7 +64,12 @@ class CustomerStatisticController extends BaseAdminController
         $startDate = new \DateTime($startYear.'-'.$startMonth.'-'.$startDay);
         $endDate = new \DateTime($endYear.'-'.$endMonth.'-'.$endDay);
 
-        $result = $this->getCustomerStatHandler()->getNewCustomersStats($startDate, $endDate);
+        if ($startDate->diff($endDate)->format('%a') === '0'){
+            $result = $this->getCustomerStatHandler()->getNewCustomersStatsByHours($startDate);
+        }
+        else{
+            $result = $this->getCustomerStatHandler()->getNewCustomersStats($startDate, $endDate);
+        }
 
         $newCustomerSeries = new \stdClass();
         $newCustomerSeries->color = $this->getRequest()->query->get('customers_color', '#f39922');
@@ -69,6 +80,23 @@ class CustomerStatisticController extends BaseAdminController
             $newCustomerSeries,
             //$firstOrderSeries,
         );
+
+        if ($ghost == 1){
+            if ($startDate->diff($endDate)->format('%a') === '0') {
+                $ghostGraph = $this->getCustomerStatHandler()->getNewCustomersStatsByHours($startDate->sub(new \DateInterval('P1Y')));
+            }
+            else{
+                $ghostGraph = $this->getCustomerStatHandler()->getNewCustomersStats(
+                    $startDate->sub(new \DateInterval('P1Y')),
+                    $endDate->sub(new \DateInterval('P1Y'))
+                );
+            }
+            $ghostCurve = new \stdClass();
+            $ghostCurve->color = "#38acfc";
+            $ghostCurve->graph = $ghostGraph['stats'];
+
+            array_push($data->series, $ghostCurve);
+        }
 
         $json = json_encode($data);
 

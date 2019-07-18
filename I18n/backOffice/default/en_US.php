@@ -3,7 +3,11 @@
 return array(
     'tool' => array(
         'title' => 'Statistics',
-
+        'day' => 'Day',
+        'month' => 'Month',
+        'year' => 'Year',
+        'from' => 'From',
+        'to' => 'To',
         'panel'=> array(
             'customer' => array(
                 'title' => 'Customers',
@@ -47,6 +51,9 @@ return array(
                     'month' => 'Month',
                     'title' => 'Annual sales',
                 ),
+                'revenue'=> array(
+                    'title'=> 'Sales'
+                )
             ),
             'product' => array(
                 'title' => 'Detail by product',
@@ -58,6 +65,9 @@ return array(
                     'title' => 'Number sale'
                 ),
                 'selectCategory' => 'Select category',
+            ),
+            'annual' => array(
+                'title' => 'Annual statistics',
             )
         )
     )

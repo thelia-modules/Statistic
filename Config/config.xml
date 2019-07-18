@@ -25,5 +25,14 @@
             <tag name="hook.event_listener" event="statistic.tab" type="back" method="onStatisticTab" />
             <tag name="hook.event_listener" event="statistic.footer.js" type="back" method="insertionJS" />
         </hook>
+
+        <hook id="statistic.configuration.hook" class="Statistic\Hook\ConfigHook" scope="request">
+            <tag name="hook.event_listener" event="module.configuration" type="back" method="onModuleConfiguration"/>
+        </hook>
     </hooks>
+
+    <forms>
+        <form name="statistic_configuration" class="Statistic\Form\Configuration" />
+    </forms>
+
 </config>

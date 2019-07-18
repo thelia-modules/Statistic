@@ -24,10 +24,6 @@ class CustomerStatHandler extends BaseCustomerQuery
 {
     public static function getNewCustomersStats(\DateTime $start, \DateTime $end)
     {
-
-        /*$start = date('Y-m-d', strtotime($start));
-        $end = date('Y-m-d', strtotime($end));*/
-
         $result = array();
         $result['stats'] = array();
         $result['label'] = array();
@@ -40,6 +36,26 @@ class CustomerStatHandler extends BaseCustomerQuery
             $key = explode('-', $date->format('Y-m-d'));
             array_push($result['stats'],array($day, $dayCustomers));
             array_push($result['label'],array($day,$key[2] . '/' . $key[1]));
+
+        }
+
+        return $result;
+    }
+    public static function getNewCustomersStatsByHours(\DateTime $start)
+    {
+        $result = array();
+        $result['stats'] = array();
+        $result['label'] = array();
+
+        for ($hour = 0; $hour < 24; $hour++) {
+            $startDate = clone ($start->setTime($hour,0,0));
+            $endDate = clone($start->setTime($hour,59,59));
+            $dayCustomers = self::create()
+                ->filterByCreatedAt($startDate->format('Y-m-d H:i:s'), Criteria::GREATER_EQUAL)
+                ->filterByCreatedAt($endDate->format('Y-m-d H:i:s'), Criteria::LESS_EQUAL)
+                ->count();
+            array_push($result['stats'], array($hour, $dayCustomers));
+            array_push($result['label'], array($hour, ($hour+1).'h' ));
 
         }
 

@@ -9,6 +9,7 @@
         var id = "jqplot-product";
         var jQPlotInstanceProduct; // global instance
         var productDate = new Date();
+        productDate.setFullYear(productDate.getFullYear()-1);
         var productDate2 = new Date();
         var productyear = productDate.getFullYear();
         var productyear2 = productDate2.getFullYear();
@@ -36,7 +37,8 @@
             setDataPlot(productUrl, id);
         });
 
-        $('.product-date-picker').datepicker('update', new Date());
+        $('.product-date-picker').datepicker('update', productDate);
+        $('.product-date-picker2').datepicker('update', productDate2);
 
 
         function setDataPlot(url, chartId) {
@@ -65,7 +67,7 @@
                 seriesDefaults: {
                     lineWidth: 3,
                     shadow: false,
-                    markerOptions: {shadow: false, style: 'filledCircle', size: 12}
+                    markerOptions: {shadow: false, style: 'filledCircle', size: 6}
                 },
                 grid: {
                     background: '#FFF',
@@ -80,7 +82,7 @@
 
                         // Return axis value : data value
                         //return jQPlotsOptions.axes.xaxis.ticks[pointIndex][1] + ': ' + plot.data[seriesIndex][pointIndex][1];
-                        return Math.round(plot.data[seriesIndex][pointIndex][1]);
+                        return Math.round(plot.data[seriesIndex][pointIndex][1]*100)/100;
                     }
                 },
                 legend:{

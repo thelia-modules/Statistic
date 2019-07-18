@@ -15,6 +15,9 @@ namespace Statistic\Handler;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\Join;
 use Propel\Runtime\Propel;
+use Statistic\Query\OrderByHoursQuery;
+use Statistic\Query\StatsOrderQuery;
+use Statistic\Statistic;
 use Thelia\Core\HttpFoundation\Request;
 use Thelia\Model\CountryQuery;
 use Thelia\Model\CouponQuery;
@@ -41,7 +44,6 @@ class StatisticHandler
 {
     const START_DAY_FORMAT = 'Y-m-d 00:00:00';
     const END_DAY_FORMAT = 'Y-m-d 23:59:59';
-    const ALLOWED_STATUS = "not_paid,paid,processing,sent";
 
     /**
      * @param \DateTime $startDate
@@ -187,11 +189,63 @@ class StatisticHandler
         $result = array();
         /** @var \DateTime $date */
         for ($date = clone($startDate); $date <= $endDate; $date->add(new \DateInterval('P1D'))) {
-            $result[$date->format('Y-m-d')] = OrderQuery::getSaleStats(
+            $result[$date->format('Y-m-d')] = StatsOrderQuery::getSaleStats(
                 $date->setTime(0, 0),
                 $date->setTime(23, 59, 59),
                 false
             );
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param \DateTime $startDate
+     * @param \DateTime $endDate
+     * @return array
+     * @throws \Exception
+     * @throws \Propel\Runtime\Exception\PropelException
+     */
+    public static function getRevenueStats(\DateTime $startDate, \DateTime $endDate)
+    {
+
+        $result = array();
+        $result['stats'] = array();
+        $result['label'] = array();
+
+        for ($day=0, $date = clone($startDate); $date <= $endDate; $date->add(new \DateInterval('P1D')), $day++) {
+            $dayAmount = StatsOrderQuery::getSaleStats(
+               $date->setTime(0,0,0),
+               $date->setTime(23,59,59),
+                false
+            );
+            $key = explode('-', $date->format('Y-m-d'));
+            array_push($result['stats'], array($day, $dayAmount));
+            array_push($result['label'], array($day,$key[2] . '/' . $key[1]));
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param \DateTime $startDate
+     * @return array
+     * @throws \Propel\Runtime\Exception\PropelException
+     */
+    public static function getRevenueStatsByHours(\DateTime $startDate)
+    {
+        $result = array();
+        $result['stats'] = array();
+        $result['label'] = array();
+
+        for ($hour = 0; $hour < 24; $hour++ ) {
+            $dayAmount = OrderByHoursQuery::getSaleStats(
+                clone ($startDate->setTime($hour,0,0)),
+                clone($startDate->setTime($hour,59,59)),
+                false
+            );
+            array_push($result['stats'], array($hour, $dayAmount));
+            array_push($result['label'], array($hour, ($hour+1).'h' ));
         }
 
         return $result;
@@ -258,7 +312,7 @@ class StatisticHandler
         $query
             ->useOrderQuery()
             ->useOrderStatusQuery()
-            ->filterByCode(explode(",", self::ALLOWED_STATUS), Criteria::IN)
+            ->filterById(explode(',',Statistic::getConfigValue('order_types')))
             ->endUse()
             ->endUse();
 
@@ -345,7 +399,7 @@ class StatisticHandler
 
         // filter with status
         $query->useOrderStatusQuery()
-            ->filterByCode(explode(",", self::ALLOWED_STATUS), Criteria::IN)
+            ->filterById(explode(',',Statistic::getConfigValue('order_types')), Criteria::IN)
             ->endUse();
 
         // filtrage sur la date
@@ -389,7 +443,7 @@ class StatisticHandler
 
         // filter with status
         $query->useOrderStatusQuery()
-            ->filterByCode(explode(",", self::ALLOWED_STATUS), Criteria::IN)
+            ->filterById(explode(',',Statistic::getConfigValue('order_types')), Criteria::IN)
             ->endUse();
 
         // filtrage sur la date
@@ -432,7 +486,7 @@ class StatisticHandler
 
         // filtrage sur la date
         $query
-            ->filterByStatusId([2,3,4], Criteria::IN)
+            ->filterByStatusId(explode(',',Statistic::getConfigValue('order_types')), Criteria::IN)
             ->where('YEAR(order.invoice_date) = ?', $year, \PDO::PARAM_STR);
 
         // jointure sur l'order product
@@ -516,14 +570,14 @@ class StatisticHandler
                 $discount = OrderQuery::create()
                     ->filterByCreatedAt(sprintf("%s 00:00:00", $startDate->format('Y-m-d')), Criteria::GREATER_EQUAL)
                     ->filterByCreatedAt(sprintf("%s 23:59:59", $endDate->format('Y-m-d')), Criteria::LESS_EQUAL)
-                    ->filterByStatusId([2, 3, 4], Criteria::IN)
+                    ->filterByStatusId(explode(',',Statistic::getConfigValue('order_types')), Criteria::IN)
                     ->withColumn("SUM(`order`.discount)", 'DISCOUNT')
                     ->select('DISCOUNT')->findOne();
 
                 $postage = OrderQuery::create()
                     ->filterByCreatedAt(sprintf("%s 00:00:00", $startDate->format('Y-m-d')), Criteria::GREATER_EQUAL)
                     ->filterByCreatedAt(sprintf("%s 23:59:59", $endDate->format('Y-m-d')), Criteria::LESS_EQUAL)
-                    ->filterByStatusId([2, 3, 4], Criteria::IN)
+                    ->filterByStatusId(explode(',',Statistic::getConfigValue('order_types')), Criteria::IN)
                     ->withColumn("SUM(`order`.postage)", 'POSTAGE')
                     ->select('POSTAGE')->findOne();
 

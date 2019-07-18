@@ -1,20 +1,14 @@
 <div class="general-block-decorator dashboard">
 
-    <div class="title title-without-tabs clearfix">
-        <div class="col-sm-10">
-            {intl l='tool.panel.general.subtitle'}
-        </div>
-        <div class="col-sm-2 input-group pull-right">
-            <span class="input-group-addon glyphicon glyphicon-calendar"></span>
-            <input id="selectedDate" type="text" class="form-control date-picker"/>
-            <input id="selectedEndDate" type="text" class="form-control end-date-picker"/>
-        </div>
-
-    </div>
-
     <div class="text-center clearfix">
         <div class="btn-group">
-            <button type="button" class="btn btn-primary general-graph-select active" role="group"
+            <button type="button" class="btn btn-default general-graph-select active" role="group"
+                    data-type="jqplot" data-toggle="jqplot-general"
+                    data-url="{url path='/admin/module/statistic/revenue'}"
+                    data-target="revenue"><span
+                    class="glyphicon glyphicon-euro"></span> {intl l="tool.panel.general.revenue.title"}
+            </button>
+            <button type="button" class="btn btn-primary general-graph-select" role="group"
                     data-type="jqplot" data-toggle="jqplot-general"
                     data-url="{url path='/admin/module/statistic/customer/stats'}"
                     data-target="registration"><span
@@ -50,27 +44,38 @@
                     data-target="means-payement"><span
                     class="glyphicon glyphicon-euro"></span> {intl l="tool.panel.general.meansPayment.title"}
             </button>
-            <button type="button" class="btn btn-default general-graph-select" role="group"
-                    data-type="table,jqplot" data-toggle="table-general,table-general2"
-                    data-url="{url path='/admin/module/statistic/turnover'}"
-                    data-target="turnover"><span
-                    class="glyphicon glyphicon-euro"></span> {intl l="tool.panel.general.turnover.title"}
-            </button>
         </div>
-        <hr/>
-        <div class="jqplot-content">
-            <div id="jqplot-general"></div>
+    </div>
+
+    <div class="col-md-4 pull-left btn-group">
+        <button class="btn btn-default" id="select-day-scale">{intl l="tool.day"}</button>
+        <button class="btn btn-default" id="select-month-scale">{intl l="tool.month"}</button>
+        <button class="btn btn-default" id="select-year-scale">{intl l="tool.year"}</button>
+        <button class="btn btn-default" id="select-last-day-scale">{intl l="tool.day"}-1</button>
+        <button class="btn btn-default" id="select-last-month-scale">{intl l="tool.month"}-1</button>
+        <button class="btn btn-default" id="select-last-year-scale">{intl l="tool.year"}-1</button>
+    </div>
+    <div class="pull-right">
+        <button class="btn btn-default glyphicon glyphicon-plus" id="add-ghost-curve" />
+    </div>
+    <div class="col-md-3 pull-right ">
+        <div class="input-group ">
+            <span class="input-group-addon ">{intl l="tool.from"}</span>
+            <input id="selectedDate" type="text" class="form-control date-picker"/>
+            <span class="input-group-addon ">{intl l="tool.to"}</span>
+            <input id="selectedEndDate" type="text" class="form-control end-date-picker"/>
         </div>
-        <div class="table-content">
-            <h2 id="table-title" class="text-center"></h2>
-            <table id="table-general" class="table">
-                <tbody></tbody>
-            </table>
-            <h2 id="table-title2" class="text-center"></h2>
-            <table id="table-general2" class="table">
-                <tbody></tbody>
-            </table>
-        </div>
+    </div>
+
+    <hr/>
+    <div class="jqplot-content">
+        <div id="jqplot-general"></div>
+    </div>
+    <div class="table-content">
+        <h2 id="table-title" class="text-center"></h2>
+        <table id="table-general" class="table">
+            <tbody></tbody>
+        </table>
     </div>
 </div>
 

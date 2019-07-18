@@ -36,11 +36,17 @@ class StatisticController extends BaseAdminController
         return $this->render('statistic-tool');
     }
 
+    /**
+     * @return \Thelia\Core\HttpFoundation\Response
+     * @throws \Exception
+     */
     public function statAverageCartAction()
     {
         // récupération des paramètres
         /*$month = $this->getRequest()->query->get('month', date('m'));
         $year = $this->getRequest()->query->get('year', date('m'));*/
+
+        $ghost = $this->getRequest()->query->get('ghost');
 
         $startDay = $this->getRequest()->query->get('startDay', date('m'));
         $startMonth = $this->getRequest()->query->get('startMonth', date('m'));
@@ -53,9 +59,9 @@ class StatisticController extends BaseAdminController
         $startDate = new \DateTime($startYear . '-' . $startMonth . '-' . $startDay);
         $endDate = new \DateTime($endYear . '-' . $endMonth . '-' . ($endDay+1));
 
+        $result = $this->getStatisticHandler()->averageCart($startDate, $endDate);
         $average = new \stdClass();
         $average->color = '#5cb85c';
-        $result = $this->getStatisticHandler()->averageCart($startDate, $endDate);
         $average->graph = $result['stats'];
         $average->graphLabel = $result['label'];
 
@@ -73,6 +79,19 @@ class StatisticController extends BaseAdminController
         $data->series = array(
             $average,
         );
+
+        if ($ghost == 1){
+
+            $ghostGraph = $this->getStatisticHandler()->getRevenueStats(
+                $startDate->sub(new DateInterval('P1Y')),
+                $endDate->sub(new DateInterval('P1Y'))
+            );
+            $ghostCurve = new \stdClass();
+            $ghostCurve->color = "#38acfc";
+            $ghostCurve->graph = $ghostGraph['stats'];
+
+            array_push($data->series, $ghostCurve);
+        }
 
         return $this->jsonResponse(json_encode($data));
     }
@@ -212,6 +231,7 @@ class StatisticController extends BaseAdminController
 
     public function statTurnoverAction()
     {
+        $this->getRequest()->getSession()->save();
         setlocale (LC_TIME, 'fr_FR.utf8','fra');
 
         // récupération des paramètres
@@ -254,6 +274,76 @@ class StatisticController extends BaseAdminController
             $turnoverStart,
             $turnoverEnd
         );
+
+        return $this->jsonResponse(json_encode($data));
+    }
+
+    /**
+     * @return \Thelia\Core\HttpFoundation\Response
+     * @throws \Exception
+     * @throws \Propel\Runtime\Exception\PropelException
+     */
+    public function statRevenueAction()
+    {
+        $this->getRequest()->getSession()->save();
+        $ghost = $this->getRequest()->query->get('ghost');
+
+        $startDay = $this->getRequest()->query->get('startDay', date('m'));
+        $startMonth = $this->getRequest()->query->get('startMonth', date('m'));
+        $startYear = $this->getRequest()->query->get('startYear', date('m'));
+
+        $endDay = $this->getRequest()->query->get('endDay', date('m'));
+        $endMonth = $this->getRequest()->query->get('endMonth', date('m'));
+        $endYear = $this->getRequest()->query->get('endYear', date('m'));
+
+        $startDate = new \DateTime($startYear . '-' . $startMonth . '-' . $startDay);
+        $endDate = new \DateTime($endYear . '-' . $endMonth . '-' . $endDay);
+
+        $saleSeries = new \stdClass();
+
+
+        if ($startDate->diff($endDate)->format('%a') === '0') {
+            $result = $this->getStatisticHandler()->getRevenueStatsByHours($startDate);
+        }
+        else{
+            $endDate->add(new DateInterval('P1D'));
+            $result = $this->getStatisticHandler()->getRevenueStats($startDate,$endDate);
+        }
+        $saleSeries->color = '#adadad';
+        $saleSeries->graph = $result['stats'];
+        $saleSeries->graphLabel = $result['label'];
+
+        $data = new \stdClass();
+
+        $data->title = $this->getTranslator()->trans("Stats between %startDay/%startMonth/%startYear and %endDay/%endMonth/%endYear", array(
+            '%startDay'=>$startDay,
+            '%startMonth' => $startMonth,
+            '%startYear' => $startYear,
+            '%endDay'=>$endDay,
+            '%endMonth'=>$endMonth,
+            '%endYear'=>$endYear
+        ), "statistic");
+
+        $data->series = array(
+            $saleSeries,
+        );
+
+        if ($ghost == 1){
+            if ($startDate->diff($endDate)->format('%a') === '0') {
+                $ghostGraph = $this->getStatisticHandler()->getRevenueStatsByHours($startDate->sub(new DateInterval('P1Y')));
+            }
+            else{
+                $ghostGraph = $this->getStatisticHandler()->getRevenueStats(
+                    $startDate->sub(new DateInterval('P1Y')),
+                    $endDate->sub(new DateInterval('P1Y'))
+                );
+            }
+            $ghostCurve = new \stdClass();
+            $ghostCurve->color = "#38acfc";
+            $ghostCurve->graph = $ghostGraph['stats'];
+
+            array_push($data->series, $ghostCurve);
+        }
 
         return $this->jsonResponse(json_encode($data));
     }
