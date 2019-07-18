@@ -3,7 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="95880c2e-721f-4cd2-b075-9063e8ac522e" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/Config/module.xml" afterPath="$PROJECT_DIR$/Config/module.xml" />
+      <change beforePath="$PROJECT_DIR$/I18n/backOffice/default/fr_FR.php" afterPath="$PROJECT_DIR$/I18n/backOffice/default/fr_FR.php" />
+      <change beforePath="$PROJECT_DIR$/templates/backOffice/default/config/module-config.html" afterPath="$PROJECT_DIR$/templates/backOffice/default/config/module-config.html" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -17,38 +18,6 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="jquery.jqplot.min.css" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/templates/backOffice/default/assets/css/jquery.jqplot.min.css">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="statistic.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/templates/backOffice/default/assets/js/statistic.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="705">
-              <caret line="47" column="30" lean-forward="false" selection-start-line="47" selection-start-column="30" selection-end-line="47" selection-end-column="30" />
-              <folding>
-                <marker date="1563365530000" expanded="true" signature="8357:8727" ph="{...}" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="statistic-product.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/templates/backOffice/default/assets/js/statistic-product.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1350">
-              <caret line="92" column="36" lean-forward="false" selection-start-line="92" selection-start-column="36" selection-end-line="92" selection-end-column="36" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="StatisticController.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Controller/StatisticController.php">
           <provider selected="true" editor-type-id="text-editor">
@@ -65,9 +34,41 @@
       <file leaf-file-name="statistic-general.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/templates/backOffice/default/hook/statistic-general.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="424">
+            <state relative-caret-position="855">
               <caret line="57" column="14" lean-forward="false" selection-start-line="57" selection-start-column="14" selection-end-line="57" selection-end-column="14" />
               <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="module-config.html" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/templates/backOffice/default/config/module-config.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="383">
+              <caret line="26" column="14" lean-forward="false" selection-start-line="26" selection-start-column="14" selection-end-line="26" selection-end-column="14" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="fr_FR.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/I18n/backOffice/default/fr_FR.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="480">
+              <caret line="32" column="2" lean-forward="false" selection-start-line="32" selection-start-column="2" selection-end-line="32" selection-end-column="2" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Statistic.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Statistic.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="270">
+              <caret line="18" column="0" lean-forward="false" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
+              <folding>
+                <element signature="e#909#959#0#PHP" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -82,11 +83,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="module.xml" pinned="false" current-in-tab="true">
+      <file leaf-file-name="module.xml" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Config/module.xml">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="495">
-              <caret line="33" column="0" lean-forward="true" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
+              <caret line="33" column="0" lean-forward="false" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -167,6 +168,8 @@
         <option value="$PROJECT_DIR$/templates/backOffice/default/hook/statistic-product.html" />
         <option value="$PROJECT_DIR$/templates/backOffice/default/assets/css/stats.css" />
         <option value="$PROJECT_DIR$/Config/module.xml" />
+        <option value="$PROJECT_DIR$/templates/backOffice/default/config/module-config.html" />
+        <option value="$PROJECT_DIR$/I18n/backOffice/default/fr_FR.php" />
       </list>
     </option>
   </component>
@@ -219,6 +222,24 @@
             <path>
               <item name="Statistic" type="b2602c69:ProjectViewProjectNode" />
               <item name="Statistic" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="I18n" type="2a2b976b:PhpTreeStructureProvider$1" />
+            </path>
+            <path>
+              <item name="Statistic" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Statistic" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="I18n" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="backOffice" type="2a2b976b:PhpTreeStructureProvider$1" />
+            </path>
+            <path>
+              <item name="Statistic" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Statistic" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="I18n" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="backOffice" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="default" type="2a2b976b:PhpTreeStructureProvider$1" />
+            </path>
+            <path>
+              <item name="Statistic" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Statistic" type="2a2b976b:PhpTreeStructureProvider$1" />
               <item name="templates" type="2a2b976b:PhpTreeStructureProvider$1" />
             </path>
             <path>
@@ -250,6 +271,14 @@
               <item name="default" type="2a2b976b:PhpTreeStructureProvider$1" />
               <item name="assets" type="2a2b976b:PhpTreeStructureProvider$1" />
               <item name="css" type="2a2b976b:PhpTreeStructureProvider$1" />
+            </path>
+            <path>
+              <item name="Statistic" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Statistic" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="templates" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="backOffice" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="default" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="config" type="2a2b976b:PhpTreeStructureProvider$1" />
             </path>
             <path>
               <item name="Statistic" type="b2602c69:ProjectViewProjectNode" />
@@ -311,7 +340,7 @@
       <workItem from="1563260942552" duration="501000" />
       <workItem from="1563262149736" duration="681000" />
       <workItem from="1563347882041" duration="96000" />
-      <workItem from="1563448677901" duration="2566000" />
+      <workItem from="1563448677901" duration="4559000" />
     </task>
     <task id="LOCAL-00001" summary="Add a new date picker and improve JQPlot graphs">
       <created>1562858357147</created>
@@ -334,11 +363,18 @@
       <option name="project" value="LOCAL" />
       <updated>1563454486571</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Change version">
+      <created>1563454994744</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1563454994744</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="8939000" />
+    <option name="totallyTimeSpent" value="10932000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1920" height="977" extended-state="0" />
@@ -374,37 +410,14 @@
     <MESSAGE value="Add a new date picker and improve JQPlot graphs" />
     <MESSAGE value="Add parameter for order status and add shortcuts for datepickers" />
     <MESSAGE value="Add some css" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add some css" />
+    <MESSAGE value="Change version" />
+    <option name="LAST_COMMIT_MESSAGE" value="Change version" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/Hook/AdminToolHook.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/backOffice/default/hook/statistic-general.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="945">
-          <caret line="63" column="35" lean-forward="true" selection-start-line="63" selection-start-column="35" selection-end-line="63" selection-end-column="35" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/I18n/fr_FR.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="7" column="0" lean-forward="false" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/templates/backOffice/default/assets/css/jquery.jqplot.css">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -767,14 +780,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/backOffice/default/hook/statistic-general.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="424">
-          <caret line="57" column="14" lean-forward="false" selection-start-line="57" selection-start-column="14" selection-end-line="57" selection-end-column="14" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/templates/backOffice/default/assets/css/stats.css">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="30">
@@ -786,7 +791,41 @@
     <entry file="file://$PROJECT_DIR$/Config/module.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="495">
-          <caret line="33" column="0" lean-forward="true" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
+          <caret line="33" column="0" lean-forward="false" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/backOffice/default/hook/statistic-general.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="855">
+          <caret line="57" column="14" lean-forward="false" selection-start-line="57" selection-start-column="14" selection-end-line="57" selection-end-column="14" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Statistic.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="18" column="0" lean-forward="false" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
+          <folding>
+            <element signature="e#909#959#0#PHP" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/backOffice/default/config/module-config.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="383">
+          <caret line="26" column="14" lean-forward="false" selection-start-line="26" selection-start-column="14" selection-end-line="26" selection-end-column="14" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/I18n/backOffice/default/fr_FR.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="480">
+          <caret line="32" column="2" lean-forward="false" selection-start-line="32" selection-start-column="2" selection-end-line="32" selection-end-column="2" />
           <folding />
         </state>
       </provider>
