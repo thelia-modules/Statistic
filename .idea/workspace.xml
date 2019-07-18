@@ -1,36 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="95880c2e-721f-4cd2-b075-9063e8ac522e" name="Default" comment="">
-      <change beforePath="" afterPath="$PROJECT_DIR$/.idea/Statistic.iml" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/Controller/ConfigController.php" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/Form/Configuration.php" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/Hook/ConfigHook.php" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/Query/OrderByHoursQuery.php" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/Query/StatsOrderQuery.php" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/templates/backOffice/default/assets/js/statistic-annual.js" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/templates/backOffice/default/config/module-config.html" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/templates/backOffice/default/hook/statistic-annual.html" />
-      <change beforePath="$PROJECT_DIR$/Config/config.xml" afterPath="$PROJECT_DIR$/Config/config.xml" />
-      <change beforePath="$PROJECT_DIR$/Config/routing.xml" afterPath="$PROJECT_DIR$/Config/routing.xml" />
-      <change beforePath="$PROJECT_DIR$/Controller/CustomerStatisticController.php" afterPath="$PROJECT_DIR$/Controller/CustomerStatisticController.php" />
-      <change beforePath="$PROJECT_DIR$/Controller/StatisticController.php" afterPath="$PROJECT_DIR$/Controller/StatisticController.php" />
-      <change beforePath="$PROJECT_DIR$/Handler/CustomerStatHandler.php" afterPath="$PROJECT_DIR$/Handler/CustomerStatHandler.php" />
-      <change beforePath="$PROJECT_DIR$/Handler/ProductStatisticHandler.php" afterPath="$PROJECT_DIR$/Handler/ProductStatisticHandler.php" />
-      <change beforePath="$PROJECT_DIR$/Handler/StatisticHandler.php" afterPath="$PROJECT_DIR$/Handler/StatisticHandler.php" />
+    <list default="true" id="95880c2e-721f-4cd2-b075-9063e8ac522e" name="Default" comment="Add parameter for order status and add shortcuts for datepickers">
+      <change beforePath="" afterPath="$PROJECT_DIR$/templates/backOffice/default/assets/css/stats.css" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change beforePath="$PROJECT_DIR$/Hook/AdminStatisticHook.php" afterPath="$PROJECT_DIR$/Hook/AdminStatisticHook.php" />
-      <change beforePath="$PROJECT_DIR$/I18n/backOffice/default/en_US.php" afterPath="$PROJECT_DIR$/I18n/backOffice/default/en_US.php" />
-      <change beforePath="$PROJECT_DIR$/I18n/backOffice/default/fr_FR.php" afterPath="$PROJECT_DIR$/I18n/backOffice/default/fr_FR.php" />
-      <change beforePath="$PROJECT_DIR$/I18n/en_US.php" afterPath="$PROJECT_DIR$/I18n/en_US.php" />
-      <change beforePath="$PROJECT_DIR$/I18n/fr_FR.php" afterPath="$PROJECT_DIR$/I18n/fr_FR.php" />
-      <change beforePath="$PROJECT_DIR$/Statistic.php" afterPath="$PROJECT_DIR$/Statistic.php" />
-      <change beforePath="$PROJECT_DIR$/templates/backOffice/default/assets/js/statistic-product.js" afterPath="$PROJECT_DIR$/templates/backOffice/default/assets/js/statistic-product.js" />
-      <change beforePath="$PROJECT_DIR$/templates/backOffice/default/assets/js/statistic.js" afterPath="$PROJECT_DIR$/templates/backOffice/default/assets/js/statistic.js" />
+      <change beforePath="$PROJECT_DIR$/templates/backOffice/default/config/module-config.html" afterPath="$PROJECT_DIR$/templates/backOffice/default/config/module-config.html" />
       <change beforePath="$PROJECT_DIR$/templates/backOffice/default/hook/statistic-general.html" afterPath="$PROJECT_DIR$/templates/backOffice/default/hook/statistic-general.html" />
-      <change beforePath="$PROJECT_DIR$/templates/backOffice/default/hook/statistic-product.html" afterPath="$PROJECT_DIR$/templates/backOffice/default/hook/statistic-product.html" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -44,16 +20,6 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="fr_FR.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/I18n/fr_FR.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="105">
-              <caret line="8" column="0" lean-forward="false" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="jquery.jqplot.css" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/templates/backOffice/default/assets/css/jquery.jqplot.css">
           <provider selected="true" editor-type-id="text-editor">
@@ -109,11 +75,21 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="statistic-general.html" pinned="false" current-in-tab="true">
+      <file leaf-file-name="statistic-general.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/templates/backOffice/default/hook/statistic-general.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="862">
-              <caret line="67" column="10" lean-forward="false" selection-start-line="67" selection-start-column="10" selection-end-line="67" selection-end-column="10" />
+            <state relative-caret-position="424">
+              <caret line="57" column="14" lean-forward="false" selection-start-line="57" selection-start-column="14" selection-end-line="57" selection-end-column="14" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="stats.css" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/templates/backOffice/default/assets/css/stats.css">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="30">
+              <caret line="2" column="1" lean-forward="false" selection-start-line="2" selection-start-column="1" selection-end-line="2" selection-end-column="1" />
               <folding />
             </state>
           </provider>
@@ -153,6 +129,13 @@
       </file>
     </leaf>
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="CSS File" />
+      </list>
+    </option>
+  </component>
   <component name="FindInProjectRecents">
     <findStrings>
       <find>Request</find>
@@ -185,6 +168,7 @@
         <option value="$PROJECT_DIR$/templates/backOffice/default/assets/js/statistic.js" />
         <option value="$PROJECT_DIR$/templates/backOffice/default/assets/js/statistic-product.js" />
         <option value="$PROJECT_DIR$/templates/backOffice/default/hook/statistic-product.html" />
+        <option value="$PROJECT_DIR$/templates/backOffice/default/assets/css/stats.css" />
       </list>
     </option>
   </component>
@@ -253,6 +237,23 @@
               <item name="templates" type="2a2b976b:PhpTreeStructureProvider$1" />
               <item name="backOffice" type="2a2b976b:PhpTreeStructureProvider$1" />
               <item name="default" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="assets" type="2a2b976b:PhpTreeStructureProvider$1" />
+            </path>
+            <path>
+              <item name="Statistic" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Statistic" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="templates" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="backOffice" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="default" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="assets" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="css" type="2a2b976b:PhpTreeStructureProvider$1" />
+            </path>
+            <path>
+              <item name="Statistic" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Statistic" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="templates" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="backOffice" type="2a2b976b:PhpTreeStructureProvider$1" />
+              <item name="default" type="2a2b976b:PhpTreeStructureProvider$1" />
               <item name="hook" type="2a2b976b:PhpTreeStructureProvider$1" />
             </path>
           </expand>
@@ -265,8 +266,12 @@
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="list.type.of.created.stylesheet" value="CSS" />
   </component>
   <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/templates/backOffice/default/assets/css" />
+    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/templates/backOffice/default/assets/css" />
     </key>
@@ -303,7 +308,7 @@
       <workItem from="1563260942552" duration="501000" />
       <workItem from="1563262149736" duration="681000" />
       <workItem from="1563347882041" duration="96000" />
-      <workItem from="1563448677901" duration="537000" />
+      <workItem from="1563448677901" duration="2072000" />
     </task>
     <task id="LOCAL-00001" summary="Add a new date picker and improve JQPlot graphs">
       <created>1562858357147</created>
@@ -312,17 +317,23 @@
       <option name="project" value="LOCAL" />
       <updated>1562858357147</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Add parameter for order status and add shortcuts for datepickers">
+      <created>1563449356446</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1563449356446</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="6910000" />
+    <option name="totallyTimeSpent" value="8445000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1920" height="977" extended-state="0" />
-    <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2683706" sideWeight="0.48185942" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2683706" sideWeight="0.48185942" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Docker" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
@@ -350,21 +361,14 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Add a new date picker and improve JQPlot graphs" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add a new date picker and improve JQPlot graphs" />
+    <MESSAGE value="Add parameter for order status and add shortcuts for datepickers" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add parameter for order status and add shortcuts for datepickers" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/templates/backOffice/default/statistic-tool.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="33" lean-forward="true" selection-start-line="0" selection-start-column="33" selection-end-line="0" selection-end-column="33" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Hook/AdminToolHook.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -760,8 +764,16 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/templates/backOffice/default/hook/statistic-general.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="862">
-          <caret line="67" column="10" lean-forward="false" selection-start-line="67" selection-start-column="10" selection-end-line="67" selection-end-column="10" />
+        <state relative-caret-position="424">
+          <caret line="57" column="14" lean-forward="false" selection-start-line="57" selection-start-column="14" selection-end-line="57" selection-end-column="14" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/backOffice/default/assets/css/stats.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="30">
+          <caret line="2" column="1" lean-forward="false" selection-start-line="2" selection-start-column="1" selection-end-line="2" selection-end-column="1" />
           <folding />
         </state>
       </provider>

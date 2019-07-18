@@ -51,6 +51,9 @@ class AdminStatisticHook extends BaseHook
         $css = $this->addCSS('assets/css/bootstrap-datepicker3.css');
         $event->add($css);
 
+        $statsCss = $this->addCSS('assets/css/stats.css');
+        $event->add($statsCss);
+
         $JQplotcss = $this->addCSS('assets/css/jquery.jqplot.css');
         $event->add($JQplotcss);
 

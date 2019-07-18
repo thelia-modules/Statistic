@@ -46,24 +46,26 @@
             </button>
         </div>
     </div>
+    <div class="row Statistic-dateSelector">
 
-    <div class="col-md-4 pull-left btn-group">
-        <button class="btn btn-default" id="select-day-scale">{intl l="tool.day"}</button>
-        <button class="btn btn-default" id="select-month-scale">{intl l="tool.month"}</button>
-        <button class="btn btn-default" id="select-year-scale">{intl l="tool.year"}</button>
-        <button class="btn btn-default" id="select-last-day-scale">{intl l="tool.day"}-1</button>
-        <button class="btn btn-default" id="select-last-month-scale">{intl l="tool.month"}-1</button>
-        <button class="btn btn-default" id="select-last-year-scale">{intl l="tool.year"}-1</button>
-    </div>
-    <div class="pull-right">
-        <button class="btn btn-default glyphicon glyphicon-plus" id="add-ghost-curve" />
-    </div>
-    <div class="col-md-3 pull-right ">
-        <div class="input-group ">
-            <span class="input-group-addon ">{intl l="tool.from"}</span>
-            <input id="selectedDate" type="text" class="form-control date-picker"/>
-            <span class="input-group-addon ">{intl l="tool.to"}</span>
-            <input id="selectedEndDate" type="text" class="form-control end-date-picker"/>
+        <div class="col-md-4 pull-left btn-group ">
+            <button class="btn btn-default" id="select-day-scale">{intl l="tool.day"}</button>
+            <button class="btn btn-default" id="select-month-scale">{intl l="tool.month"}</button>
+            <button class="btn btn-default" id="select-year-scale">{intl l="tool.year"}</button>
+            <button class="btn btn-default" id="select-last-day-scale">{intl l="tool.day"}-1</button>
+            <button class="btn btn-default" id="select-last-month-scale">{intl l="tool.month"}-1</button>
+            <button class="btn btn-default" id="select-last-year-scale">{intl l="tool.year"}-1</button>
+        </div>
+        <div class="col-md-3 pull-right ">
+            <div class="input-group ">
+                <span class="input-group-addon ">{intl l="tool.from"}</span>
+                <input id="selectedDate" type="text" class="form-control date-picker"/>
+                <span class="input-group-addon ">{intl l="tool.to"}</span>
+                <input id="selectedEndDate" type="text" class="form-control end-date-picker"/>
+                <span class="input-group-btn">
+                    <button class="btn btn-default glyphicon glyphicon-plus" id="add-ghost-curve" ></button>
+                </span>
+            </div>
         </div>
     </div>
 

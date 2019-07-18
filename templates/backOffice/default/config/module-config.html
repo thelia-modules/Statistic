@@ -9,6 +9,7 @@
             <div class="col-md-12">
                 {form name = "statistic_configuration"}
                     <form method="POST" action="{url path="/admin/module/statistic/config"}" >
+
                         {form_hidden_fields form=$form}
                         {if $form_error}
                         <div class="row">
@@ -19,7 +20,7 @@
                         {/if}
 
                         {form_field form=$form field="order"}
-                        <div class="form-group {if $error}has-error{/if} col-md-2 ">
+                        <div class="form-group {if $error}has-error{/if} col-md-2 input-group">
 
                             {form_error form=$form field="order"}
                             <br />
@@ -27,11 +28,13 @@
                             {/form_error}
 
                             <input type="text" name="{$name}" class="form-control" value="{$value}" \>
+                            <span class="input-group-btn">
+                                <button type="submit" class="form-submit-button btn btn-default" >Set</button>
+                            </span>
                         </div>
                         {/form_field}
 
 
-                        <button type="submit" class="form-submit-button btn btn-sm btn-default" >Set</button>
                     </form>
                 {/form}
                 <hr>
