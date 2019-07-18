@@ -36,8 +36,12 @@
         <default key="_controller">Statistic\Controller\StatisticController::statMeansPaymentAction</default>
     </route>
 
-    <route id="statistic.tool.general.turnover" path="/admin/module/statistic/turnover" methods="get">
+    <route id="statistic.tool.annual.turnover" path="/admin/module/statistic/turnover" methods="get">
         <default key="_controller">Statistic\Controller\StatisticController::statTurnoverAction</default>
+    </route>
+
+    <route id="statistic.tool.general.revenue" path="/admin/module/statistic/revenue" methods="get">
+        <default key="_controller">Statistic\Controller\StatisticController::statRevenueAction</default>
     </route>
 
     <!-- Product statistic -->
@@ -51,6 +55,12 @@
 
     <route id="statistic.tool.product.list" path="/admin/module/statistic/product/list" methods="get">
         <default key="_controller">Statistic\Controller\ProductStatisticController::listProductAction</default>
+    </route>
+
+    <!-- Configuration -->
+
+    <route id="statistic.configuration" path="/admin/module/statistic/config" methods="post">
+        <default key="_controller">Statistic\Controller\ConfigController::setAction</default>
     </route>
 
 </routes>

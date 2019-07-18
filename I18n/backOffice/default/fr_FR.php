@@ -1,64 +1,33 @@
 <?php
 
 return array(
-    'tool' => array(
-        'title' => 'Statistiques',
-
-        'panel'=> array(
-            'customer' => array(
-                'title' => 'Clients',
-                'subtitle' => 'Statistiques sur les clients',
-                'newCustomer' => 'Nouveau client',
-                'firstOrder' => 'Première commande',
-            ),
-            'general' => array(
-                'title' => 'Statistiques générales',
-                'subtitle' => 'Statistiques générales',
-                'averageCart' => 'Panier moyen',
-                'bestSales' => array(
-                    'name' => 'Nom',
-                    'reference' => 'Référence',
-                    'totalHT' => 'Total Hors Taxe (€)',
-                    'totalSold' => 'Total des ventes',
-                    'totalTTC' => 'Total TTC (€)',
-                    'title' => 'Meilleures ventes',
-                ),
-                'discountCode' => array(
-                    'code' => 'Code promotionnel',
-                    'nbUse' => 'Nombre d\'utilisation',
-                    'rule' => 'Règle',
-                    'title' => 'Code promotionnel',
-                ),
-                'meansTransport' => array(
-                    'description' => 'Description',
-                    'means' => 'Moyen de transport',
-                    'nbUse' => 'Nombre d\'utilisation',
-                    'title' => 'Moyen de transport',
-                ),
-                'meansPayment' => array(
-                    'description' => 'Description',
-                    'means' => 'Moyen de paiement',
-                    'nbUse' => 'Nombre d\'utilisation',
-                    'title' => 'Moyen de paiement',
-                ),
-                'turnover' => array(
-                    'TTCWithShippping' => 'Chiffre d\'affaires avec les frais de port',
-                    'TTCWithoutShippping' => 'Chiffre d\'affaires sans les frais de port',
-                    'month' => 'Mois',
-                    'title' => 'Chiffre d\'affaires annuel',
-                ),
-            ),
-            'product' => array(
-                'title' => 'Détail par produit',
-                'subtitle' => 'Statistiques par produit',
-                'turnover' => array(
-                    'title' => 'Part du chiffre d\'affaires'
-                ),
-                'sale' => array(
-                    'title' => 'Nombre de ventes'
-                ),
-                'selectCategory' => 'Sélectionnez une catégorie',
-            )
-        )
-    )
+    'tool.config.action' => 'Action',
+    'tool.config.code' => 'Code',
+    'tool.config.delete_order_status' => 'Supprimer ce statut de commande',
+    'tool.config.edit_order_status' => 'Editer ce statut de commande',
+    'tool.config.help' => 'Entrer les identifiants des statuts de commande qui seront pris en compte dans les statistiques (exemple: 2,3,4)',
+    'tool.config.id' => 'ID',
+    'tool.config.order' => 'Commande',
+    'tool.config.order_status' => 'Order Status',
+    'tool.config.order_types' => 'Order types',
+    'tool.config.position' => 'Position',
+    'tool.config.title' => 'Titre',
+    'tool.day' => 'Jour',
+    'tool.from' => 'Du',
+    'tool.month' => 'Mois',
+    'tool.panel.customer.newCustomer' => 'Nouveau client',
+    'tool.panel.general.averageCart' => 'Panier moyen',
+    'tool.panel.general.bestSales.title' => 'Meilleures ventes',
+    'tool.panel.general.discountCode.title' => 'Code promotionnel',
+    'tool.panel.general.meansPayment.title' => 'Moyen de paiement',
+    'tool.panel.general.meansTransport.title' => 'Moyen de transport',
+    'tool.panel.general.revenue.title' => 'Ventes',
+    'tool.panel.general.turnover.title' => 'Chiffre d\'affaires annuel',
+    'tool.panel.product.sale.title' => 'Nombre de ventes',
+    'tool.panel.product.selectCategory' => 'Sélectionnez une catégorie',
+    'tool.panel.product.subtitle' => 'Statistiques par produit',
+    'tool.panel.product.turnover.title' => 'Part du chiffre d\'affaires',
+    'tool.title' => 'Statistiques',
+    'tool.to' => 'Au',
+    'tool.year' => 'Année',
 );

@@ -1,69 +1,83 @@
 <div class="general-block-decorator dashboard">
 
-    <div class="title title-without-tabs clearfix">
-        <div class="col-sm-10">
-            {intl l='tool.panel.general.subtitle'}
-        </div>
-        <div class="col-sm-2 input-group pull-right">
-            <span class="input-group-addon glyphicon glyphicon-calendar"></span>
-            <input id="selectedDate" type="text" class="form-control date-picker"/>
-        </div>
-    </div>
-
     <div class="text-center clearfix">
         <div class="btn-group">
-            <button type="button" class="btn btn-primary general-graph-select active" role="group"
+            <button type="button" class="btn btn-default general-graph-select active" role="group"
+                    data-type="jqplot" data-toggle="jqplot-general"
+                    data-url="{url path='/admin/module/statistic/revenue'}"
+                    data-target="revenue"><span
+                    class="glyphicon glyphicon-euro"></span> {intl l="tool.panel.general.revenue.title"}
+            </button>
+            <button type="button" class="btn btn-primary general-graph-select" role="group"
                     data-type="jqplot" data-toggle="jqplot-general"
                     data-url="{url path='/admin/module/statistic/customer/stats'}"
                     data-target="registration"><span
-                        class="glyphicon glyphicon-user"></span> {intl l="tool.panel.customer.newCustomer"}
+                    class="glyphicon glyphicon-user"></span> {intl l="tool.panel.customer.newCustomer"}
             </button>
             <button type="button" class="btn btn-success general-graph-select" role="group"
                     data-type="jqplot" data-toggle="jqplot-general"
                     data-url="{url path='/admin/module/statistic/averageCart'}"
                     data-target="average-cart"><span
-                        class="glyphicon glyphicon-shopping-cart"></span> {intl l="tool.panel.general.averageCart"}
+                    class="glyphicon glyphicon-shopping-cart"></span> {intl l="tool.panel.general.averageCart"}
             </button>
             <button type="button" class="btn btn-success general-graph-select" role="group"
                     data-type="table" data-toggle="table-general"
                     data-url="{url path='/admin/module/statistic/bestSales'}"
                     data-target="best-sales"><span
-                        class="glyphicon glyphicon-thumbs-up"></span> {intl l="tool.panel.general.bestSales.title"}
+                    class="glyphicon glyphicon-thumbs-up"></span> {intl l="tool.panel.general.bestSales.title"}
             </button>
             <button type="button" class="btn btn-success general-graph-select" role="group"
                     data-type="table" data-toggle="table-general"
                     data-url="{url path='/admin/module/statistic/discountCode'}"
                     data-target="discount-code"><span
-                        class="glyphicon glyphicon-asterisk"></span> {intl l="tool.panel.general.discountCode.title"}
+                    class="glyphicon glyphicon-asterisk"></span> {intl l="tool.panel.general.discountCode.title"}
             </button>
             <button type="button" class="btn btn-info general-graph-select" role="group"
                     data-type="table" data-toggle="table-general"
                     data-url="{url path='/admin/module/statistic/meansTransport'}"
                     data-target="means-transport"><span
-                        class="glyphicon glyphicon glyphicon-road"></span> {intl l="tool.panel.general.meansTransport.title"}
+                    class="glyphicon glyphicon glyphicon-road"></span> {intl l="tool.panel.general.meansTransport.title"}
             </button>
             <button type="button" class="btn btn-info general-graph-select" role="group"
                     data-type="table" data-toggle="table-general"
                     data-url="{url path='/admin/module/statistic/meansPayment'}"
                     data-target="means-payement"><span
-                        class="glyphicon glyphicon-euro"></span> {intl l="tool.panel.general.meansPayment.title"}
-            </button>
-            <button type="button" class="btn btn-default general-graph-select" role="group"
-                    data-type="table,jqplot" data-toggle="table-general,jqplot-general"
-                    data-url="{url path='/admin/module/statistic/turnover'}"
-                    data-target="turnover"><span
-                        class="glyphicon glyphicon-euro"></span> {intl l="tool.panel.general.turnover.title"}
+                    class="glyphicon glyphicon-euro"></span> {intl l="tool.panel.general.meansPayment.title"}
             </button>
         </div>
-        <hr/>
-        <div class="jqplot-content">
-            <div id="jqplot-general"></div>
+    </div>
+    <div class="row Statistic-dateSelector">
+
+        <div class="col-md-4 pull-left btn-group ">
+            <button class="btn btn-default" id="select-day-scale">{intl l="tool.day"}</button>
+            <button class="btn btn-default" id="select-month-scale">{intl l="tool.month"}</button>
+            <button class="btn btn-default" id="select-year-scale">{intl l="tool.year"}</button>
+            <button class="btn btn-default" id="select-last-day-scale">{intl l="tool.day"}-1</button>
+            <button class="btn btn-default" id="select-last-month-scale">{intl l="tool.month"}-1</button>
+            <button class="btn btn-default" id="select-last-year-scale">{intl l="tool.year"}-1</button>
         </div>
-        <div class="table-content">
-            <table id="table-general" class="table">
-                <tbody></tbody>
-            </table>
+        <div class="col-md-3 pull-right ">
+            <div class="input-group ">
+                <span class="input-group-addon ">{intl l="tool.from"}</span>
+                <input id="selectedDate" type="text" class="form-control date-picker"/>
+                <span class="input-group-addon ">{intl l="tool.to"}</span>
+                <input id="selectedEndDate" type="text" class="form-control end-date-picker"/>
+                <span class="input-group-btn">
+                    <button class="btn btn-default glyphicon glyphicon-plus" id="add-ghost-curve" ></button>
+                </span>
+            </div>
         </div>
+    </div>
+
+    <hr/>
+    <div class="jqplot-content">
+        <div id="jqplot-general"></div>
+    </div>
+    <div class="table-content">
+        <h2 id="table-title" class="text-center"></h2>
+        <table id="table-general" class="table">
+            <tbody></tbody>
+        </table>
     </div>
 </div>
 

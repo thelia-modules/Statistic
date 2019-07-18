@@ -37,6 +37,11 @@ class AdminStatisticHook extends BaseHook
                 'tab_nav_title' => $this->trans('tool.panel.product.title', [], Statistic::BO_MESSAGE_DOMAIN),
                 'content' => $this->render('hook/statistic-product.html')
             ))
+            ->add(array(
+                'tab_id' => 'anual-statistic',
+                'tab_nav_title' => $this->trans('tool.panel.annual.title', [], Statistic::BO_MESSAGE_DOMAIN),
+                'content' => $this->render('hook/statistic-annual.html')
+            ))
         ;
 
     }
@@ -45,6 +50,12 @@ class AdminStatisticHook extends BaseHook
     {
         $css = $this->addCSS('assets/css/bootstrap-datepicker3.css');
         $event->add($css);
+
+        $statsCss = $this->addCSS('assets/css/stats.css');
+        $event->add($statsCss);
+
+        $JQplotcss = $this->addCSS('assets/css/jquery.jqplot.css');
+        $event->add($JQplotcss);
 
         $blocksitJs = $this->addJS('assets/js/blocksit.min.js');
         $event->add($blocksitJs);
@@ -57,5 +68,8 @@ class AdminStatisticHook extends BaseHook
 
         $productJs = $this->addJS('assets/js/statistic-product.js');
         $event->add($productJs);
+
+        $annualJs = $this->addJS('assets/js/statistic-annual.js');
+        $event->add($annualJs);
     }
 }

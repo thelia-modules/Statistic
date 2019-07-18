@@ -22,12 +22,12 @@
         <language>en_US</language>
         <language>fr_FR</language>
     </languages>
-    <version>0.3.3</version>
+    <version>1.0.0</version>
     <author>
-        <name>David Gros</name>
-        <email>dgros@openstudio.fr</email>
+        <name>David Gros, Nicolas Barbey</name>
+        <email>dgros@openstudio.fr , nbarbey@openstudio.fr</email>
     </author>
     <type>classic</type>
-    <thelia>2.1.0</thelia>
+    <thelia>2.3.0</thelia>
     <stability>other</stability>
 </module>

@@ -17,7 +17,6 @@ use Propel\Runtime\ActiveQuery\Criteria;
 use Statistic\Statistic;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Model\OrderQuery;
-use Thelia\Tools\MoneyFormat;
 
 /**
  * Class StatisticController
@@ -37,46 +36,79 @@ class StatisticController extends BaseAdminController
         return $this->render('statistic-tool');
     }
 
+    /**
+     * @return \Thelia\Core\HttpFoundation\Response
+     * @throws \Exception
+     */
     public function statAverageCartAction()
     {
         // récupération des paramètres
-        $month = $this->getRequest()->query->get('month', date('m'));
-        $year = $this->getRequest()->query->get('year', date('m'));
+        /*$month = $this->getRequest()->query->get('month', date('m'));
+        $year = $this->getRequest()->query->get('year', date('m'));*/
 
-        $startDate = new \DateTime($year . '-' . $month . '-01');
-        /** @var \DateTime $endDate */
-        $endDate = clone($startDate);
-        $endDate->add(new DateInterval('P' . (cal_days_in_month(CAL_GREGORIAN, $month, $year)-1) . 'D'));
+        $ghost = $this->getRequest()->query->get('ghost');
 
+        $startDay = $this->getRequest()->query->get('startDay', date('m'));
+        $startMonth = $this->getRequest()->query->get('startMonth', date('m'));
+        $startYear = $this->getRequest()->query->get('startYear', date('m'));
+
+        $endDay = $this->getRequest()->query->get('endDay', date('m'));
+        $endMonth = $this->getRequest()->query->get('endMonth', date('m'));
+        $endYear = $this->getRequest()->query->get('endYear', date('m'));
+
+        $startDate = new \DateTime($startYear . '-' . $startMonth . '-' . $startDay);
+        $endDate = new \DateTime($endYear . '-' . $endMonth . '-' . ($endDay+1));
+
+        $result = $this->getStatisticHandler()->averageCart($startDate, $endDate);
         $average = new \stdClass();
         $average->color = '#5cb85c';
-        $average->graph = $this->getStatisticHandler()->averageCart($startDate, $endDate);
+        $average->graph = $result['stats'];
+        $average->graphLabel = $result['label'];
 
         $data = new \stdClass();
 
-        $data->title = $this->getTranslator()->trans("Stats on %month/%year", array('%month' => $this->getRequest()->query->get('month', date('m')), '%year' => $this->getRequest()->query->get('year', date('Y'))));
+        $data->title = $this->getTranslator()->trans("Stats between %startDay/%startMonth/%startYear and %endDay/%endMonth/%endYear", array(
+            '%startDay'=>$startDay,
+            '%startMonth' => $startMonth,
+            '%startYear' => $startYear,
+            '%endDay'=>$endDay,
+            '%endMonth'=>$endMonth,
+            '%endYear'=>$endYear
+        ), "statistic");
 
         $data->series = array(
             $average,
         );
 
+        if ($ghost == 1){
+
+            $ghostGraph = $this->getStatisticHandler()->getRevenueStats(
+                $startDate->sub(new DateInterval('P1Y')),
+                $endDate->sub(new DateInterval('P1Y'))
+            );
+            $ghostCurve = new \stdClass();
+            $ghostCurve->color = "#38acfc";
+            $ghostCurve->graph = $ghostGraph['stats'];
+
+            array_push($data->series, $ghostCurve);
+        }
+
         return $this->jsonResponse(json_encode($data));
     }
 
-    /**
-     * @return \Thelia\Core\HttpFoundation\Response
-     * @throws \Exception
-     */
     public function statBestSalesAction()
     {
         // récupération des paramètres
-        $month = $this->getRequest()->query->get('month', date('m'));
-        $year = $this->getRequest()->query->get('year', date('m'));
+        $startDay = $this->getRequest()->query->get('startDay', date('m'));
+        $startMonth = $this->getRequest()->query->get('startMonth', date('m'));
+        $startYear = $this->getRequest()->query->get('startYear', date('m'));
 
-        $startDate = new \DateTime($year . '-' . $month . '-01');
-        /** @var \DateTime $endDate */
-        $endDate = clone($startDate);
-        $endDate->add(new DateInterval('P' . (cal_days_in_month(CAL_GREGORIAN, $month, $year)-1) . 'D'));
+        $endDay = $this->getRequest()->query->get('endDay', date('m'));
+        $endMonth = $this->getRequest()->query->get('endMonth', date('m'));
+        $endYear = $this->getRequest()->query->get('endYear', date('m'));
+
+        $startDate = new \DateTime($startYear . '-' . $startMonth . '-' . $startDay);
+        $endDate = new \DateTime($endYear . '-' . $endMonth . '-' . $endDay);
 
         $bestSales = new \stdClass();
         $bestSales->color = '#5cb85c';
@@ -97,20 +129,19 @@ class StatisticController extends BaseAdminController
         return $this->jsonResponse(json_encode($data));
     }
 
-    /**
-     * @return \Thelia\Core\HttpFoundation\Response
-     * @throws \Exception
-     */
     public function statDiscountCodeAction()
     {
         // récupération des paramètres
-        $month = $this->getRequest()->query->get('month', date('m'));
-        $year = $this->getRequest()->query->get('year', date('m'));
+        $startDay = $this->getRequest()->query->get('startDay', date('m'));
+        $startMonth = $this->getRequest()->query->get('startMonth', date('m'));
+        $startYear = $this->getRequest()->query->get('startYear', date('m'));
 
-        $startDate = new \DateTime($year . '-' . $month . '-01');
-        /** @var \DateTime $endDate */
-        $endDate = clone($startDate);
-        $endDate->add(new DateInterval('P' . (cal_days_in_month(CAL_GREGORIAN, $month, $year)-1) . 'D'));
+        $endDay = $this->getRequest()->query->get('endDay', date('m'));
+        $endMonth = $this->getRequest()->query->get('endMonth', date('m'));
+        $endYear = $this->getRequest()->query->get('endYear', date('m'));
+
+        $startDate = new \DateTime($startYear . '-' . $startMonth . '-' . $startDay);
+        $endDate = new \DateTime($endYear . '-' . $endMonth . '-' . $endDay);
 
         $discount = new \stdClass();
         $result = $this->getStatisticHandler()->discountCode($startDate, $endDate);
@@ -134,20 +165,19 @@ class StatisticController extends BaseAdminController
         return $this->jsonResponse(json_encode($data));
     }
 
-    /**
-     * @return \Thelia\Core\HttpFoundation\Response
-     * @throws \Exception
-     */
     public function statMeansTransportAction()
     {
         // récupération des paramètres
-        $month = $this->getRequest()->query->get('month', date('m'));
-        $year = $this->getRequest()->query->get('year', date('m'));
+        $startDay = $this->getRequest()->query->get('startDay', date('m'));
+        $startMonth = $this->getRequest()->query->get('startMonth', date('m'));
+        $startYear = $this->getRequest()->query->get('startYear', date('m'));
 
-        $startDate = new \DateTime($year . '-' . $month . '-01');
-        /** @var \DateTime $endDate */
-        $endDate = clone($startDate);
-        $endDate->add(new DateInterval('P' . (cal_days_in_month(CAL_GREGORIAN, $month, $year)-1) . 'D'));
+        $endDay = $this->getRequest()->query->get('endDay', date('m'));
+        $endMonth = $this->getRequest()->query->get('endMonth', date('m'));
+        $endYear = $this->getRequest()->query->get('endYear', date('m'));
+
+        $startDate = new \DateTime($startYear . '-' . $startMonth . '-' . $startDay);
+        $endDate = new \DateTime($endYear . '-' . $endMonth . '-' . $endDay);
 
         $local = $this->getSession()->getLang()->getLocale();
 
@@ -167,20 +197,19 @@ class StatisticController extends BaseAdminController
         return $this->jsonResponse(json_encode($data));
     }
 
-    /**
-     * @return \Thelia\Core\HttpFoundation\Response
-     * @throws \Exception
-     */
     public function statMeansPaymentAction()
     {
         // récupération des paramètres
-        $month = $this->getRequest()->query->get('month', date('m'));
-        $year = $this->getRequest()->query->get('year', date('m'));
+        $startDay = $this->getRequest()->query->get('startDay', date('m'));
+        $startMonth = $this->getRequest()->query->get('startMonth', date('m'));
+        $startYear = $this->getRequest()->query->get('startYear', date('m'));
 
-        $startDate = new \DateTime($year . '-' . $month . '-01');
-        /** @var \DateTime $endDate */
-        $endDate = clone($startDate);
-        $endDate->add(new DateInterval('P' . (cal_days_in_month(CAL_GREGORIAN, $month, $year)-1) . 'D'));
+        $endDay = $this->getRequest()->query->get('endDay', date('m'));
+        $endMonth = $this->getRequest()->query->get('endMonth', date('m'));
+        $endYear = $this->getRequest()->query->get('endYear', date('m'));
+
+        $startDate = new \DateTime($startYear . '-' . $startMonth . '-' . $startDay);
+        $endDate = new \DateTime($endYear . '-' . $endMonth . '-' . $endDay);
 
         $local = $this->getSession()->getLang()->getLocale();
 
@@ -200,93 +229,121 @@ class StatisticController extends BaseAdminController
         return $this->jsonResponse(json_encode($data));
     }
 
-    /**
-     * @return \Thelia\Core\HttpFoundation\Response
-     * @throws \Propel\Runtime\Exception\PropelException
-     * @throws \Exception
-     */
     public function statTurnoverAction()
     {
+        $this->getRequest()->getSession()->save();
         setlocale (LC_TIME, 'fr_FR.utf8','fra');
 
         // récupération des paramètres
-        $month = $this->getRequest()->query->get('month', date('m'));
-        $year = $this->getRequest()->query->get('year', date('m'));
 
-        $turnover = new \stdClass();
-        $result =  $this->getStatisticHandler()->turnover($year);
-        $table = array();
-        $graph = array();
-        $month = array();
-        $zero = MoneyFormat::getInstance($this->getRequest())->formatByCurrency(0);
+        $startYear = $this->getRequest()->query->get('startYear', date('m'));
+        $endYear = $this->getRequest()->query->get('endYear', date('m'));
 
-        for ($i = 1; $i <= 12; ++$i) {
-            $date = new \DateTime($year.'-'.$i);
-            if(!isset($result[$date->format('Y-n')])){
-                $table[$i] = array(
-                    'TTCWithShippping' => $zero,
-                    'TTCWithoutShippping' => $zero
-                );
-                $graph[] = array(
-                    $i - 1,
-                    0
-                );
-            }else{
-                $tmp = $result[$date->format('Y-n')];
+        $result[$startYear] = $this->getStatisticHandler()->getTurnoverYear($startYear);
+        $result[$endYear] = $this->getStatisticHandler()->getTurnoverYear($endYear);
 
-                //Get first day of month
-                $startDate = new \DateTime($year . '-' . $i . '-01');
-                /** @var \DateTime $endDate */
+        $turnoverStart = new \stdClass();
 
-                //Get last day of month (first + total of month day -1)
-                $endDate = clone($startDate);
-                $endDate->add(new DateInterval('P' . (cal_days_in_month(CAL_GREGORIAN, $i, $year)-1) . 'D'));
-
-                $discount = OrderQuery::create()
-                    ->filterByInvoiceDate(sprintf("%s 00:00:00", $startDate->format('Y-m-d')), Criteria::GREATER_EQUAL)
-                    ->filterByInvoiceDate(sprintf("%s 23:59:59", $endDate->format('Y-m-d')), Criteria::LESS_EQUAL)
-                    ->filterByStatusId([2, 3, 4], Criteria::IN)
-                    ->withColumn("SUM(`order`.discount)", 'DISCOUNT')
-                    ->select('DISCOUNT')->findOne();
-
-                $postage = OrderQuery::create()
-                    ->filterByInvoiceDate(sprintf("%s 00:00:00", $startDate->format('Y-m-d')), Criteria::GREATER_EQUAL)
-                    ->filterByInvoiceDate(sprintf("%s 23:59:59", $endDate->format('Y-m-d')), Criteria::LESS_EQUAL)
-                    ->filterByStatusId([2, 3, 4], Criteria::IN)
-                    ->withColumn("SUM(`order`.postage)", 'POSTAGE')
-                    ->select('POSTAGE')->findOne();
-
-                if (null === $discount) {
-                    $discount = 0;
-                }
-
-                $table[$i] = array(
-                    'TTCWithShippping' => MoneyFormat::getInstance($this->getRequest())->formatByCurrency($tmp['TOTAL'] + $tmp['TAX'] + $postage - $discount),
-                    'TTCWithoutShippping' => MoneyFormat::getInstance($this->getRequest())->formatByCurrency($tmp['TOTAL'] + $tmp['TAX'] - $discount)
-                );
-                $graph[] = array(
-                    $i - 1,
-                    intval($tmp['TOTAL']+$tmp['TAX'] - $discount)
-                );
-            }
-            $month[] = $date->format('M');
-            $table[$i]['month'] = $date->format('M');
-        }
-        $turnover->color = '#adadad';
-        $turnover->graph = $graph;
-        $turnover->graphLabel = $month;
-        $turnover->table = $table;
-        $turnover->thead = array(
+        $turnoverStart->color = '#adadad';
+        $turnoverStart->graph = $result[$startYear]['graph'];
+        $turnoverStart->graphLabel = $result[$startYear]['month'];
+        $turnoverStart->table = $result[$startYear]['table'];
+        $turnoverStart->thead = array(
             'month' => $this->getTranslator()->trans('tool.panel.general.turnover.month', [], Statistic::BO_MESSAGE_DOMAIN),
             'TTCWithShippping' => $this->getTranslator()->trans('tool.panel.general.turnover.TTCWithShippping', [], Statistic::BO_MESSAGE_DOMAIN),
             'TTCWithoutShippping' => $this->getTranslator()->trans('tool.panel.general.turnover.TTCWithoutShippping', [], Statistic::BO_MESSAGE_DOMAIN),
         );
+
+        $turnoverEnd = new \stdClass();
+
+        $turnoverEnd->color = '#F00';
+        $turnoverEnd->graph = $result[$endYear]['graph'];
+        $turnoverEnd->graphLabel = $result[$endYear]['month'];
+        $turnoverEnd->table = $result[$endYear]['table'];
+        $turnoverEnd->thead = array(
+            'month' => $this->getTranslator()->trans('tool.panel.general.turnover.month', [], Statistic::BO_MESSAGE_DOMAIN),
+            'TTCWithShippping' => $this->getTranslator()->trans('tool.panel.general.turnover.TTCWithShippping', [], Statistic::BO_MESSAGE_DOMAIN),
+            'TTCWithoutShippping' => $this->getTranslator()->trans('tool.panel.general.turnover.TTCWithoutShippping', [], Statistic::BO_MESSAGE_DOMAIN),
+        );
+
+
         $data = new \stdClass();
-        $data->title = $this->getTranslator()->trans("Stats on %year", array('%year' => $this->getRequest()->query->get('year', date('Y'))), "statistic");
+        $data->title = $this->getTranslator()->trans("Stats on %startYear and %endYear", array('%startYear' => $startYear, '%endYear' => $endYear),"statistic");
 
         $data->series = array(
-            $turnover
+            $turnoverStart,
+            $turnoverEnd
         );
+
+        return $this->jsonResponse(json_encode($data));
+    }
+
+    /**
+     * @return \Thelia\Core\HttpFoundation\Response
+     * @throws \Exception
+     * @throws \Propel\Runtime\Exception\PropelException
+     */
+    public function statRevenueAction()
+    {
+        $this->getRequest()->getSession()->save();
+        $ghost = $this->getRequest()->query->get('ghost');
+
+        $startDay = $this->getRequest()->query->get('startDay', date('m'));
+        $startMonth = $this->getRequest()->query->get('startMonth', date('m'));
+        $startYear = $this->getRequest()->query->get('startYear', date('m'));
+
+        $endDay = $this->getRequest()->query->get('endDay', date('m'));
+        $endMonth = $this->getRequest()->query->get('endMonth', date('m'));
+        $endYear = $this->getRequest()->query->get('endYear', date('m'));
+
+        $startDate = new \DateTime($startYear . '-' . $startMonth . '-' . $startDay);
+        $endDate = new \DateTime($endYear . '-' . $endMonth . '-' . $endDay);
+
+        $saleSeries = new \stdClass();
+
+
+        if ($startDate->diff($endDate)->format('%a') === '0') {
+            $result = $this->getStatisticHandler()->getRevenueStatsByHours($startDate);
+        }
+        else{
+            $endDate->add(new DateInterval('P1D'));
+            $result = $this->getStatisticHandler()->getRevenueStats($startDate,$endDate);
+        }
+        $saleSeries->color = '#adadad';
+        $saleSeries->graph = $result['stats'];
+        $saleSeries->graphLabel = $result['label'];
+
+        $data = new \stdClass();
+
+        $data->title = $this->getTranslator()->trans("Stats between %startDay/%startMonth/%startYear and %endDay/%endMonth/%endYear", array(
+            '%startDay'=>$startDay,
+            '%startMonth' => $startMonth,
+            '%startYear' => $startYear,
+            '%endDay'=>$endDay,
+            '%endMonth'=>$endMonth,
+            '%endYear'=>$endYear
+        ), "statistic");
+
+        $data->series = array(
+            $saleSeries,
+        );
+
+        if ($ghost == 1){
+            if ($startDate->diff($endDate)->format('%a') === '0') {
+                $ghostGraph = $this->getStatisticHandler()->getRevenueStatsByHours($startDate->sub(new DateInterval('P1Y')));
+            }
+            else{
+                $ghostGraph = $this->getStatisticHandler()->getRevenueStats(
+                    $startDate->sub(new DateInterval('P1Y')),
+                    $endDate->sub(new DateInterval('P1Y'))
+                );
+            }
+            $ghostCurve = new \stdClass();
+            $ghostCurve->color = "#38acfc";
+            $ghostCurve->graph = $ghostGraph['stats'];
+
+            array_push($data->series, $ghostCurve);
+        }
 
         return $this->jsonResponse(json_encode($data));
     }

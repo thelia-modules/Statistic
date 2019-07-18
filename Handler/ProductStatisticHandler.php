@@ -13,6 +13,7 @@
 namespace Statistic\Handler;
 
 use Propel\Runtime\ActiveQuery\Criteria;
+use Statistic\Statistic;
 use Thelia\Model\OrderProductQuery;
 
 
@@ -51,7 +52,6 @@ class ProductStatisticHandler
 
     public function sale($productRef, $year){
         $query = $this->saleQuery($productRef, $year);
-        $q = $query->toString();
         $result = $query->find()->toArray('date');
         return $result;
     }
@@ -64,7 +64,6 @@ class ProductStatisticHandler
     {
         $query = $this->statisticHandler->turnoverQuery($year);
         $query->where('order_product.product_ref = ?',$productRef, \PDO::PARAM_STR);
-        $q = $query->toString();
 
         return $query;
     }
@@ -77,7 +76,7 @@ class ProductStatisticHandler
         $query
             ->useOrderQuery()
                 ->useOrderStatusQuery()
-                    ->filterByCode(explode(",",StatisticHandler::ALLOWED_STATUS), Criteria::IN)
+                    ->filterById(explode(',',Statistic::getConfigValue('order_types')), Criteria::IN)
                 ->endUse()
             ->endUse();
 

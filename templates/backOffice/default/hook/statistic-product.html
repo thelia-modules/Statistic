@@ -7,31 +7,32 @@
             {intl l='tool.panel.product.subtitle'}
         </div>
         <div class="col-sm-3">
-        <select id="category-select" class="col-sm-4 form-control">
-            <option value="">{intl l="tool.panel.product.selectCategory"}</option>
-            {loop type="category" name="category"}
+            <select id="category-select" class="col-sm-4 form-control">
+                <option value="">{intl l="tool.panel.product.selectCategory"}</option>
+                {loop type="category" name="category"}
                 <option value="{$ID}">{$TITLE}</option>
-            {/loop}
-        </select>
+                {/loop}
+            </select>
         </div>
         <div class="col-sm-3">
 
-        <select id="product-select" class="col-sm-4 form-control" data-url="{url path='/admin/module/statistic/product/list'}">
-            {*{loop type="product" name="product"}*}
+            <select id="product-select" class="col-sm-4 form-control" data-url="{url path='/admin/module/statistic/product/list'}">
+                {*{loop type="product" name="product"}*}
                 {*<option value="{$REF}">{$TITLE}</option>*}
-            {*{/loop}*}
-        </select>
-            </div>
+                {*{/loop}*}
+            </select>
+        </div>
         <div class="col-sm-2 input-group pull-right">
             <span class="input-group-addon glyphicon glyphicon-calendar"></span>
             <input type="text" class="form-control product-date-picker" id="selectedDate"/>
+            <input type="text" class="form-control product-date-picker2" id="selectedDate2"/>
         </div>
     </div>
 
 
     <div class="text-center clearfix">
         <div class="btn-group">
-            <button type="button" class="btn btn-primary product-graph-select active"
+            <button type="button" class="btn btn-primary product-graph-select"
                     data-type="jqplot" data-toggle="jqplot-product"
                     data-url="{url path='/admin/module/statistic/product/turnover'}"
                     data-target="turnover-product">
