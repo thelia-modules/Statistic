@@ -82,7 +82,7 @@ class StatisticController extends BaseAdminController
 
         if ($ghost == 1){
 
-            $ghostGraph = $this->getStatisticHandler()->getRevenueStats(
+            $ghostGraph = $this->getStatisticHandler()->averageCart(
                 $startDate->sub(new DateInterval('P1Y')),
                 $endDate->sub(new DateInterval('P1Y'))
             );
