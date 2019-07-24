@@ -22,6 +22,6 @@ return array(
     'tool.panel.general.turnover.TTCWithShippping' => 'Chiffre d\'affaires avec les frais de port',
     'tool.panel.general.turnover.TTCWithoutShippping' => 'Chiffre d\'affaires sans les frais de port',
     'tool.panel.general.turnover.month' => 'Mois',
-    'tool.panel.product.title' => 'Détail par produit',
+    'tool.panel.product.title' => 'Statistiques par produit',
     'tool.title' => 'Statistique',
 );

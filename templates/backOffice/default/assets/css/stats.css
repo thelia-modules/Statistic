@@ -1,3 +1,8 @@
 .Statistic-dateSelector{
     margin-top: 10px;
 }
+
+.Statistic-float{
+    float: left !important;
+    margin-right: 10px;
+}

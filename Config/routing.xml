@@ -63,4 +63,13 @@
         <default key="_controller">Statistic\Controller\ConfigController::setAction</default>
     </route>
 
+    <!-- Search -->
+
+    <route id="statistic.products.search" path="/admin/module/statictic/products/search">
+        <default key="_controller">Statistic\Controller\SearchController::searchProductAction</default>
+    </route>
+    <route id="statistic.category.search" path="/admin/module/statictic/category/search">
+        <default key="_controller">Statistic\Controller\SearchController::searchCategoryAction</default>
+    </route>
+
 </routes>

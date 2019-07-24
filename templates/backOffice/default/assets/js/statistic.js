@@ -17,7 +17,7 @@
         var targetId = "registration";
         var dataTarget = "";
         var startDate = new Date();
-        startDate.setMonth(startDate.getMonth() - 1)
+        startDate.setMonth(startDate.getMonth() - 1);
         var endDate = new Date();
         var ghost = 0;
 
@@ -25,13 +25,17 @@
         var jQPlotsOptions = {
             animate: false,
             axesDefaults: {
+                tickRenderer: $.jqplot.CanvasAxisTickRenderer,
                 tickOptions: {showMark: true, showGridline: true}
             },
             axes: {
                 xaxis: {
                     borderColor: '#ccc',
                     ticks: [],
-                    tickOptions: {showGridline: false}
+                    tickOptions: {
+                        angle: -30,
+                        showGridline: false
+                    }
                 },
                 yaxis: {
                     min: 0,
@@ -229,7 +233,7 @@
                         ticks.push([val[i][0], val[i][1]]);
                     }
                 }
-                ticks.push([days-1,''])
+                ticks.push([days-1," "])
             }
             jQPlotsOptions.axes.xaxis.ticks = ticks;
 
