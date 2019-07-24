@@ -92,7 +92,6 @@
 
             // Get initial data Json
             var ref = $('#product-select').val();
-            console.log(ref)
             retrieveJQPlotJson(ref, productyear, productyear2);
 
 

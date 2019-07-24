@@ -34,7 +34,6 @@ $(document).ready(function(){
     $modalSearch.on('click', '.js-modal-btn-select', function(e){
         e.preventDefault();
         var selectedVal = $modalSearch.find('.js-block-search-result select').val();
-        console.log(selectedVal)
         if(selectedVal != null) {
             $($modalSearch.data('selectselector')).val(selectedVal).trigger('change');
             $modalSearch.dismiss();
