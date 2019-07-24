@@ -57,6 +57,9 @@ class AdminStatisticHook extends BaseHook
         $JQplotcss = $this->addCSS('assets/css/jquery.jqplot.css');
         $event->add($JQplotcss);
 
+        $searchJs = $this->addJS('assets/js/modalSearch.js');
+        $event->add($searchJs);
+
         $blocksitJs = $this->addJS('assets/js/blocksit.min.js');
         $event->add($blocksitJs);
 

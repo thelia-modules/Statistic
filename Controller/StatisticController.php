@@ -74,7 +74,7 @@ class StatisticController extends BaseAdminController
             '%endDay'=>$endDay,
             '%endMonth'=>$endMonth,
             '%endYear'=>$endYear
-        ), "statistic");
+        ), "statistic.bo.default");
 
         $data->series = array(
             $average,
@@ -113,11 +113,11 @@ class StatisticController extends BaseAdminController
         $bestSales = new \stdClass();
         $bestSales->color = '#5cb85c';
         $bestSales->thead = array(
-            'title' => $this->getTranslator()->trans('tool.panel.general.bestSales.name', [], Statistic::BO_MESSAGE_DOMAIN),
-            'pse_ref' => $this->getTranslator()->trans('tool.panel.general.bestSales.reference', [], Statistic::BO_MESSAGE_DOMAIN),
-            'total_sold' => $this->getTranslator()->trans('tool.panel.general.bestSales.totalSold', [], Statistic::BO_MESSAGE_DOMAIN),
-            'total_ht' => $this->getTranslator()->trans('tool.panel.general.bestSales.totalHT', [], Statistic::BO_MESSAGE_DOMAIN),
-            'total_ttc' => $this->getTranslator()->trans('tool.panel.general.bestSales.totalTTC', [], Statistic::BO_MESSAGE_DOMAIN),
+            'title' => $this->getTranslator()->trans('tool.panel.general.bestSales.name', [], "statistic.bo.default"),
+            'pse_ref' => $this->getTranslator()->trans('tool.panel.general.bestSales.reference', [], "statistic.bo.default"),
+            'total_sold' => $this->getTranslator()->trans('tool.panel.general.bestSales.totalSold', [], "statistic.bo.default"),
+            'total_ht' => $this->getTranslator()->trans('tool.panel.general.bestSales.totalHT', [], "statistic.bo.default"),
+            'total_ttc' => $this->getTranslator()->trans('tool.panel.general.bestSales.totalTTC', [], "statistic.bo.default"),
         );
         $bestSales->table = $this->getStatisticHandler()->bestSales($this->getRequest(), $startDate, $endDate);
 
@@ -152,9 +152,9 @@ class StatisticController extends BaseAdminController
         }
         $discount->table = $result;
         $discount->thead = array(
-            'code' => $this->getTranslator()->trans('tool.panel.general.discountCode.code',[], Statistic::BO_MESSAGE_DOMAIN),
-            'rule' => $this->getTranslator()->trans('tool.panel.general.discountCode.rule',[], Statistic::BO_MESSAGE_DOMAIN),
-            'total' => $this->getTranslator()->trans('tool.panel.general.discountCode.nbUse',[], Statistic::BO_MESSAGE_DOMAIN),
+            'code' => $this->getTranslator()->trans('tool.panel.general.discountCode.code',[], "statistic.bo.default"),
+            'rule' => $this->getTranslator()->trans('tool.panel.general.discountCode.rule',[], "statistic.bo.default"),
+            'total' => $this->getTranslator()->trans('tool.panel.general.discountCode.nbUse',[], "statistic.bo.default"),
         );
 
         $data = new \stdClass();
@@ -184,9 +184,9 @@ class StatisticController extends BaseAdminController
         $transport = new \stdClass();
         $transport->table = $this->getStatisticHandler()->meansTransport($startDate, $endDate, $local);
         $transport->thead = array(
-            'code' => $this->getTranslator()->trans('tool.panel.general.meansTransport.means',[], Statistic::BO_MESSAGE_DOMAIN),
-            'title' => $this->getTranslator()->trans('tool.panel.general.meansTransport.description',[], Statistic::BO_MESSAGE_DOMAIN),
-            'total' => $this->getTranslator()->trans('tool.panel.general.meansTransport.nbUse',[], Statistic::BO_MESSAGE_DOMAIN),
+            'code' => $this->getTranslator()->trans('tool.panel.general.meansTransport.means',[], "statistic.bo.default"),
+            'title' => $this->getTranslator()->trans('tool.panel.general.meansTransport.description',[], "statistic.bo.default"),
+            'total' => $this->getTranslator()->trans('tool.panel.general.meansTransport.nbUse',[], "statistic.bo.default"),
         );
 
         $data = new \stdClass();
@@ -216,9 +216,9 @@ class StatisticController extends BaseAdminController
         $payment = new \stdClass();
         $payment->table = $this->getStatisticHandler()->meansPayment($startDate, $endDate, $local);
         $payment->thead = array(
-            'code' => $this->getTranslator()->trans('tool.panel.general.meansPayment.means',[], Statistic::BO_MESSAGE_DOMAIN),
-            'title' => $this->getTranslator()->trans('tool.panel.general.meansPayment.description',[], Statistic::BO_MESSAGE_DOMAIN),
-            'total' => $this->getTranslator()->trans('tool.panel.general.meansPayment.nbUse',[], Statistic::BO_MESSAGE_DOMAIN),
+            'code' => $this->getTranslator()->trans('tool.panel.general.meansPayment.means',[], "statistic.bo.default"),
+            'title' => $this->getTranslator()->trans('tool.panel.general.meansPayment.description',[], "statistic.bo.default"),
+            'total' => $this->getTranslator()->trans('tool.panel.general.meansPayment.nbUse',[], "statistic.bo.default"),
         );
 
         $data = new \stdClass();
@@ -249,9 +249,9 @@ class StatisticController extends BaseAdminController
         $turnoverStart->graphLabel = $result[$startYear]['month'];
         $turnoverStart->table = $result[$startYear]['table'];
         $turnoverStart->thead = array(
-            'month' => $this->getTranslator()->trans('tool.panel.general.turnover.month', [], Statistic::BO_MESSAGE_DOMAIN),
-            'TTCWithShippping' => $this->getTranslator()->trans('tool.panel.general.turnover.TTCWithShippping', [], Statistic::BO_MESSAGE_DOMAIN),
-            'TTCWithoutShippping' => $this->getTranslator()->trans('tool.panel.general.turnover.TTCWithoutShippping', [], Statistic::BO_MESSAGE_DOMAIN),
+            'month' => $this->getTranslator()->trans('tool.panel.general.turnover.month', [], "statistic.bo.default"),
+            'TTCWithShippping' => $this->getTranslator()->trans('tool.panel.general.turnover.TTCWithShippping', [], "statistic.bo.default"),
+            'TTCWithoutShippping' => $this->getTranslator()->trans('tool.panel.general.turnover.TTCWithoutShippping', [], "statistic.bo.default"),
         );
 
         $turnoverEnd = new \stdClass();
@@ -261,14 +261,14 @@ class StatisticController extends BaseAdminController
         $turnoverEnd->graphLabel = $result[$endYear]['month'];
         $turnoverEnd->table = $result[$endYear]['table'];
         $turnoverEnd->thead = array(
-            'month' => $this->getTranslator()->trans('tool.panel.general.turnover.month', [], Statistic::BO_MESSAGE_DOMAIN),
-            'TTCWithShippping' => $this->getTranslator()->trans('tool.panel.general.turnover.TTCWithShippping', [], Statistic::BO_MESSAGE_DOMAIN),
-            'TTCWithoutShippping' => $this->getTranslator()->trans('tool.panel.general.turnover.TTCWithoutShippping', [], Statistic::BO_MESSAGE_DOMAIN),
+            'month' => $this->getTranslator()->trans('tool.panel.general.turnover.month', [], "statistic.bo.default"),
+            'TTCWithShippping' => $this->getTranslator()->trans('tool.panel.general.turnover.TTCWithShippping', [], "statistic.bo.default"),
+            'TTCWithoutShippping' => $this->getTranslator()->trans('tool.panel.general.turnover.TTCWithoutShippping', [], "statistic.bo.default"),
         );
 
 
         $data = new \stdClass();
-        $data->title = $this->getTranslator()->trans("Stats on %startYear and %endYear", array('%startYear' => $startYear, '%endYear' => $endYear),"statistic");
+        $data->title = $this->getTranslator()->trans("Stats on %startYear and %endYear", array('%startYear' => $startYear, '%endYear' => $endYear),"statistic.bo.default");
 
         $data->series = array(
             $turnoverStart,
@@ -322,7 +322,7 @@ class StatisticController extends BaseAdminController
             '%endDay'=>$endDay,
             '%endMonth'=>$endMonth,
             '%endYear'=>$endYear
-        ), "statistic");
+        ), "statistic.bo.default");
 
         $data->series = array(
             $saleSeries,

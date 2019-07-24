@@ -92,6 +92,7 @@
 
             // Get initial data Json
             var ref = $('#product-select').val();
+            console.log(ref)
             retrieveJQPlotJson(ref, productyear, productyear2);
 
 
@@ -200,6 +201,25 @@
             setDataPlot(productUrl, id);
         });
 
+        $('.js-btn-search-product').on('click', function(event){
+            event.preventDefault();
+            $modalSearch.initAndShow(
+                this.dataset.title,
+                baseAdminUrl+"/module/statictic/products/search",
+                '#product-select',
+                this.dataset.placeholder,
+                $('#category-select').val()
+            );
+        });
 
+        $('.js-btn-search-category').on('click', function(event){
+            event.preventDefault();
+            $modalSearch.initAndShow(
+                this.dataset.title,
+                baseAdminUrl+"/module/statictic/category/search",
+                '#category-select',
+                this.dataset.placeholder
+            );
+        });
     });
 })(jQuery);
