@@ -29,25 +29,22 @@ class SearchController extends BaseAdminController
 
         $resultArray = array();
 
-        $productsI18nQuery = ProductI18nQuery::create()
-            ->join('Product')
-            ->filterByTitle($search)
-            ->select(array('Id','title','Product.ref'));
-
+        $productQuery = ProductQuery::create()
+            ->join('ProductI18n')
+            ->filterByRef($search)
+            ->select(array('Id', 'ref', 'ProductI18n.title'));
 
         $category_id = $this->getRequest()->query->get('category_id');
         if($category_id != null){
-            $productsI18nQuery
-                ->useProductQuery()
+            $productQuery
                 ->useProductCategoryQuery()
                 ->filterByCategoryId($category_id)
-                ->endUse()
                 ->endUse();
         }
-        $products = $productsI18nQuery->limit(100);
+        $products = $productQuery->limit(100);
 
         foreach ($products as $product) {
-            $resultArray[$product['Product.ref']] = $product['title'];
+            $resultArray[$product['ref']] = $product['ProductI18n.title'];
         }
 
         return $this->jsonResponse(json_encode($resultArray));
