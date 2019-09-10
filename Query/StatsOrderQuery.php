@@ -23,10 +23,10 @@ class StatsOrderQuery extends OrderQuery
      * @param \DateTime $startDate
      * @param \DateTime $endDate
      * @param $includeShipping
+     * @param bool $withTaxes
      * @return float|int
-     * @throws \Propel\Runtime\Exception\PropelException
      */
-    public static function getSaleStats(\DateTime $startDate, \DateTime $endDate, $includeShipping)
+    public static function getSaleStats(\DateTime $startDate, \DateTime $endDate, $includeShipping, $withTaxes = true)
     {
         $orderTaxJoin = new Join();
         $orderTaxJoin->addExplicitCondition(OrderProductTableMap::TABLE_NAME, 'ID', null, OrderProductTaxTableMap::TABLE_NAME, 'ORDER_PRODUCT_ID', null);
