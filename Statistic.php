@@ -51,6 +51,6 @@ class Statistic extends BaseModule
 
     public function postActivation(ConnectionInterface $con = null)
     {
-        Statistic::setConfigValue('order_types','2,3,4',true, true);
+        self::setConfigValue('order_types','2,3,4');
     }
 }
