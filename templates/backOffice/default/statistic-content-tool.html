@@ -4,7 +4,7 @@
     <!-- Statistic panel -->
     <div role="tabpanel">
         {$counterLi = 0}
-        {$counterPANE = 0}
+        {$counterPane = 0}
         {hookblock name="statistic.tab"}
             <ul class="nav nav-tabs" role="tablist">
                 {forhook rel="statistic.tab"}
@@ -22,7 +22,7 @@
                     <div class="tab-pane {if $counterPAN == 0 }active{/if}" id="{$tab_id}" role="tabpanel">
                         {$content nofilter}
                     </div>
-                    {$counterPANE = 1}
+                    {$counterPane = 1}
                 {/forhook}
             </div>
         {/hookblock}
