@@ -29,6 +29,10 @@
         <hook id="statistic.configuration.hook" class="Statistic\Hook\ConfigHook" scope="request">
             <tag name="hook.event_listener" event="module.configuration" type="back" method="onModuleConfiguration"/>
         </hook>
+
+        <hook id="statistic.hook.admin.home" class="Statistic\Hook\AdminHomeHook" scope="request">
+            <tag name="hook.event_listener" event="hook_home_stats" type="back"  method="onMainHomeAdmin" />
+        </hook>
     </hooks>
 
     <forms>
