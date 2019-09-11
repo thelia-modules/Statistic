@@ -1,0 +1,70 @@
+{block name="main-content-stats"}
+{default_translation_domain domain='statistic.bo.default'}
+<div class="statistic_tool">
+    <!-- Statistic panel -->
+    <div role="tabpanel">
+        {$counterLI = 0}
+        {$counterPAN = 0}
+        {hookblock name="statistic.tab"}
+            <ul class="nav nav-tabs" role="tablist">
+                {forhook rel="statistic.tab"}
+                    <li {if $counterLI == 0 }class="active"{/if} role="presentation">
+                        <a href="#{$tab_id}" role="tab" data-toggle="tab">
+                            {$tab_nav_title}
+                        </a>
+                    </li>
+                    {$counterLI = 1}
+                {/forhook}
+            </ul>
+
+            <div class="tab-content">
+                {forhook rel="statistic.tab"}
+                    <div class="tab-pane {if $counterPAN == 0 }active{/if}" id="{$tab_id}" role="tabpanel">
+                        {$content nofilter}
+                    </div>
+                    {$counterPAN = 1}
+                {/forhook}
+            </div>
+        {/hookblock}
+    </div>
+</div>
+{/block}
+
+<script src="//code.jquery.com/jquery-2.0.3.min.js"></script>
+<script>
+    if (typeof jQuery == 'undefined') {
+        {javascripts file='assets/js/libs/jquery.js'}
+        document.write(unescape("%3Cscript src='{$asset_url}' %3E%3C/script%3E"));
+        {/javascripts}
+    }
+</script>
+
+{block name="javascript-initializatio-stats"}
+{javascripts file='assets/js/jqplot/jquery.jqplot.min.js'}
+    <script src="{$asset_url}"></script>
+{/javascripts}
+{javascripts file='assets/js/jqplot/plugins/jqplot.highlighter.min.js'}
+    <script type="text/javascript" src="{$asset_url}"></script>
+{/javascripts}
+{javascripts file='assets/js/jqplot/plugins/jqplot.barRenderer.min.js'}
+    <script type="text/javascript" src="{$asset_url}"></script>
+{/javascripts}
+{javascripts file='assets/js/jqplot/plugins/jqplot.pieRenderer.min.js'}
+    <script type="text/javascript" src="{$asset_url}"></script>
+{/javascripts}
+{javascripts file='assets/js/jqplot/plugins/jqplot.canvasTextRenderer.min.js'}
+    <script type="text/javascript" src="{$asset_url}"></script>
+{/javascripts}
+{javascripts file='assets/js/jqplot/plugins/jqplot.dateAxisRenderer.min.js'}
+    <script type="text/javascript" src="{$asset_url}"></script>
+{/javascripts}
+{javascripts file='assets/js/jqplot/plugins/jqplot.canvasAxisTickRenderer.min.js'}
+    <script type="text/javascript" src="{$asset_url}"></script>
+{/javascripts}
+
+<script>
+    var baseAdminUrl = "{url path="/admin"}";
+</script>
+{/block}
+
+{hook name='statistic.footer.js'}
