@@ -50,13 +50,13 @@ class StatisticController extends BaseAdminController
 
         $ghost = $this->getRequest()->query->get('ghost');
 
-        $startDay = $this->getRequest()->query->get('startDay', date('m'));
+        $startDay = $this->getRequest()->query->get('startDay', date('d'));
         $startMonth = $this->getRequest()->query->get('startMonth', date('m'));
-        $startYear = $this->getRequest()->query->get('startYear', date('m'));
+        $startYear = $this->getRequest()->query->get('startYear', date('Y'));
 
-        $endDay = $this->getRequest()->query->get('endDay', date('m'));
+        $endDay = $this->getRequest()->query->get('endDay', date('d'));
         $endMonth = $this->getRequest()->query->get('endMonth', date('m'));
-        $endYear = $this->getRequest()->query->get('endYear', date('m'));
+        $endYear = $this->getRequest()->query->get('endYear', date('Y'));
 
         $startDate = new \DateTime($startYear . '-' . $startMonth . '-' . $startDay);
         $endDate = new \DateTime($endYear . '-' . $endMonth . '-' . ($endDay+1));
@@ -101,13 +101,13 @@ class StatisticController extends BaseAdminController
     public function statBestSalesAction()
     {
         // récupération des paramètres
-        $startDay = $this->getRequest()->query->get('startDay', date('m'));
+        $startDay = $this->getRequest()->query->get('startDay', date('d'));
         $startMonth = $this->getRequest()->query->get('startMonth', date('m'));
-        $startYear = $this->getRequest()->query->get('startYear', date('m'));
+        $startYear = $this->getRequest()->query->get('startYear', date('Y'));
 
-        $endDay = $this->getRequest()->query->get('endDay', date('m'));
+        $endDay = $this->getRequest()->query->get('endDay', date('d'));
         $endMonth = $this->getRequest()->query->get('endMonth', date('m'));
-        $endYear = $this->getRequest()->query->get('endYear', date('m'));
+        $endYear = $this->getRequest()->query->get('endYear', date('Y'));
 
         $startDate = new \DateTime($startYear . '-' . $startMonth . '-' . $startDay);
         $endDate = new \DateTime($endYear . '-' . $endMonth . '-' . $endDay);
@@ -134,13 +134,13 @@ class StatisticController extends BaseAdminController
     public function statDiscountCodeAction()
     {
         // récupération des paramètres
-        $startDay = $this->getRequest()->query->get('startDay', date('m'));
+        $startDay = $this->getRequest()->query->get('startDay', date('d'));
         $startMonth = $this->getRequest()->query->get('startMonth', date('m'));
-        $startYear = $this->getRequest()->query->get('startYear', date('m'));
+        $startYear = $this->getRequest()->query->get('startYear', date('Y'));
 
-        $endDay = $this->getRequest()->query->get('endDay', date('m'));
+        $endDay = $this->getRequest()->query->get('endDay', date('d'));
         $endMonth = $this->getRequest()->query->get('endMonth', date('m'));
-        $endYear = $this->getRequest()->query->get('endYear', date('m'));
+        $endYear = $this->getRequest()->query->get('endYear', date('Y'));
 
         $startDate = new \DateTime($startYear . '-' . $startMonth . '-' . $startDay);
         $endDate = new \DateTime($endYear . '-' . $endMonth . '-' . $endDay);
@@ -170,13 +170,13 @@ class StatisticController extends BaseAdminController
     public function statMeansTransportAction()
     {
         // récupération des paramètres
-        $startDay = $this->getRequest()->query->get('startDay', date('m'));
+        $startDay = $this->getRequest()->query->get('startDay', date('d'));
         $startMonth = $this->getRequest()->query->get('startMonth', date('m'));
-        $startYear = $this->getRequest()->query->get('startYear', date('m'));
+        $startYear = $this->getRequest()->query->get('startYear', date('Y'));
 
-        $endDay = $this->getRequest()->query->get('endDay', date('m'));
+        $endDay = $this->getRequest()->query->get('endDay', date('d'));
         $endMonth = $this->getRequest()->query->get('endMonth', date('m'));
-        $endYear = $this->getRequest()->query->get('endYear', date('m'));
+        $endYear = $this->getRequest()->query->get('endYear', date('Y'));
 
         $startDate = new \DateTime($startYear . '-' . $startMonth . '-' . $startDay);
         $endDate = new \DateTime($endYear . '-' . $endMonth . '-' . $endDay);
@@ -202,13 +202,13 @@ class StatisticController extends BaseAdminController
     public function statMeansPaymentAction()
     {
         // récupération des paramètres
-        $startDay = $this->getRequest()->query->get('startDay', date('m'));
+        $startDay = $this->getRequest()->query->get('startDay', date('d'));
         $startMonth = $this->getRequest()->query->get('startMonth', date('m'));
-        $startYear = $this->getRequest()->query->get('startYear', date('m'));
+        $startYear = $this->getRequest()->query->get('startYear', date('Y'));
 
-        $endDay = $this->getRequest()->query->get('endDay', date('m'));
+        $endDay = $this->getRequest()->query->get('endDay', date('d'));
         $endMonth = $this->getRequest()->query->get('endMonth', date('m'));
-        $endYear = $this->getRequest()->query->get('endYear', date('m'));
+        $endYear = $this->getRequest()->query->get('endYear', date('Y'));
 
         $startDate = new \DateTime($startYear . '-' . $startMonth . '-' . $startDay);
         $endDate = new \DateTime($endYear . '-' . $endMonth . '-' . $endDay);
@@ -238,8 +238,8 @@ class StatisticController extends BaseAdminController
 
         // récupération des paramètres
 
-        $startYear = $this->getRequest()->query->get('startYear', date('m'));
-        $endYear = $this->getRequest()->query->get('endYear', date('m'));
+        $startYear = $this->getRequest()->query->get('startYear', date('Y'));
+        $endYear = $this->getRequest()->query->get('endYear', date('Y'));
 
         $result[$startYear] = $this->getStatisticHandler()->getTurnoverYear($startYear);
         $result[$endYear] = $this->getStatisticHandler()->getTurnoverYear($endYear);
@@ -290,19 +290,18 @@ class StatisticController extends BaseAdminController
         $this->getRequest()->getSession()->save();
         $ghost = $this->getRequest()->query->get('ghost');
 
-        $startDay = $this->getRequest()->query->get('startDay', date('m'));
+        $startDay = $this->getRequest()->query->get('startDay', date('d'));
         $startMonth = $this->getRequest()->query->get('startMonth', date('m'));
-        $startYear = $this->getRequest()->query->get('startYear', date('m'));
+        $startYear = $this->getRequest()->query->get('startYear', date('Y'));
 
-        $endDay = $this->getRequest()->query->get('endDay', date('m'));
+        $endDay = $this->getRequest()->query->get('endDay', date('d'));
         $endMonth = $this->getRequest()->query->get('endMonth', date('m'));
-        $endYear = $this->getRequest()->query->get('endYear', date('m'));
+        $endYear = $this->getRequest()->query->get('endYear', date('Y'));
 
         $startDate = new \DateTime($startYear . '-' . $startMonth . '-' . $startDay);
         $endDate = new \DateTime($endYear . '-' . $endMonth . '-' . $endDay);
 
         $saleSeries = new \stdClass();
-
 
         if ($startDate->diff($endDate)->format('%a') === '0') {
             $result = $this->getStatisticHandler()->getRevenueStatsByHours($startDate);
@@ -360,13 +359,13 @@ class StatisticController extends BaseAdminController
         $this->getRequest()->getSession()->save();
         $ghost = $this->getRequest()->query->get('ghost');
 
-        $startDay = $this->getRequest()->query->get('startDay', date('m'));
+        $startDay = $this->getRequest()->query->get('startDay', date('d'));
         $startMonth = $this->getRequest()->query->get('startMonth', date('m'));
-        $startYear = $this->getRequest()->query->get('startYear', date('m'));
+        $startYear = $this->getRequest()->query->get('startYear', date('Y'));
 
-        $endDay = $this->getRequest()->query->get('endDay', date('m'));
+        $endDay = $this->getRequest()->query->get('endDay', date('d'));
         $endMonth = $this->getRequest()->query->get('endMonth', date('m'));
-        $endYear = $this->getRequest()->query->get('endYear', date('m'));
+        $endYear = $this->getRequest()->query->get('endYear', date('Y'));
 
         $startDate = new \DateTime($startYear . '-' . $startMonth . '-' . $startDay);
         $endDate = new \DateTime($endYear . '-' . $endMonth . '-' . $endDay);
