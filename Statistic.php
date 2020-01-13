@@ -19,7 +19,7 @@ use Thelia\Module\BaseModule;
 
 class Statistic extends BaseModule
 {
-    const BO_MESSAGE_DOMAIN = "statistic";
+    const MESSAGE_DOMAIN = "statistic";
 
     public function getHooks()
     {

@@ -78,7 +78,7 @@ class ProductStatisticController extends BaseAdminController
         $turnover2->graphLabel = $graphLabel[1];
 
         $data = new \stdClass();
-        $data->title = $this->getTranslator()->trans("Stats on %startYear and %endYear", array('%startYear' => $year, '%endYear' => $year2), "statistic");
+        $data->title = $this->getTranslator()->trans("Stats on %startYear and %endYear", array('%startYear' => $year, '%endYear' => $year2), Statistic::MESSAGE_DOMAIN);
 
         $data->series = array(
             $turnover,
@@ -124,7 +124,7 @@ class ProductStatisticController extends BaseAdminController
         $sale2->graphLabel = $graphLabel[1];
 
         $data = new \stdClass();
-        $data->title = $this->getTranslator()->trans("Stats on %startYear and %endYear", array('%startYear' => $year, '%endYear' => $year2), "statistic");
+        $data->title = $this->getTranslator()->trans("Stats on %startYear and %endYear", array('%startYear' => $year, '%endYear' => $year2), Statistic::MESSAGE_DOMAIN);
 
         $data->series = array(
             $sale,
