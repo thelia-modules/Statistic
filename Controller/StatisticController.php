@@ -46,6 +46,8 @@ class StatisticController extends BaseAdminController
         /*$month = $this->getRequest()->query->get('month', date('m'));
         $year = $this->getRequest()->query->get('year', date('m'));*/
 
+        $this->getRequest()->getSession()->save();
+
         $ghost = $this->getRequest()->query->get('ghost');
 
         $startDay = $this->getRequest()->query->get('startDay', date('m'));
@@ -74,7 +76,7 @@ class StatisticController extends BaseAdminController
             '%endDay'=>$endDay,
             '%endMonth'=>$endMonth,
             '%endYear'=>$endYear
-        ), "statistic.bo.default");
+        ), "statistic");
 
         $data->series = array(
             $average,
@@ -113,11 +115,11 @@ class StatisticController extends BaseAdminController
         $bestSales = new \stdClass();
         $bestSales->color = '#5cb85c';
         $bestSales->thead = array(
-            'title' => $this->getTranslator()->trans('tool.panel.general.bestSales.name', [], "statistic.bo.default"),
-            'pse_ref' => $this->getTranslator()->trans('tool.panel.general.bestSales.reference', [], "statistic.bo.default"),
-            'total_sold' => $this->getTranslator()->trans('tool.panel.general.bestSales.totalSold', [], "statistic.bo.default"),
-            'total_ht' => $this->getTranslator()->trans('tool.panel.general.bestSales.totalHT', [], "statistic.bo.default"),
-            'total_ttc' => $this->getTranslator()->trans('tool.panel.general.bestSales.totalTTC', [], "statistic.bo.default"),
+            'title' => $this->getTranslator()->trans('tool.panel.general.bestSales.name', [], "statistic"),
+            'pse_ref' => $this->getTranslator()->trans('tool.panel.general.bestSales.reference', [], "statistic"),
+            'total_sold' => $this->getTranslator()->trans('tool.panel.general.bestSales.totalSold', [], "statistic"),
+            'total_ht' => $this->getTranslator()->trans('tool.panel.general.bestSales.totalHT', [], "statistic"),
+            'total_ttc' => $this->getTranslator()->trans('tool.panel.general.bestSales.totalTTC', [], "statistic"),
         );
         $bestSales->table = $this->getStatisticHandler()->bestSales($this->getRequest(), $startDate, $endDate);
 
@@ -152,9 +154,9 @@ class StatisticController extends BaseAdminController
         }
         $discount->table = $result;
         $discount->thead = array(
-            'code' => $this->getTranslator()->trans('tool.panel.general.discountCode.code',[], "statistic.bo.default"),
-            'rule' => $this->getTranslator()->trans('tool.panel.general.discountCode.rule',[], "statistic.bo.default"),
-            'total' => $this->getTranslator()->trans('tool.panel.general.discountCode.nbUse',[], "statistic.bo.default"),
+            'code' => $this->getTranslator()->trans('tool.panel.general.discountCode.code',[], "statistic"),
+            'rule' => $this->getTranslator()->trans('tool.panel.general.discountCode.rule',[], "statistic"),
+            'total' => $this->getTranslator()->trans('tool.panel.general.discountCode.nbUse',[], "statistic"),
         );
 
         $data = new \stdClass();
@@ -184,9 +186,9 @@ class StatisticController extends BaseAdminController
         $transport = new \stdClass();
         $transport->table = $this->getStatisticHandler()->meansTransport($startDate, $endDate, $local);
         $transport->thead = array(
-            'code' => $this->getTranslator()->trans('tool.panel.general.meansTransport.means',[], "statistic.bo.default"),
-            'title' => $this->getTranslator()->trans('tool.panel.general.meansTransport.description',[], "statistic.bo.default"),
-            'total' => $this->getTranslator()->trans('tool.panel.general.meansTransport.nbUse',[], "statistic.bo.default"),
+            'code' => $this->getTranslator()->trans('tool.panel.general.meansTransport.means',[], "statistic"),
+            'title' => $this->getTranslator()->trans('tool.panel.general.meansTransport.description',[], "statistic"),
+            'total' => $this->getTranslator()->trans('tool.panel.general.meansTransport.nbUse',[], "statistic"),
         );
 
         $data = new \stdClass();
@@ -216,9 +218,9 @@ class StatisticController extends BaseAdminController
         $payment = new \stdClass();
         $payment->table = $this->getStatisticHandler()->meansPayment($startDate, $endDate, $local);
         $payment->thead = array(
-            'code' => $this->getTranslator()->trans('tool.panel.general.meansPayment.means',[], "statistic.bo.default"),
-            'title' => $this->getTranslator()->trans('tool.panel.general.meansPayment.description',[], "statistic.bo.default"),
-            'total' => $this->getTranslator()->trans('tool.panel.general.meansPayment.nbUse',[], "statistic.bo.default"),
+            'code' => $this->getTranslator()->trans('tool.panel.general.meansPayment.means',[], "statistic"),
+            'title' => $this->getTranslator()->trans('tool.panel.general.meansPayment.description',[], "statistic"),
+            'total' => $this->getTranslator()->trans('tool.panel.general.meansPayment.nbUse',[], "statistic"),
         );
 
         $data = new \stdClass();
@@ -249,9 +251,9 @@ class StatisticController extends BaseAdminController
         $turnoverStart->graphLabel = $result[$startYear]['month'];
         $turnoverStart->table = $result[$startYear]['table'];
         $turnoverStart->thead = array(
-            'month' => $this->getTranslator()->trans('tool.panel.general.turnover.month', [], "statistic.bo.default"),
-            'TTCWithShippping' => $this->getTranslator()->trans('tool.panel.general.turnover.TTCWithShippping', [], "statistic.bo.default"),
-            'TTCWithoutShippping' => $this->getTranslator()->trans('tool.panel.general.turnover.TTCWithoutShippping', [], "statistic.bo.default"),
+            'month' => $this->getTranslator()->trans('tool.panel.general.turnover.month', [], "statistic"),
+            'TTCWithShippping' => $this->getTranslator()->trans('tool.panel.general.turnover.TTCWithShippping', [], "statistic"),
+            'TTCWithoutShippping' => $this->getTranslator()->trans('tool.panel.general.turnover.TTCWithoutShippping', [], "statistic"),
         );
 
         $turnoverEnd = new \stdClass();
@@ -261,14 +263,14 @@ class StatisticController extends BaseAdminController
         $turnoverEnd->graphLabel = $result[$endYear]['month'];
         $turnoverEnd->table = $result[$endYear]['table'];
         $turnoverEnd->thead = array(
-            'month' => $this->getTranslator()->trans('tool.panel.general.turnover.month', [], "statistic.bo.default"),
-            'TTCWithShippping' => $this->getTranslator()->trans('tool.panel.general.turnover.TTCWithShippping', [], "statistic.bo.default"),
-            'TTCWithoutShippping' => $this->getTranslator()->trans('tool.panel.general.turnover.TTCWithoutShippping', [], "statistic.bo.default"),
+            'month' => $this->getTranslator()->trans('tool.panel.general.turnover.month', [], "statistic"),
+            'TTCWithShippping' => $this->getTranslator()->trans('tool.panel.general.turnover.TTCWithShippping', [], "statistic"),
+            'TTCWithoutShippping' => $this->getTranslator()->trans('tool.panel.general.turnover.TTCWithoutShippping', [], "statistic"),
         );
 
 
         $data = new \stdClass();
-        $data->title = $this->getTranslator()->trans("Stats on %startYear and %endYear", array('%startYear' => $startYear, '%endYear' => $endYear),"statistic.bo.default");
+        $data->title = $this->getTranslator()->trans("Stats on %startYear and %endYear", array('%startYear' => $startYear, '%endYear' => $endYear),"statistic");
 
         $data->series = array(
             $turnoverStart,
@@ -322,7 +324,7 @@ class StatisticController extends BaseAdminController
             '%endDay'=>$endDay,
             '%endMonth'=>$endMonth,
             '%endYear'=>$endYear
-        ), "statistic.bo.default");
+        ), "statistic");
 
         $data->series = array(
             $saleSeries,
@@ -334,6 +336,76 @@ class StatisticController extends BaseAdminController
             }
             else{
                 $ghostGraph = $this->getStatisticHandler()->getRevenueStats(
+                    $startDate->sub(new DateInterval('P1Y')),
+                    $endDate->sub(new DateInterval('P1Y'))
+                );
+            }
+            $ghostCurve = new \stdClass();
+            $ghostCurve->color = "#38acfc";
+            $ghostCurve->graph = $ghostGraph['stats'];
+
+            array_push($data->series, $ghostCurve);
+        }
+
+        return $this->jsonResponse(json_encode($data));
+    }
+
+    /**
+     * @return \Thelia\Core\HttpFoundation\Response
+     * @throws \Exception
+     * @throws \Propel\Runtime\Exception\PropelException
+     */
+    public function statOrdersAction()
+    {
+        $this->getRequest()->getSession()->save();
+        $ghost = $this->getRequest()->query->get('ghost');
+
+        $startDay = $this->getRequest()->query->get('startDay', date('m'));
+        $startMonth = $this->getRequest()->query->get('startMonth', date('m'));
+        $startYear = $this->getRequest()->query->get('startYear', date('m'));
+
+        $endDay = $this->getRequest()->query->get('endDay', date('m'));
+        $endMonth = $this->getRequest()->query->get('endMonth', date('m'));
+        $endYear = $this->getRequest()->query->get('endYear', date('m'));
+
+        $startDate = new \DateTime($startYear . '-' . $startMonth . '-' . $startDay);
+        $endDate = new \DateTime($endYear . '-' . $endMonth . '-' . $endDay);
+
+        $saleSeries = new \stdClass();
+
+
+        if ($startDate->diff($endDate)->format('%a') === '0') {
+            $result = $this->getStatisticHandler()->getOrdersStatsByHours($startDate);
+        }
+        else{
+            $endDate->add(new DateInterval('P1D'));
+            $result = $this->getStatisticHandler()->getOrdersStats($startDate,$endDate);
+        }
+        $saleSeries->color = '#d10d0d';
+        $saleSeries->graph = $result['stats'];
+        $saleSeries->graphLabel = $result['label'];
+
+        $data = new \stdClass();
+
+        $data->title = $this->getTranslator()->trans("Stats between %startDay/%startMonth/%startYear and %endDay/%endMonth/%endYear", array(
+            '%startDay'=>$startDay,
+            '%startMonth' => $startMonth,
+            '%startYear' => $startYear,
+            '%endDay'=>$endDay,
+            '%endMonth'=>$endMonth,
+            '%endYear'=>$endYear
+        ), "statistic");
+
+        $data->series = array(
+            $saleSeries,
+        );
+
+        if ($ghost == 1){
+            if ($startDate->diff($endDate)->format('%a') === '0') {
+                $ghostGraph = $this->getStatisticHandler()->getOrdersStatsByHours($startDate->sub(new DateInterval('P1Y')));
+            }
+            else{
+                $ghostGraph = $this->getStatisticHandler()->getOrdersStats(
                     $startDate->sub(new DateInterval('P1Y')),
                     $endDate->sub(new DateInterval('P1Y'))
                 );

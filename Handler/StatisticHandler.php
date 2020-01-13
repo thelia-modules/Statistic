@@ -29,6 +29,9 @@ use Thelia\Model\Map\OrderCouponTableMap;
 use Thelia\Model\Map\OrderProductTableMap;
 use Thelia\Model\Map\OrderProductTaxTableMap;
 use Thelia\Model\Map\OrderTableMap;
+use Thelia\Model\ModuleConfigI18nQuery;
+use Thelia\Model\ModuleConfigQuery;
+use Thelia\Model\ModuleQuery;
 use Thelia\Model\OrderProductQuery;
 use Thelia\Model\OrderQuery;
 use Thelia\Model\ProductQuery;
@@ -243,6 +246,67 @@ class StatisticHandler
                 clone ($startDate->setTime($hour,0,0)),
                 clone($startDate->setTime($hour,59,59)),
                 false
+            );
+            array_push($result['stats'], array($hour, $dayAmount));
+            array_push($result['label'], array($hour, ($hour+1).'h' ));
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param \DateTime $startDate
+     * @param \DateTime $endDate
+     * @return array
+     * @throws \Exception
+     * @throws \Propel\Runtime\Exception\PropelException
+     */
+    public static function getOrdersStats(\DateTime $startDate, \DateTime $endDate)
+    {
+
+        $result = array();
+        $result['stats'] = array();
+        $result['label'] = array();
+
+        $statModuleId = ModuleQuery::create()->findOneByCode('Statistic')->getId();
+        $statConfig = ModuleConfigQuery::create()->filterByModuleId($statModuleId)->findOneByName('order_types')->getId();
+        $status = explode(',', ModuleConfigI18nQuery::create()->findOneById($statConfig));
+
+        for ($day=0, $date = clone($startDate); $date <= $endDate; $date->add(new \DateInterval('P1D')), $day++) {
+            $dayAmount = OrderQuery::getOrderStats(
+                $date->setTime(0,0,0),
+                $date->setTime(23,59,59),
+                $status
+            );
+            $key = explode('-', $date->format('Y-m-d'));
+            array_push($result['stats'], array($day, $dayAmount));
+            array_push($result['label'], array($day,$key[2] . '/' . $key[1]));
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param \DateTime $startDate
+     * @return array
+     * @throws \Propel\Runtime\Exception\PropelException
+     */
+    public static function getOrdersStatsByHours(\DateTime $startDate)
+    {
+        $result = array();
+        $result['stats'] = array();
+        $result['label'] = array();
+
+        $statModuleId = ModuleQuery::create()->findOneByCode('Statistic')->getId();
+        $statConfig = ModuleConfigQuery::create()->filterByModuleId($statModuleId)->findOneByName('order_types')->getId();
+        $status = explode(',', ModuleConfigI18nQuery::create()->findOneById($statConfig));
+
+
+        for ($hour = 0; $hour < 24; $hour++ ) {
+            $dayAmount = OrderByHoursQuery::getOrdersStats(
+                clone ($startDate->setTime($hour,0,0)),
+                clone($startDate->setTime($hour,59,59)),
+                $status
             );
             array_push($result['stats'], array($hour, $dayAmount));
             array_push($result['label'], array($hour, ($hour+1).'h' ));

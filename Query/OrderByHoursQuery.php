@@ -38,7 +38,7 @@ class OrderByHoursQuery extends BaseOrderQuery
             ->select(['TOTAL', 'TAX'])
         ;
         $arrayAmount = $query->findOne();
-//        die(var_dump($query));
+
         $amount = $arrayAmount['TOTAL'] + $arrayAmount['TAX'];
 
         if (null === $amount) {
@@ -73,8 +73,18 @@ class OrderByHoursQuery extends BaseOrderQuery
     protected static function baseSaleStats(\DateTime $startDate, \DateTime $endDate, $modelAlias = null)
     {
         return self::create($modelAlias)
-            ->filterByCreatedAt( $startDate->format('Y-m-d H:i:s'), Criteria::GREATER_EQUAL)
+            ->filterByCreatedAt($startDate->format('Y-m-d H:i:s'), Criteria::GREATER_EQUAL)
             ->filterByCreatedAt($endDate->format('Y-m-d H:i:s'), Criteria::LESS_EQUAL)
             ->filterByStatusId(explode(',',Statistic::getConfigValue('order_types')), Criteria::IN);
     }
+
+    public static function getOrdersStats(\DateTime $startDate, \DateTime $endDate, $status = array(1, 2, 3, 4))
+    {
+        return self::create()
+            ->filterByStatusId($status, Criteria::IN)
+            ->filterByCreatedAt($startDate->format('Y-m-d H:i:s'), Criteria::GREATER_EQUAL)
+            ->filterByCreatedAt($endDate->format('Y-m-d H:i:s'), Criteria::LESS_EQUAL)
+            ->count();
+    }
+
 }
