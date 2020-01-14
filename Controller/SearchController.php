@@ -21,7 +21,7 @@ class SearchController extends BaseAdminController
 {
     public function searchProductAction()
     {
-        if (null !== $response = $this->checkAuth(AdminResources::MODULE, Statistic::BO_MESSAGE_DOMAIN, AccessManager::VIEW)) {
+        if (null !== $response = $this->checkAuth(AdminResources::MODULE, Statistic::MESSAGE_DOMAIN, AccessManager::VIEW)) {
             return $response;
         }
 
@@ -53,7 +53,7 @@ class SearchController extends BaseAdminController
 
     public function searchCategoryAction()
     {
-        if (null !== $response = $this->checkAuth(AdminResources::MODULE, Statistic::BO_MESSAGE_DOMAIN, AccessManager::VIEW)) {
+        if (null !== $response = $this->checkAuth(AdminResources::MODULE, Statistic::MESSAGE_DOMAIN, AccessManager::VIEW)) {
             return $response;
         }
 

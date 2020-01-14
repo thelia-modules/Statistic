@@ -58,7 +58,7 @@ class CustomerStatisticController extends BaseAdminController
             '%endDay' => $endDay,
             '%endMonth' => $endMonth,
             '%endYear' => $endYear
-        ), "statistic"
+        ), Statistic::MESSAGE_DOMAIN
         );
 
         $startDate = new \DateTime($startYear.'-'.$startMonth.'-'.$startDay);

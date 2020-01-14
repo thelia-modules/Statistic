@@ -14,6 +14,12 @@
                     data-target="registration"><span
                     class="glyphicon glyphicon-user"></span> {intl l="tool.panel.customer.newCustomer"}
             </button>
+            <button type="button" class="btn btn-danger general-graph-select" role="group"
+                    data-type="jqplot" data-toggle="jqplot-general"
+                    data-url="{url path='/admin/module/statistic/orders'}"
+                    data-target="orders"><span
+                    class="glyphicon glyphicon-credit-card"></span> {intl l="tool.panel.general.order"}
+            </button>
             <button type="button" class="btn btn-success general-graph-select" role="group"
                     data-type="jqplot" data-toggle="jqplot-general"
                     data-url="{url path='/admin/module/statistic/averageCart'}"
@@ -72,6 +78,9 @@
     <hr/>
     <div class="jqplot-content">
         <div id="jqplot-general"></div>
+    </div>
+    <div class="total">
+        <h1 id="total">Total :</h1>
     </div>
     <div class="table-content">
         <h2 id="table-title" class="text-center"></h2>

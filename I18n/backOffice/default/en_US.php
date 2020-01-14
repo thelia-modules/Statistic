@@ -1,74 +1,44 @@
 <?php
 
 return array(
-    'tool' => array(
-        'title' => 'Statistics',
-        'day' => 'Day',
-        'month' => 'Month',
-        'year' => 'Year',
-        'from' => 'From',
-        'to' => 'To',
-        'panel'=> array(
-            'customer' => array(
-                'title' => 'Customers',
-                'subtitle' => 'Statistics on customers',
-                'newCustomer' => 'New customer',
-                'firstOrder' => 'First order',
-            ),
-            'general' => array(
-                'title' => 'General Statistics',
-                'subtitle' => 'General Statistics',
-                'averageCart' => 'Average cart',
-                'bestSales' => array(
-                    'name' => 'Name',
-                    'reference' => 'Reference',
-                    'totalHT' => 'Total without taxes (€)',
-                    'totalSold' => 'Total sold',
-                    'totalTTC' => 'Total with taxes (€)',
-                    'title' => 'Best sale',
-                ),
-                'discountCode' => array(
-                    'code' => 'Promotional code',
-                    'nbUse' => 'Number use',
-                    'rule' => 'Rule',
-                    'title' => 'Promotional code',
-                ),
-                'meansTransport' => array(
-                    'description' => 'Description',
-                    'means' => 'Means transport',
-                    'nbUse' => 'Number of use',
-                    'title' => 'Means transport',
-                ),
-                'meansPayment' => array(
-                    'description' => 'Description',
-                    'means' => 'Means of payment',
-                    'nbUse' => 'Number of use',
-                    'title' => 'Means of payment',
-                ),
-                'turnover' => array(
-                    'TTCWithShippping' => 'Turnover with shipping costs',
-                    'TTCWithoutShippping' => 'Turnover without shipping costs',
-                    'month' => 'Month',
-                    'title' => 'Annual sales',
-                ),
-                'revenue'=> array(
-                    'title'=> 'Sales'
-                )
-            ),
-            'product' => array(
-                'title' => 'Detail by product',
-                'subtitle' => 'Statistics by product',
-                'turnover' => array(
-                    'title' => 'Turnover'
-                ),
-                'sale' => array(
-                    'title' => 'Number sale'
-                ),
-                'selectCategory' => 'Select category',
-            ),
-            'annual' => array(
-                'title' => 'Annual statistics',
-            )
-        )
-    )
+    'Close' => 'Close',
+    'Home' => 'Home',
+    'No results found for your search.' => 'No results found for your search.',
+    'Please wait, loading' => 'Please wait, loading',
+    'Search' => 'Search',
+    'Select' => 'Select',
+    'Tools' => 'Tools',
+    'search.category.placeholder' => 'Category placeholder',
+    'search.category.title' => 'Category title',
+    'search.product.placeholder' => 'Product placeholder',
+    'search.product.title' => 'Product title',
+    'tool.config.action' => 'Action',
+    'tool.config.code' => 'Code',
+    'tool.config.delete_order_status' => 'Delete order status',
+    'tool.config.edit_order_status' => 'Edit order status',
+    'tool.config.help' => 'Help',
+    'tool.config.id' => 'ID',
+    'tool.config.order' => 'Order',
+    'tool.config.order_status' => 'Order status',
+    'tool.config.order_types' => 'Order Types',
+    'tool.config.position' => 'Position',
+    'tool.config.title' => 'Title',
+    'tool.day' => 'Day',
+    'tool.from' => 'From',
+    'tool.month' => 'Month',
+    'tool.panel.customer.newCustomer' => 'New customer',
+    'tool.panel.general.averageCart' => 'Average cart',
+    'tool.panel.general.bestSales.title' => 'Best sale',
+    'tool.panel.general.discountCode.title' => 'Promotional code',
+    'tool.panel.general.meansPayment.title' => 'Means of payment',
+    'tool.panel.general.meansTransport.title' => 'Means transport',
+    'tool.panel.general.order' => 'Orders',
+    'tool.panel.general.revenue.title' => 'Sales',
+    'tool.panel.general.turnover.title' => 'Annual sales',
+    'tool.panel.product.sale.title' => 'Number sale',
+    'tool.panel.product.selectCategory' => 'Select category',
+    'tool.panel.product.turnover.title' => 'Turnover',
+    'tool.title' => 'Statistics',
+    'tool.to' => 'To',
+    'tool.year' => 'Year',
 );

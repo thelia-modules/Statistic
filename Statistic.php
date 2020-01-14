@@ -19,7 +19,7 @@ use Thelia\Module\BaseModule;
 
 class Statistic extends BaseModule
 {
-    const BO_MESSAGE_DOMAIN = "statistic.bo.default";
+    const MESSAGE_DOMAIN = "statistic";
 
     public function getHooks()
     {
@@ -28,7 +28,7 @@ class Statistic extends BaseModule
                 'type' => TemplateDefinition::BACK_OFFICE,
                 'code' => 'statistic.tab',
                 'title' => array(
-                    'fr_FR' => 'Module de statistique, onglets.',
+                    'fr_FR' => 'Module de statistiques, onglets.',
                     'en_US' => 'Statistic module, tabs.'
                 ),
                 'active' => true,
@@ -39,7 +39,7 @@ class Statistic extends BaseModule
                 'type' => TemplateDefinition::BACK_OFFICE,
                 'code' => 'statistic.footer.js',
                 'title' => array(
-                    'fr_FR' => 'Module de statistic, insertion des JS.',
+                    'fr_FR' => 'Module de statistiques, insertion des JS.',
                     'en_US' => 'Statistic module, JS insertion'
                 ),
                 'active' => true,

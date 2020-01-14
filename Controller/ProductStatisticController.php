@@ -45,8 +45,8 @@ class ProductStatisticController extends BaseAdminController
     {
         // récupération des paramètres
         $productRef = $this->getRequest()->query->get('ref', '141_4_91359672');
-        $year = $this->getRequest()->query->get('year', date('m'));
-        $year2 = $this->getRequest()->query->get('year2', date('m'));
+        $year = $this->getRequest()->query->get('year', date('Y'));
+        $year2 = $this->getRequest()->query->get('year2', date('Y'));
 
         $turnover = new \stdClass();
         $turnover2 = new \stdClass();
@@ -78,7 +78,7 @@ class ProductStatisticController extends BaseAdminController
         $turnover2->graphLabel = $graphLabel[1];
 
         $data = new \stdClass();
-        $data->title = $this->getTranslator()->trans("Stats on %startYear and %endYear", array('%startYear' => $year, '%endYear' => $year2), "statistic");
+        $data->title = $this->getTranslator()->trans("Stats on %startYear and %endYear", array('%startYear' => $year, '%endYear' => $year2), Statistic::MESSAGE_DOMAIN);
 
         $data->series = array(
             $turnover,
@@ -92,8 +92,8 @@ class ProductStatisticController extends BaseAdminController
     {
         // récupération des paramètres
         $productId = $this->getRequest()->query->get('ref', '141_4_91359672');
-        $year = $this->getRequest()->query->get('year', date('m'));
-        $year2 = $this->getRequest()->query->get('year2', date('m'));
+        $year = $this->getRequest()->query->get('year', date('Y'));
+        $year2 = $this->getRequest()->query->get('year2', date('Y'));
 
         $sale = new \stdClass();
         $sale2 = new \stdClass();
@@ -124,7 +124,7 @@ class ProductStatisticController extends BaseAdminController
         $sale2->graphLabel = $graphLabel[1];
 
         $data = new \stdClass();
-        $data->title = $this->getTranslator()->trans("Stats on %startYear and %endYear", array('%startYear' => $year, '%endYear' => $year2), "statistic");
+        $data->title = $this->getTranslator()->trans("Stats on %startYear and %endYear", array('%startYear' => $year, '%endYear' => $year2), Statistic::MESSAGE_DOMAIN);
 
         $data->series = array(
             $sale,

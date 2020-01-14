@@ -29,17 +29,17 @@ class AdminStatisticHook extends BaseHook
         $event
             ->add(array(
                 'tab_id' => 'general-statistic',
-                'tab_nav_title' => $this->trans('tool.panel.general.title', [], Statistic::BO_MESSAGE_DOMAIN),
+                'tab_nav_title' => $this->trans('tool.panel.general.title', [], Statistic::MESSAGE_DOMAIN),
                 'content' => $this->render('hook/statistic-general.html')
             ))
             ->add(array(
                 'tab_id' => 'product-statistic',
-                'tab_nav_title' => $this->trans('tool.panel.product.title', [], Statistic::BO_MESSAGE_DOMAIN),
+                'tab_nav_title' => $this->trans('tool.panel.product.title', [], Statistic::MESSAGE_DOMAIN),
                 'content' => $this->render('hook/statistic-product.html')
             ))
             ->add(array(
                 'tab_id' => 'anual-statistic',
-                'tab_nav_title' => $this->trans('tool.panel.annual.title', [], Statistic::BO_MESSAGE_DOMAIN),
+                'tab_nav_title' => $this->trans('tool.panel.annual.title', [], Statistic::MESSAGE_DOMAIN),
                 'content' => $this->render('hook/statistic-annual.html')
             ))
         ;

@@ -31,7 +31,6 @@ class StatsOrderQuery extends OrderQuery
         $orderTaxJoin = new Join();
         $orderTaxJoin->addExplicitCondition(OrderProductTableMap::TABLE_NAME, 'ID', null, OrderProductTaxTableMap::TABLE_NAME, 'ORDER_PRODUCT_ID', null);
         $orderTaxJoin->setJoinType(Criteria::LEFT_JOIN);
-
         $query = self::baseSaleStats($startDate, $endDate, 'o')
             ->innerJoinOrderProduct()
             ->addJoinObject($orderTaxJoin)

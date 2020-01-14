@@ -166,10 +166,12 @@
         function updateContent() {
             if (type.indexOf('jqplot')!==-1) {
                 $('.jqplot-content').show();
-                $('#jqplot-general').css("width","100%");
+                $('#jqplot-general').show();
+                $('.total').css("display","block");
                 retrieveJQPlotJson(startDate, endDate, ghost);
             } else {
                 $('.jqplot-content').hide();
+                $('.total').hide();
 
             }
             
@@ -180,6 +182,18 @@
             } else {
                 $('.table-content').css("display","none");
             }
+        }
+
+        function totalCalcul(jQplotData) {
+            console.log(jQplotData);
+            let total = 0;
+
+            for (let i = 0; i < jQplotData.series[0].graph.length; i++){
+                total += jQplotData.series[0].graph[i][1];
+            }
+
+            let s = document.getElementById('total');
+            s.innerHTML = "Total : " + total;
         }
 
         function retrieveJQPlotJson(startDate, endDate, ghost, callback) {
@@ -198,6 +212,7 @@
             })
                 .done(function (data) {
                     jQplotData = data;
+                    totalCalcul(jQplotData);
                     jsonSuccessLoad();
                     if (callback) {
                         callback();

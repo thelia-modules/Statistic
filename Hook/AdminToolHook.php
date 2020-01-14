@@ -28,7 +28,7 @@ class AdminToolHook extends BaseHook
     {
         $event->add(array(
             "url" => URL::getInstance()->absoluteUrl("/admin/module/statistic/tool"),
-            "title" => $this->trans("tool.title", [], Statistic::BO_MESSAGE_DOMAIN)
+            "title" => $this->trans("tool.title", [], Statistic::MESSAGE_DOMAIN)
         ));
     }
 }
