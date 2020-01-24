@@ -2,7 +2,9 @@
 
 return array(
     'Stats between %startDay/%startMonth/%startYear and %endDay/%endMonth/%endYear' => 'Statistics between %startDay/%startMonth/%startYear and %endDay/%endMonth/%endYear',
+    'Stats between %startDay/%startMonth/%startYear' => 'Statistics on %startDay/%startMonth/%startYear',
     'Stats on %startYear and %endYear' => 'Statistics for %startYear and %endYear',
+    'Stats on %startYear' => 'Statistics for %startYear',
     'tool.panel.annual.title' => 'Annual stats',
     'tool.panel.general.bestSales.name' => 'Name',
     'tool.panel.general.bestSales.reference' => 'Reference',

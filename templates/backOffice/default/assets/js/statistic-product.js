@@ -100,12 +100,25 @@
                 $.getJSON(url, {ref: productRef, year: productyear, year2: productyear2})
                     .done(function (data) {
                         jQplotData = data;
+                        totalCalcul(jQplotData);
                         jsonSuccessLoad();
                         if (callback) {
                             callback();
                         }
                     })
                     .fail(jsonFailLoad);
+            }
+
+            function totalCalcul(jQplotData) {
+                let total = 0;
+
+                jQplotData.series.forEach(serie => {
+                    for (let i = 0; i < serie.graph.length; i++)
+                        total += serie.graph[i][1];
+                });
+
+                let s = document.getElementById('total-prod');
+                s.innerHTML = total.toString();
             }
 
             function initJqplotData(json) {
@@ -199,6 +212,11 @@
         $("#product-select").change(function(e){
             setDataPlot(productUrl, id);
         });
+
+        // If there's an already loaded category, it loads all products.
+        let current_val = $('#category-select').val()
+        if (current_val)
+            $("#category-select").val(current_val).trigger("change");
 
         $('.js-btn-search-product').on('click', function(event){
             event.preventDefault();
