@@ -116,6 +116,7 @@
             total = Math.round(total * 100) / 100;
 
             let s = document.getElementById('total-annual');
+            $(s.parentElement).removeClass("hide");
             s.innerHTML = total.toString();
         }
 
