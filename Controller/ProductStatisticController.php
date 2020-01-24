@@ -91,8 +91,8 @@ class ProductStatisticController extends BaseAdminController
 
         foreach ($results as $index => $result) {
             for ($i = 1; $i <= 12; ++$i) {
-                $date = new \DateTime($productYear.'-'.$i);
-                if( !isset($result[$date->format('Y-n')]))
+                $date = new \DateTime($productYear . '-' . $i);
+                if (!isset($result[$date->format('Y-n')]))
                     $graph[$index][] = [$i - 1, 0];
                 else
                     $graph[$index][] = [$i - 1, floatval($result[$date->format('Y-n')][$type])];
@@ -111,6 +111,7 @@ class ProductStatisticController extends BaseAdminController
             $turnover
         );
 
+        // There are two graphs
         if (sizeof($graph) > 1) {
             $data->title = $this->getTranslator()->trans("Stats on %startYear and %endYear", array('%startYear' => $year, '%endYear' => $year2), Statistic::MESSAGE_DOMAIN);
             $turnover2->color = '#f39922';

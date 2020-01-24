@@ -117,6 +117,8 @@
                         total += serie.graph[i][1];
                 });
 
+                total = Math.round(total * 100) / 100;
+
                 let s = document.getElementById('total-prod');
                 s.innerHTML = total.toString();
             }
