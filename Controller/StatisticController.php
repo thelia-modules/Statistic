@@ -69,14 +69,23 @@ class StatisticController extends BaseAdminController
 
         $data = new \stdClass();
 
-        $data->title = $this->getTranslator()->trans("Stats between %startDay/%startMonth/%startYear and %endDay/%endMonth/%endYear", array(
-            '%startDay'=>$startDay,
-            '%startMonth' => $startMonth,
-            '%startYear' => $startYear,
-            '%endDay'=>$endDay,
-            '%endMonth'=>$endMonth,
-            '%endYear'=>$endYear
-        ), Statistic::MESSAGE_DOMAIN);
+        if ($startDay == $endDay && $startMonth == $endMonth && $startYear == $endYear) {
+            $data->title = $this->getTranslator()->trans("Stats between %startDay/%startMonth/%startYear", array(
+                '%startDay'=>$startDay,
+                '%startMonth' => $startMonth,
+                '%startYear' => $startYear,
+            ), Statistic::MESSAGE_DOMAIN);
+        }
+        else {
+            $data->title = $this->getTranslator()->trans("Stats between %startDay/%startMonth/%startYear and %endDay/%endMonth/%endYear", array(
+                '%startDay'=>$startDay,
+                '%startMonth' => $startMonth,
+                '%startYear' => $startYear,
+                '%endDay'=>$endDay,
+                '%endMonth'=>$endMonth,
+                '%endYear'=>$endYear
+            ), Statistic::MESSAGE_DOMAIN);
+        }
 
         $data->series = array(
             $average,
@@ -242,7 +251,6 @@ class StatisticController extends BaseAdminController
         $endYear = $this->getRequest()->query->get('endYear', date('Y'));
 
         $result[$startYear] = $this->getStatisticHandler()->getTurnoverYear($startYear);
-        $result[$endYear] = $this->getStatisticHandler()->getTurnoverYear($endYear);
 
         $turnoverStart = new \stdClass();
 
@@ -256,26 +264,31 @@ class StatisticController extends BaseAdminController
             'TTCWithoutShippping' => $this->getTranslator()->trans('tool.panel.general.turnover.TTCWithoutShippping', [], Statistic::MESSAGE_DOMAIN),
         );
 
-        $turnoverEnd = new \stdClass();
-
-        $turnoverEnd->color = '#F00';
-        $turnoverEnd->graph = $result[$endYear]['graph'];
-        $turnoverEnd->graphLabel = $result[$endYear]['month'];
-        $turnoverEnd->table = $result[$endYear]['table'];
-        $turnoverEnd->thead = array(
-            'month' => $this->getTranslator()->trans('tool.panel.general.turnover.month', [], Statistic::MESSAGE_DOMAIN),
-            'TTCWithShippping' => $this->getTranslator()->trans('tool.panel.general.turnover.TTCWithShippping', [], Statistic::MESSAGE_DOMAIN),
-            'TTCWithoutShippping' => $this->getTranslator()->trans('tool.panel.general.turnover.TTCWithoutShippping', [], Statistic::MESSAGE_DOMAIN),
-        );
-
-
         $data = new \stdClass();
-        $data->title = $this->getTranslator()->trans("Stats on %startYear and %endYear", array('%startYear' => $startYear, '%endYear' => $endYear),Statistic::MESSAGE_DOMAIN);
 
         $data->series = array(
             $turnoverStart,
-            $turnoverEnd
         );
+
+        if ($startYear != $endYear) {
+            $result[$endYear] = $this->getStatisticHandler()->getTurnoverYear($endYear);
+
+            $turnoverEnd = new \stdClass();
+
+            $turnoverEnd->color = '#F00';
+            $turnoverEnd->graph = $result[$endYear]['graph'];
+            $turnoverEnd->graphLabel = $result[$endYear]['month'];
+            $turnoverEnd->table = $result[$endYear]['table'];
+            $turnoverEnd->thead = array(
+                'month' => $this->getTranslator()->trans('tool.panel.general.turnover.month', [], Statistic::MESSAGE_DOMAIN),
+                'TTCWithShippping' => $this->getTranslator()->trans('tool.panel.general.turnover.TTCWithShippping', [], Statistic::MESSAGE_DOMAIN),
+                'TTCWithoutShippping' => $this->getTranslator()->trans('tool.panel.general.turnover.TTCWithoutShippping', [], Statistic::MESSAGE_DOMAIN),
+            );
+            array_push($data->series, $turnoverEnd);
+            $data->title = $this->getTranslator()->trans("Stats on %startYear and %endYear", array('%startYear' => $startYear, '%endYear' => $endYear), Statistic::MESSAGE_DOMAIN);
+        }
+        else
+            $data->title = $this->getTranslator()->trans("Stats on %startYear", array('%startYear' => $startYear), Statistic::MESSAGE_DOMAIN);
 
         return $this->jsonResponse(json_encode($data));
     }
@@ -316,14 +329,23 @@ class StatisticController extends BaseAdminController
 
         $data = new \stdClass();
 
-        $data->title = $this->getTranslator()->trans("Stats between %startDay/%startMonth/%startYear and %endDay/%endMonth/%endYear", array(
-            '%startDay'=>$startDay,
-            '%startMonth' => $startMonth,
-            '%startYear' => $startYear,
-            '%endDay'=>$endDay,
-            '%endMonth'=>$endMonth,
-            '%endYear'=>$endYear
-        ), Statistic::MESSAGE_DOMAIN);
+        if ($startDay == $endDay && $startMonth == $endMonth && $startYear == $endYear) {
+            $data->title = $this->getTranslator()->trans("Stats between %startDay/%startMonth/%startYear", array(
+                '%startDay'=>$startDay,
+                '%startMonth' => $startMonth,
+                '%startYear' => $startYear,
+            ), Statistic::MESSAGE_DOMAIN);
+        }
+        else {
+            $data->title = $this->getTranslator()->trans("Stats between %startDay/%startMonth/%startYear and %endDay/%endMonth/%endYear", array(
+                '%startDay'=>$startDay,
+                '%startMonth' => $startMonth,
+                '%startYear' => $startYear,
+                '%endDay'=>$endDay,
+                '%endMonth'=>$endMonth,
+                '%endYear'=>$endYear
+            ), Statistic::MESSAGE_DOMAIN);
+        }
 
         $data->series = array(
             $saleSeries,
@@ -386,14 +408,23 @@ class StatisticController extends BaseAdminController
 
         $data = new \stdClass();
 
-        $data->title = $this->getTranslator()->trans("Stats between %startDay/%startMonth/%startYear and %endDay/%endMonth/%endYear", array(
-            '%startDay'=>$startDay,
-            '%startMonth' => $startMonth,
-            '%startYear' => $startYear,
-            '%endDay'=>$endDay,
-            '%endMonth'=>$endMonth,
-            '%endYear'=>$endYear
-        ), Statistic::MESSAGE_DOMAIN);
+        if ($startDay == $endDay && $startMonth == $endMonth && $startYear == $endYear) {
+            $data->title = $this->getTranslator()->trans("Stats between %startDay/%startMonth/%startYear", array(
+                '%startDay'=>$startDay,
+                '%startMonth' => $startMonth,
+                '%startYear' => $startYear,
+            ), Statistic::MESSAGE_DOMAIN);
+        }
+        else {
+            $data->title = $this->getTranslator()->trans("Stats between %startDay/%startMonth/%startYear and %endDay/%endMonth/%endYear", array(
+                '%startDay'=>$startDay,
+                '%startMonth' => $startMonth,
+                '%startYear' => $startYear,
+                '%endDay'=>$endDay,
+                '%endMonth'=>$endMonth,
+                '%endYear'=>$endYear
+            ), Statistic::MESSAGE_DOMAIN);
+        }
 
         $data->series = array(
             $saleSeries,

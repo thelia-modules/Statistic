@@ -185,19 +185,18 @@
         }
 
         function totalCalcul(jQplotData) {
-            console.log(jQplotData);
             let total = 0;
 
-            for (let i = 0; i < jQplotData.series[0].graph.length; i++){
-                total += jQplotData.series[0].graph[i][1];
-            }
+            jQplotData.series.forEach(serie => {
+                for (let i = 0; i < serie.graph.length; i++)
+                    total += serie.graph[i][1];
+            });
 
             let s = document.getElementById('total');
-            s.innerHTML = "Total : " + total;
+            s.innerHTML = total.toString();
         }
 
         function retrieveJQPlotJson(startDate, endDate, ghost, callback) {
-
             if (typeof ghost === 'undefined'){
                 ghost = 0;
             }
