@@ -192,12 +192,14 @@
                     total += serie.graph[i][1];
             });
 
+            total = Math.round(total * 100) / 100;
+
             let s = document.getElementById('total');
             s.innerHTML = total.toString();
         }
 
         function retrieveJQPlotJson(startDate, endDate, ghost, callback) {
-            if (typeof ghost === 'undefined'){
+            if (typeof ghost === 'undefined') {
                 ghost = 0;
             }
             $.getJSON(url, {

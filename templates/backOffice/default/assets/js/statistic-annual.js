@@ -113,6 +113,8 @@
                     total += entry.graph[i][1];
             });
 
+            total = Math.round(total * 100) / 100;
+
             let s = document.getElementById('total-annual');
             s.innerHTML = total.toString();
         }
