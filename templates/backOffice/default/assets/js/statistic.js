@@ -187,9 +187,10 @@
         function totalCalcul(jQplotData) {
             let total = 0;
 
-            jQplotData.series.forEach(serie => {
-                for (let i = 0; i < serie.graph.length; i++)
-                    total += serie.graph[i][1];
+            jQplotData.series.forEach(entry => {
+                entry.graph.forEach(graph => {
+                    total += graph[1];
+                });
             });
 
             total = Math.round(total * 100) / 100;

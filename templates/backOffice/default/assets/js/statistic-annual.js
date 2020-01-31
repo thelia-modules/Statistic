@@ -109,8 +109,9 @@
             let total = 0;
 
             jQplotData.series.forEach(entry => {
-                for (let i = 0; i < entry.graph.length; i++)
-                    total += entry.graph[i][1];
+                entry.graph.forEach(graph => {
+                    total += graph[1];
+                });
             });
 
             total = Math.round(total * 100) / 100;
