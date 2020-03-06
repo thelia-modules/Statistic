@@ -37,6 +37,17 @@ class Statistic extends BaseModule
             ),
             array(
                 'type' => TemplateDefinition::BACK_OFFICE,
+                'code' => 'hook_home_stats',
+                'title' => array(
+                    'fr_FR' => 'Accueil des statistiques',
+                    'en_US' => 'Home Statistics'
+                ),
+                'active' => true,
+                'block' => false,
+                'module' => false
+            ),
+            array(
+                'type' => TemplateDefinition::BACK_OFFICE,
                 'code' => 'statistic.footer.js',
                 'title' => array(
                     'fr_FR' => 'Module de statistiques, insertion des JS.',
