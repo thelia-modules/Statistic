@@ -192,7 +192,7 @@ class StatisticHandler
         $result = array();
         /** @var \DateTime $date */
         for ($date = clone($startDate); $date <= $endDate; $date->add(new \DateInterval('P1D'))) {
-            $result[$date->format('Y-m-d')] = StatsOrderQuery::getSaleStats(
+            $result[$date->format('Y-m-d')] = OrderQuery::getSaleStats(
                 $date->setTime(0, 0),
                 $date->setTime(23, 59, 59),
                 false
@@ -217,7 +217,7 @@ class StatisticHandler
         $result['label'] = array();
 
         for ($day=0, $date = clone($startDate); $date <= $endDate; $date->add(new \DateInterval('P1D')), $day++) {
-            $dayAmount = StatsOrderQuery::getSaleStats(
+            $dayAmount = OrderQuery::getSaleStats(
                $date->setTime(0,0,0),
                $date->setTime(23,59,59),
                 false

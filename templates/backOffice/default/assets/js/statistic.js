@@ -185,13 +185,11 @@
         }
 
         function totalCalcul(jQplotData) {
-            console.log(jQplotData);
             let total = 0;
 
             for (let i = 0; i < jQplotData.series[0].graph.length; i++){
-                total += jQplotData.series[0].graph[i][1];
+                total = parseFloat(total.toFixed(2)) + parseFloat(jQplotData.series[0].graph[i][1].toFixed(2));
             }
-
             let s = document.getElementById('total');
             s.innerHTML = "Total : " + total;
         }
