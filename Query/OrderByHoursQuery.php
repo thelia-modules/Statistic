@@ -73,8 +73,8 @@ class OrderByHoursQuery extends BaseOrderQuery
     protected static function baseSaleStats(\DateTime $startDate, \DateTime $endDate, $modelAlias = null)
     {
         return self::create($modelAlias)
-            ->filterByCreatedAt($startDate->format('Y-m-d H:i:s'), Criteria::GREATER_EQUAL)
-            ->filterByCreatedAt($endDate->format('Y-m-d H:i:s'), Criteria::LESS_EQUAL)
+            ->filterByInvoiceDate($startDate->format('Y-m-d H:i:s'), Criteria::GREATER_EQUAL)
+            ->filterByInvoiceDate($endDate->format('Y-m-d H:i:s'), Criteria::LESS_EQUAL)
             ->filterByStatusId(explode(',',Statistic::getConfigValue('order_types')), Criteria::IN);
     }
 
@@ -82,8 +82,8 @@ class OrderByHoursQuery extends BaseOrderQuery
     {
         return self::create()
             ->filterByStatusId($status, Criteria::IN)
-            ->filterByCreatedAt($startDate->format('Y-m-d H:i:s'), Criteria::GREATER_EQUAL)
-            ->filterByCreatedAt($endDate->format('Y-m-d H:i:s'), Criteria::LESS_EQUAL)
+            ->filterByInvoiceDate($startDate->format('Y-m-d H:i:s'), Criteria::GREATER_EQUAL)
+            ->filterByInvoiceDate($endDate->format('Y-m-d H:i:s'), Criteria::LESS_EQUAL)
             ->count();
     }
 

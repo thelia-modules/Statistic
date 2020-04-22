@@ -75,8 +75,8 @@ class StatsOrderQuery extends OrderQuery
     {
         $status = explode(',',Statistic::getConfigValue('order_types'));
         return self::create($modelAlias)
-            ->filterByCreatedAt(sprintf("%s 00:00:00", $startDate->format('Y-m-d')), Criteria::GREATER_EQUAL)
-            ->filterByCreatedAt(sprintf("%s 23:59:59", $endDate->format('Y-m-d')), Criteria::LESS_EQUAL)
+            ->filterByInvoiceDate(sprintf("%s 00:00:00", $startDate->format('Y-m-d')), Criteria::GREATER_EQUAL)
+            ->filterByInvoiceDate(sprintf("%s 23:59:59", $endDate->format('Y-m-d')), Criteria::LESS_EQUAL)
             ->filterByStatusId($status, Criteria::IN);
     }
 }

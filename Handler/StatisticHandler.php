@@ -631,15 +631,15 @@ class StatisticHandler
                 $endDate->add(new \DateInterval('P' . (cal_days_in_month(CAL_GREGORIAN, $i, $year)-1) . 'D'));
 
                 $discount = OrderQuery::create()
-                    ->filterByCreatedAt(sprintf("%s 00:00:00", $startDate->format('Y-m-d')), Criteria::GREATER_EQUAL)
-                    ->filterByCreatedAt(sprintf("%s 23:59:59", $endDate->format('Y-m-d')), Criteria::LESS_EQUAL)
+                    ->filterByInvoiceDate(sprintf("%s 00:00:00", $startDate->format('Y-m-d')), Criteria::GREATER_EQUAL)
+                    ->filterByInvoiceDate(sprintf("%s 23:59:59", $endDate->format('Y-m-d')), Criteria::LESS_EQUAL)
                     ->filterByStatusId(explode(',',Statistic::getConfigValue('order_types')), Criteria::IN)
                     ->withColumn("SUM(`order`.discount)", 'DISCOUNT')
                     ->select('DISCOUNT')->findOne();
 
                 $postage = OrderQuery::create()
-                    ->filterByCreatedAt(sprintf("%s 00:00:00", $startDate->format('Y-m-d')), Criteria::GREATER_EQUAL)
-                    ->filterByCreatedAt(sprintf("%s 23:59:59", $endDate->format('Y-m-d')), Criteria::LESS_EQUAL)
+                    ->filterByInvoiceDate(sprintf("%s 00:00:00", $startDate->format('Y-m-d')), Criteria::GREATER_EQUAL)
+                    ->filterByInvoiceDate(sprintf("%s 23:59:59", $endDate->format('Y-m-d')), Criteria::LESS_EQUAL)
                     ->filterByStatusId(explode(',',Statistic::getConfigValue('order_types')), Criteria::IN)
                     ->withColumn("SUM(`order`.postage)", 'POSTAGE')
                     ->select('POSTAGE')->findOne();
