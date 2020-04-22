@@ -105,6 +105,22 @@
             }
         }
 
+        function totalCalcul(jQplotData) {
+            let total = 0;
+
+            jQplotData.series.forEach(entry => {
+                entry.graph.forEach(graph => {
+                    total += graph[1];
+                });
+            });
+
+            total = Math.round(total * 100) / 100;
+
+            let s = document.getElementById('total-annual');
+            $(s.parentElement).removeClass("hide");
+            s.innerHTML = total.toString();
+        }
+
         function retrieveJQPlotJson(startDate, endDate, callback) {
 
             $.getJSON(url, {
@@ -117,6 +133,7 @@
             })
                 .done(function (data) {
                     jQplotData = data;
+                    totalCalcul(jQplotData);
                     jsonSuccessLoad();
                     if (callback) {
                         callback();
