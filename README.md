@@ -1,4 +1,3 @@
-(en_US)
 # Statistic 
 Show statistic of customer, sales and products. It also provides the Hook to insert other statistics.
 
@@ -30,8 +29,6 @@ This module provides two hooks to insert statistic tab and JS file :
     $event->add($jsFile);
        
     
-(fr_FR)
-
 # Statistic
 Affichage de statistique sur les client, les ventes et les produits. Il fournit aussi les Hook pour insérer d'autre 
 statistiques.
