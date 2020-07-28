@@ -224,9 +224,10 @@
 
         $('.js-btn-search-product').on('click', function(event){
             event.preventDefault();
+            setModalSearch('js-modal-search-product');
             $modalSearch.initAndShow(
                 this.dataset.title,
-                baseAdminUrl+"/module/statictic/products/search",
+                baseAdminUrl+"/module/statistic/products/search",
                 '#product-select',
                 this.dataset.placeholder,
                 $('#category-select').val()
@@ -235,9 +236,10 @@
 
         $('.js-btn-search-category').on('click', function(event){
             event.preventDefault();
+            setModalSearch('js-modal-search-product');
             $modalSearch.initAndShow(
                 this.dataset.title,
-                baseAdminUrl+"/module/statictic/category/search",
+                baseAdminUrl+"/module/statistic/category/search",
                 '#category-select',
                 this.dataset.placeholder
             );

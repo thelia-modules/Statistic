@@ -1,0 +1,93 @@
+{default_translation_domain domain='statistic.bo.default'}
+
+<div class="general-block-decorator dashboard ">
+
+    <div class="title title-without-tabs clearfix">
+        <div class="col-sm-2 col-sm-offset-5 input-group Statistic-float">
+            <select id="brand-select" class=" form-control">
+                <option value="">{intl l="tool.panel.brand.selectBrand"}</option>
+                {loop name="get-brands" type="brand" visible="*"  return_url=false backend_context="true"}
+                <option value="{$ID}">{$TITLE}</option>
+                {/loop}
+            </select>
+            <span class="input-group-btn">
+                <a class="js-btn-search-brand btn btn-info" href="#" data-title="{intl l='search.brand.title'}" data-placeholder="{intl l='search.brand.placeholder'}">
+                    <span class="glyphicon glyphicon-search"></span>
+                </a>
+            </span>
+        </div>
+    </div>
+
+    <div class="col-md-12">
+        <div class="col-md-3 pull-right ">
+            <div class="input-group ">
+                <span class="input-group-addon ">{intl l="tool.from"}</span>
+                <input id="brand-date-picker" type="text" class="form-control"/>
+                <span class="input-group-addon ">{intl l="tool.to"}</span>
+                <input id="brand-date-picker2" type="text" class="form-control"/>
+                <span class="input-group-btn">
+                    <button class="btn btn-default glyphicon glyphicon-plus" id="add-ghost-curve-brand" ></button>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center clearfix">
+        <div class="btn-group">
+            <button type="button" class="btn btn-primary brand-graph-select"
+                    data-type="jqplot" data-toggle="jqplot-brand"
+                    data-url="{url path='/admin/module/statistic/brand/turnover'}"
+                    data-target="turnover-brand">
+                <span class="glyphicon glyphicon-euro"></span>
+                {intl l="tool.panel.brand.turnover.title"}
+            </button>
+            <button type="button" class="btn btn-success brand-graph-select"
+                    data-type="jqplot" data-toggle="jqplot-brand"
+                    data-url="{url path='/admin/module/statistic/brand/sale'}"
+                    data-target="sales-brand">
+                <span class="glyphicon glyphicon-credit-card"></span>
+                {intl l="tool.panel.brand.sale.title"}
+            </button>
+        </div>
+        <hr/>
+        <div class="jqplot-content">
+            <div id="jqplot-brand"></div>
+        </div>
+    </div>
+
+    <div class="total">
+        <h1 class="hide">Total : <span id="total-brand"></span></h1>
+    </div>
+
+    <div class="modal fade js-modal-search-brand" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="js-btn-dismiss-modal close">×</button>
+                    <h3></h3>
+                </div>
+                <div class="modal-body align-center">
+                    <div class="js-form-search">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-addon">{intl l="Search"}</div>
+                                <input name="search" class="js-input-search form-control" type="text"/>
+                            </div>
+                        </div>
+                        <div class="js-loader text-center hide">{intl l="Please wait, loading"}</div>
+                        <div class="alert alert-warning text-center hide js-alert-no-result">
+                            {intl l="No results found for your search." }
+                        </div>
+                        <div class="form-group js-block-search-result hide">
+                            <select class="form-control" size="10"></select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" class="js-btn-dismiss-modal btn btn-default">{intl l="Close"}</a>
+                    <a href="#" class="js-modal-btn-select btn btn-primary">{intl l="Select"}</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -11,6 +11,9 @@
         <service id="statistic.handler.statistic" class="Statistic\Handler\StatisticHandler">
         </service>
 
+        <service id="statistic.handler.brand" class="Statistic\Handler\BrandStatisticHandler">
+        </service>
+
         <service id="statistic.handler.product" class="Statistic\Handler\ProductStatisticHandler">
             <argument type="service" id="statistic.handler.statistic"/>
         </service>

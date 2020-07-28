@@ -56,7 +56,7 @@ class ProductStatisticController extends BaseAdminController
             $results[1] = $this->getProductStatisticHandler()->turnover($productRef, $year2);
         }
 
-        $data = $this->prepareData($year, $year2, $results, "percent");
+        $data = $this->prepareData($year, $year2, $results, "TOTAL");
 
         return $this->jsonResponse(json_encode($data));
     }

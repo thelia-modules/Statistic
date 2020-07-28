@@ -34,18 +34,9 @@ class ProductStatisticHandler
 
     public function turnover($productId, $year)
     {
-        $turnoverQuery = $this->statisticHandler->turnoverQuery($year);
         $turnoverProductQuery = $this->turnoverQuery($productId, $year);
 
-        $turnover = $turnoverQuery->find()->toArray('date');
         $turnoverProduct = $turnoverProductQuery->find()->toArray('date');
-
-        foreach( $turnover as $date => $val){
-            $turnoverProduct[$date]['percent'] = isset( $turnoverProduct[$date] )
-                ? $turnoverProduct[$date]['TOTAL'] * 100 / $val['TOTAL']
-                : 0
-            ;
-        }
 
         return $turnoverProduct;
     }

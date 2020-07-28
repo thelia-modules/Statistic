@@ -9,16 +9,24 @@
 namespace Statistic\Controller;
 
 
+use Propel\Runtime\ActiveQuery\Criteria;
 use Statistic\Statistic;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Core\Security\AccessManager;
 use Thelia\Core\Security\Resource\AdminResources;
+use Thelia\Model\Base\BrandI18n;
+use Thelia\Model\Base\BrandI18nQuery;
+use Thelia\Model\Base\BrandQuery;
 use Thelia\Model\CategoryI18nQuery;
 use Thelia\Model\ProductI18nQuery;
 use Thelia\Model\ProductQuery;
 
 class SearchController extends BaseAdminController
 {
+    /**
+     * @return mixed|\Thelia\Core\HttpFoundation\Response
+     * @throws \Propel\Runtime\Exception\PropelException
+     */
     public function searchProductAction()
     {
         if (null !== $response = $this->checkAuth(AdminResources::MODULE, Statistic::MESSAGE_DOMAIN, AccessManager::VIEW)) {
@@ -31,7 +39,10 @@ class SearchController extends BaseAdminController
 
         $productQuery = ProductQuery::create()
             ->join('ProductI18n')
-            ->filterByRef($search)
+            ->where('Product.ref LIKE ?', $search)
+            ->_or()
+            ->where('ProductI18n.title LIKE ?', $search)
+            ->filterByVisible(1)
             ->select(array('Id', 'ref', 'ProductI18n.title'));
 
         $category_id = $this->getRequest()->query->get('category_id');
@@ -51,17 +62,24 @@ class SearchController extends BaseAdminController
     }
 
 
+    /**
+     * @return mixed|\Thelia\Core\HttpFoundation\Response
+     * @throws \Propel\Runtime\Exception\PropelException
+     */
     public function searchCategoryAction()
     {
         if (null !== $response = $this->checkAuth(AdminResources::MODULE, Statistic::MESSAGE_DOMAIN, AccessManager::VIEW)) {
             return $response;
         }
 
-        $search = '%'.$this->getRequest()->query->get('q').'%';
+        $search = '%' . $this->getRequest()->query->get('q') . '%';
 
         $resultArray = array();
 
-        $categoriesI18n = CategoryI18nQuery::create()->filterByTitle($search)->limit(100);
+        $categoriesI18n = CategoryI18nQuery::create()
+            ->where('CategoryI18n.title LIKE ?', $search)
+            ->limit(100)
+            ->find();
 
         /** @var \Thelia\Model\CategoryI18n $categoryI18n */
         foreach ($categoriesI18n as $categoryI18n) {
@@ -71,4 +89,30 @@ class SearchController extends BaseAdminController
 
         return $this->jsonResponse(json_encode($resultArray));
     }
+
+    /**
+     * @return mixed|\Thelia\Core\HttpFoundation\Response
+     */
+    public function searchBrandAction()
+    {
+        if (null !== $response = $this->checkAuth(AdminResources::MODULE, Statistic::MESSAGE_DOMAIN, AccessManager::VIEW)) {
+            return $response;
+        }
+
+        $search = '%' . $this->getRequest()->query->get('q') . '%';
+
+        $resultArray = array();
+
+        $brands = BrandI18nQuery::create()
+            ->where('BrandI18n.title LIKE ?', $search)
+            ->limit(100)
+            ->find();
+
+        foreach ($brands as $brand) {
+            $resultArray[$brand->getId()] = $brand->getTitle();
+        }
+
+        return $this->jsonResponse(json_encode($resultArray));
+    }
+
 }
