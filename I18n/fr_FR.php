@@ -1,11 +1,13 @@
 <?php
 
 return array(
-    'Stats between %startDay/%startMonth/%startYear and %endDay/%endMonth/%endYear' => 'Statistiques entre le %startDay/%startMonth/%startYear et le %endDay/%endMonth/%endYear',
     'Stats between %startDay/%startMonth/%startYear' => 'Statistiques du %startDay/%startMonth/%startYear',
-    'Stats on %startYear and %endYear' => 'Statistiques pour %startYear et %endYear',
+    'Stats between %startDay/%startMonth/%startYear and %endDay/%endMonth/%endYear' => 'Statistiques entre le %startDay/%startMonth/%startYear et le %endDay/%endMonth/%endYear',
+    'Stats for %startDay/%startMonth/%startYear' => 'Statistic pour le %startDay/%startMonth/%startYear',
     'Stats on %startYear' => 'Statistiques pour %startYear',
+    'Stats on %startYear and %endYear' => 'Statistiques pour %startYear et %endYear',
     'tool.panel.annual.title' => 'Statistiques annuelles',
+    'tool.panel.brand.title' => 'Statistiques par marque',
     'tool.panel.general.bestSales.name' => 'Nom',
     'tool.panel.general.bestSales.reference' => 'Référence',
     'tool.panel.general.bestSales.totalHT' => 'Total Hors Taxe (€)',

@@ -61,6 +61,15 @@
         <default key="_controller">Statistic\Controller\ProductStatisticController::listProductAction</default>
     </route>
 
+    <!-- brand statistic -->
+    <route id="statistic.tool.brand.turnover" path="/admin/module/statistic/brand/turnover" methods="get">
+        <default key="_controller">Statistic\Controller\BrandStatisticController::brandTurnoverAction</default>
+    </route>
+
+    <route id="statistic.tool.brand.sale" path="/admin/module/statistic/brand/sale" methods="get">
+        <default key="_controller">Statistic\Controller\BrandStatisticController::brandSalesAction</default>
+    </route>
+
     <!-- Configuration -->
 
     <route id="statistic.configuration" path="/admin/module/statistic/config" methods="post">
@@ -69,11 +78,16 @@
 
     <!-- Search -->
 
-    <route id="statistic.products.search" path="/admin/module/statictic/products/search">
+    <route id="statistic.products.search" path="/admin/module/statistic/products/search">
         <default key="_controller">Statistic\Controller\SearchController::searchProductAction</default>
     </route>
-    <route id="statistic.category.search" path="/admin/module/statictic/category/search">
+
+    <route id="statistic.category.search" path="/admin/module/statistic/category/search">
         <default key="_controller">Statistic\Controller\SearchController::searchCategoryAction</default>
+    </route>
+
+    <route id="statistic.brand.search" path="/admin/module/statistic/brand/search" methods="get">
+        <default key="_controller">Statistic\Controller\SearchController::searchBrandAction</default>
     </route>
 
 </routes>
