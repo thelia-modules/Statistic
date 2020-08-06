@@ -1,8 +1,7 @@
-(en_US)
-# Statistic 
+# Statistic 
 Show statistic of customer, sales and products. It also provides the Hook to insert other statistics.
 
-## Installation
+## Installation
 
 ### Manually
 * Copy the module into <thelia_root>/local/modules directory and be surethat the name of the module is `Statistic`.
@@ -16,7 +15,7 @@ It includes 3 tabs :
  Means of payment and Annual turnover -,
 * Product details, product statistics -  Share of turnover and Sales number -.
 
-## Hook 
+## Hook 
 This module provides two hooks to insert statistic tab and JS file :
 
 `statistic.tab` type `back`, event is `HookRenderBlockEvent` type and parameters are :
@@ -30,8 +29,6 @@ This module provides two hooks to insert statistic tab and JS file :
     $event->add($jsFile);
        
     
-(fr_FR)
-
 # Statistic
 Affichage de statistique sur les client, les ventes et les produits. Il fournit aussi les Hook pour insérer d'autre 
 statistiques.
@@ -42,7 +39,7 @@ statistiques.
 * Copier le module dans le dossier <thelia_root>/local/modules et s'assurer que le nom du module soit bien `Statistic`,
 * Activer le module dans le paneau d'administration Thelia.
 
-## Usage
+## Usage
 Ce module est accessible dans le backOffice, menu `Outil`, sous-menu `Statistique`.
 Il comporte 3 onglets :
 * Clients, statistiques générales sur les clients - Nouveaux clients et Première commande -,
@@ -50,7 +47,7 @@ Il comporte 3 onglets :
  Moyen de transport, Moyen de paiement et Chiffre d'affaire annuel -,
 * Détail par produit, statistiques par produits - Part du chiffre d'affaire et Nombre de vente.
 
-## Hook
+## Hook
 Ce module fournit deux Hooks pour insérer un onglet de statistiques et son fichier JS associé :
 
 `statistic.tab` de type `back`, l'événement est de type `HookRenderBlockEvent` et les paramètres sont :
