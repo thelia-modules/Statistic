@@ -26,39 +26,57 @@ class ProductStatisticHandler
 {
     protected $statisticHandler;
 
-    public function __construct(
-        StatisticHandler $statisticHandler
-    ){
+    public function __construct(StatisticHandler $statisticHandler)
+    {
         $this->statisticHandler = $statisticHandler;
     }
 
+    /**
+     * @param $productId
+     * @param $year
+     * @return array
+     * @throws \Propel\Runtime\Exception\PropelException
+     */
     public function turnover($productId, $year)
     {
-        $turnoverProductQuery = $this->turnoverQuery($productId, $year);
-
-        $turnoverProduct = $turnoverProductQuery->find()->toArray('date');
-
-        return $turnoverProduct;
+        return $this->turnoverQuery($productId, $year)->find()->toArray('date');
     }
 
-    public function sale($productRef, $year){
-        $query = $this->saleQuery($productRef, $year);
-        $result = $query->find()->toArray('date');
-        return $result;
+    /**
+     * @param $productRef
+     * @param $year
+     * @return array
+     * @throws \Propel\Runtime\Exception\PropelException
+     */
+    public function sale($productRef, $year)
+    {
+        return $this->saleQuery($productRef, $year)->find()->toArray('date');
     }
 
     // -------------
     // Query methods
     // -------------
 
+    /**
+     * @param $productRef
+     * @param $year
+     * @return \Thelia\Model\OrderQuery
+     * @throws \Propel\Runtime\Exception\PropelException
+     */
     public function turnoverQuery($productRef, $year)
     {
         $query = $this->statisticHandler->turnoverQuery($year);
-        $query->where('order_product.product_ref = ?',$productRef, \PDO::PARAM_STR);
+        $query->where('order_product.product_ref = ?', $productRef, \PDO::PARAM_STR);
 
         return $query;
     }
 
+    /**
+     * @param $productRef
+     * @param $year
+     * @return OrderProductQuery
+     * @throws \Propel\Runtime\Exception\PropelException
+     */
     public function saleQuery($productRef, $year)
     {
         $query = OrderProductQuery::create();
@@ -66,9 +84,9 @@ class ProductStatisticHandler
         // filter with status
         $query
             ->useOrderQuery()
-                ->useOrderStatusQuery()
-                    ->filterById(explode(',',Statistic::getConfigValue('order_types')), Criteria::IN)
-                ->endUse()
+            ->useOrderStatusQuery()
+            ->filterById(explode(',', Statistic::getConfigValue('order_types')), Criteria::IN)
+            ->endUse()
             ->endUse();
 
         // filtrage par Ref
@@ -80,8 +98,7 @@ class ProductStatisticHandler
         // ajout des colonnes AS
         $query
             ->addAsColumn('date', "CONCAT(YEAR(order_product.created_at), '-', MONTH(order_product.created_at))")
-            ->addAsColumn('total', 'SUM(order_product.quantity)')
-        ;
+            ->addAsColumn('total', 'SUM(order_product.quantity)');
 
         // group by par mois
         $query->addGroupByColumn('YEAR(order_product.created_at)');

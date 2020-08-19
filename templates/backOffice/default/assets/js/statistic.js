@@ -1,7 +1,7 @@
 /**
  * Created by doud on 05/06/15.
  */
-
+var bestSales;
 (function ($) {
     $(document).ready(function () {
         var url = baseAdminUrl + '/module/statistic/revenue';
@@ -20,6 +20,7 @@
         startDate.setMonth(startDate.getMonth() - 1);
         var endDate = new Date();
         var ghost = 0;
+        var dt = null;
 
 
         var jQPlotsOptions = {
@@ -164,6 +165,7 @@
         }
 
         function updateContent() {
+            $('#best-sales-tool-div').hide();
             if (type.indexOf('jqplot')!==-1) {
                 $('.jqplot-content').show();
                 $('#jqplot-general').show();
@@ -178,7 +180,7 @@
             if (type.indexOf('table')!==-1) {
                 var id = targetId.split(',');
                 $('.table-content').css("display","block");
-                setDataTable(id)
+                setDataTable(id);
             } else {
                 $('.table-content').css("display","none");
             }
@@ -282,19 +284,28 @@
                 '&endMonth=' + (endDate.getMonth()+1) +
                 '&endYear=' + endDate.getFullYear()
             }).success(function (json) {
-                for (i= 0; i < tableId.length; i++){
-                    if (tableId.length > 1){
-                        document.getElementById('table-title').innerHTML = startDate.getFullYear();
-                        document.getElementById('table-title2').innerHTML = endDate.getFullYear();
-                    }
-                    var table = document.getElementById(tableId[i]);
-                    table.innerHTML = "";
 
+                var tableJQ = $('#' + tableId);
+                var table = document.getElementById(tableId);
+
+                if (dt) {
+                    dt.destroy();
+                    tableJQ.empty();
+                }
+
+                table.innerHTML = "";
+
+                // Ajout des header
+                var action = url.split('/');
+                if (action[action.length - 1] === "bestSales") {
+                    setBestSalesTable(json, table, tableJQ);
+                }
+                else {
                     var head = table.createTHead();
                     var keys = [];
-                    // Ajout des header
+
                     var row = head.insertRow(0);
-                    var titles = json.series[i].thead;
+                    var titles = json.series[0].thead;
                     for (var key in titles) {
                         keys.push(key);
                         var cell = row.insertCell(-1);
@@ -303,23 +314,117 @@
 
                     // Ajout des données
                     var body = table.appendChild(document.createElement('tbody'));
-                    var data = json.series[i].table;
-                    for(var idx in data){
+                    var data = json.series[0].table;
+                    for (var idx in data) {
                         var line = data[idx];
-                        var row = table.insertRow(-1);
-                        for(var k in keys){
-                            var key = keys[k];
-                            var cell = row.insertCell(-1);
+                        row = body.insertRow(-1);
+                        for (var k in keys) {
+                            key = keys[k];
+                            cell = row.insertCell(-1);
                             cell.innerHTML = line[key];
                         }
                     }
+                    dt = tableJQ.DataTable({
+                        "paging": false,
+                        "ordering": false,
+                        "info": false,
+                        "searching": false
+                    })
+                }
+            });
+        }
 
-                    if (data.length === 0) {
-                        table.insertRow(-1).insertCell(-1).outerHTML = '<td class="text-left" colspan="99">Aucune donnée disponible.</td>';
+        function setBestSalesTable(json, table, tableJQ){
+            $('#best-sales-tool-div').show();
+            var head = table.createTHead();
+            keys = [];
+            var mhead = json.series[0].mhead;
+            var row = head.insertRow(0);
+            var cell = row.insertCell(-1);
+            cell.innerHTML = '';
+            cell.colSpan = 3;
+            for (var index in mhead){
+                cell = row.insertCell(-1);
+                cell.innerHTML = mhead[index];
+                cell.colSpan = 3;
+                cell.classList.add('text-center');
+            }
+            row = head.insertRow(1);
+            var titles = json.series[0].thead;
+            for (var key in titles) {
+                keys.push(key);
+                cell = row.insertCell(-1);
+                cell.innerHTML = titles[key];
+            }
+            cell = row.insertCell(-1);
+            cell.innerHTML = "";
+
+            var body = table.appendChild(document.createElement('tbody'));
+            var data = json.series[0].table;
+            for(var idx in data){
+                var line = data[idx];
+                row = body.insertRow(-1);
+                for(var k in keys){
+                    key = keys[k];
+                    cell = row.insertCell(-1);
+                    cell.innerHTML = line[key];
+                    if(k <= 1){
+                        var productUrl = baseAdminUrl + "/products/update?product_id=" + line['product_id'];
+                        cell.innerHTML = "<a href='" + productUrl + "'>" + line[key] + "</a>";
+                        cell.setAttribute("data-sort", line[key].normalize("NFD").replace(/[\u0300-\u036f]/g, ""));
+                    }
+                    if(k >= 6 && k <= 8){
+                        var dataSort = line[key].toString().replace(",", ".");
+                        dataSort = Number(dataSort.replace(/[^0-9.-]+/g, ""));
+                        cell.setAttribute("data-sort", dataSort.toString());
                     }
                 }
-            })
+                cell = row.insertCell(-1);
+                cell.innerHTML = "<button class='btn btn-default glyphicon glyphicon-arrow-down button-details' data-product='" + line['product_id'] + "'/>"
+            }
+            dt = tableJQ.DataTable({
+                "lengthChange": false,
+                "pageLength": 30,
+                "order":[[3, "desc"]],
+                "columnDefs": [
+                    {"width": "40%", "targets":0},
+                    {
+                        "targets": 9,
+                        "className": 'best-sales-details',
+                        "orderable": false
+                    }
+                ]
+            });
+
+            $('.dataTables_filter').hide();
+
+            $('#table-general tbody').on('click', 'td.best-sales-details', function () {
+                var tr = $(this).closest('tr');
+                var row = dt.row( tr );
+                var button = tr.find(".button-details");
+                if (row.child.isShown()) {
+                    row.child.hide();
+                    tr.removeClass('shown');
+                    button.removeClass("glyphicon-arrow-up").addClass("glyphicon-arrow-down");
+                }
+                else {
+                    getDetail(button.attr('data-product'), row, tr, button);
+                }
+            });
         }
+
+        $("#best-sale-brand").on('change', function() {
+            var brand = '^' + this.options[this.selectedIndex].text + '$';
+            if(this.value === ""){
+                brand = this.value
+            }
+            dt.columns(2).search(brand, true, false, true).draw();
+        });
+
+        $("#best-sale-search").keyup(function() {
+            console.log($(this).val());
+            dt.search($(this).val()).draw();
+        });
 
         function jsonFailLoad(data) {
             $('#' + chartId + '').html('<div class="alert alert-danger">An error occurred while reading from JSON file</div>');
@@ -339,5 +444,41 @@
                 jQPlotInstance.replot({resetAxes: true});
             });
         }
+
+        function getDetail(productId, row, tr, button) {
+            console.log(productId);
+            $.ajax({
+                url:
+                baseAdminUrl + '/module/statistic/getProductDetails' +
+                '?startDay=' + startDate.getDate() +
+                '&startMonth=' + (startDate.getMonth() + 1) +
+                '&startYear=' + startDate.getFullYear() +
+                '&endDay=' + endDate.getDate() +
+                '&endMonth=' + (endDate.getMonth() + 1) +
+                '&endYear=' + endDate.getFullYear() +
+                '&productId=' + productId
+            }).success(function (json) {
+                var result = '<table>';
+                for (var size in json){
+                    result += '<tr>' +
+                        '<td rowspan="'+ json[size].length +'" style="vertical-align: top;" >' +
+                        size +
+                        '</td>' +
+                        '<td>' +
+                        json[size][0] +
+                        '</td>' +
+                        '</tr>';
+                    for (var i = 1; i < json[size].length; i++){
+                        result += '<tr><td>' + json[size][i] + '</td></tr>'
+                    }
+                }
+                result += '</table>';
+
+                row.child(result).show();
+                tr.addClass('shown');
+                button.removeClass("glyphicon-arrow-down").addClass("glyphicon-arrow-up");
+            })
+        }
+
     });
 })(jQuery);

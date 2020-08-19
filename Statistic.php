@@ -14,7 +14,6 @@ namespace Statistic;
 
 use Propel\Runtime\Connection\ConnectionInterface;
 use Thelia\Core\Template\TemplateDefinition;
-use Thelia\Model\ConfigQuery;
 use Thelia\Module\BaseModule;
 
 class Statistic extends BaseModule
@@ -62,6 +61,6 @@ class Statistic extends BaseModule
 
     public function postActivation(ConnectionInterface $con = null)
     {
-        self::setConfigValue('order_types','2,3,4');
+        self::setConfigValue('order_types', '2,3,4');
     }
 }

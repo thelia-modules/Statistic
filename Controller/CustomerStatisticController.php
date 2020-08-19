@@ -17,7 +17,6 @@ use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Core\Security\AccessManager;
 
 
-
 /**
  * Class CustomerStatisticController
  * @package Statistic\Controller
@@ -61,13 +60,12 @@ class CustomerStatisticController extends BaseAdminController
         ), Statistic::MESSAGE_DOMAIN
         );
 
-        $startDate = new \DateTime($startYear.'-'.$startMonth.'-'.$startDay);
-        $endDate = new \DateTime($endYear.'-'.$endMonth.'-'.$endDay);
+        $startDate = new \DateTime($startYear . '-' . $startMonth . '-' . $startDay);
+        $endDate = new \DateTime($endYear . '-' . $endMonth . '-' . $endDay);
 
-        if ($startDate->diff($endDate)->format('%a') === '0'){
+        if ($startDate->diff($endDate)->format('%a') === '0') {
             $result = $this->getCustomerStatHandler()->getNewCustomersStatsByHours($startDate);
-        }
-        else{
+        } else {
             $result = $this->getCustomerStatHandler()->getNewCustomersStats($startDate, $endDate);
         }
 
@@ -78,14 +76,12 @@ class CustomerStatisticController extends BaseAdminController
 
         $data->series = array(
             $newCustomerSeries,
-            //$firstOrderSeries,
         );
 
-        if ($ghost == 1){
+        if ((int)$ghost === 1) {
             if ($startDate->diff($endDate)->format('%a') === '0') {
                 $ghostGraph = $this->getCustomerStatHandler()->getNewCustomersStatsByHours($startDate->sub(new \DateInterval('P1Y')));
-            }
-            else{
+            } else {
                 $ghostGraph = $this->getCustomerStatHandler()->getNewCustomersStats(
                     $startDate->sub(new \DateInterval('P1Y')),
                     $endDate->sub(new \DateInterval('P1Y'))
@@ -95,7 +91,7 @@ class CustomerStatisticController extends BaseAdminController
             $ghostCurve->color = "#38acfc";
             $ghostCurve->graph = $ghostGraph['stats'];
 
-            array_push($data->series, $ghostCurve);
+            $data->series[] = $ghostCurve;
         }
 
         $json = json_encode($data);

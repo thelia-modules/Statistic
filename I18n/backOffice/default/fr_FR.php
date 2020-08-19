@@ -2,11 +2,14 @@
 
 return array(
     'Close' => 'Fermer',
+    'Filter by brand :' => 'Filtrer par marques :',
     'Home' => 'Accueil',
+    'No filter' => 'Aucun filtre',
     'No results found for your search.' => 'Aucun résultat trouvé',
     'Please wait, loading' => 'En attente, chargement ...',
     'Search' => 'Rechercher',
     'Select' => 'Choisir',
+    'Statistics' => 'Statistiques',
     'Tools' => 'Outils',
     'search.brand.placeholder' => 'Nom d\'une marque',
     'search.brand.title' => 'Rechercher une marque',

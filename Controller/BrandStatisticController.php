@@ -9,7 +9,6 @@
 namespace Statistic\Controller;
 
 
-use Statistic\Handler\BrandStatisticHandler;
 use Statistic\Statistic;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Model\Base\OrderQuery;
@@ -39,10 +38,9 @@ class BrandStatisticController extends BaseAdminController
 
         if ($startDate->diff($endDate)->format('%a') === '0') {
             $result = $this->getBrandStatisticHandler()->getBrandTurnoverByHours($brandId, $startDate);
-        }
-        else{
+        } else {
             /** @var OrderQuery $query */
-            $result = $this->getBrandStatisticHandler()->getBrandTurnover($brandId, $startDate,$endDate);
+            $result = $this->getBrandStatisticHandler()->getBrandTurnover($brandId, $startDate, $endDate);
         }
 
 
@@ -55,25 +53,24 @@ class BrandStatisticController extends BaseAdminController
 
         $data->series = [$plot];
 
-        if ($startDay == $endDay && $startMonth == $endMonth && $startYear == $endYear) {
+        if ($startDay === $endDay && $startMonth === $endMonth && $startYear === $endYear) {
             $data->title = $this->getTranslator()->trans("Stats for %startDay/%startMonth/%startYear", array(
-                '%startDay'=>$startDay,
+                '%startDay' => $startDay,
                 '%startMonth' => $startMonth,
                 '%startYear' => $startYear,
             ), Statistic::MESSAGE_DOMAIN);
-        }
-        else {
+        } else {
             $data->title = $this->getTranslator()->trans("Stats between %startDay/%startMonth/%startYear and %endDay/%endMonth/%endYear", array(
-                '%startDay'=>$startDay,
+                '%startDay' => $startDay,
                 '%startMonth' => $startMonth,
                 '%startYear' => $startYear,
-                '%endDay'=>$endDay,
-                '%endMonth'=>$endMonth,
-                '%endYear'=>$endYear
+                '%endDay' => $endDay,
+                '%endMonth' => $endMonth,
+                '%endYear' => $endYear
             ), Statistic::MESSAGE_DOMAIN);
         }
 
-        if ($ghost == 1){
+        if ((int)$ghost === 1) {
 
             $ghostGraph = $this->getBrandStatisticHandler()->getBrandTurnover(
                 $brandId,
@@ -84,7 +81,7 @@ class BrandStatisticController extends BaseAdminController
             $ghostCurve->color = "#38acfc";
             $ghostCurve->graph = $ghostGraph['stats'];
 
-            array_push($data->series, $ghostCurve);
+            $data->series[] = $ghostCurve;
         }
 
 
@@ -114,8 +111,7 @@ class BrandStatisticController extends BaseAdminController
 
         if ($startDate->diff($endDate)->format('%a') === '0') {
             $result = $this->getBrandStatisticHandler()->getBrandTurnoverByHours($brandId, $startDate, true);
-        }
-        else{
+        } else {
             /** @var OrderQuery $query */
             $result = $this->getBrandStatisticHandler()->getBrandTurnover($brandId, $startDate, $endDate, true);
         }
@@ -129,25 +125,24 @@ class BrandStatisticController extends BaseAdminController
 
         $data->series = [$plot];
 
-        if ($startDay == $endDay && $startMonth == $endMonth && $startYear == $endYear) {
+        if ($startDay === $endDay && $startMonth === $endMonth && $startYear === $endYear) {
             $data->title = $this->getTranslator()->trans("Stats for %startDay/%startMonth/%startYear", array(
-                '%startDay'=>$startDay,
+                '%startDay' => $startDay,
                 '%startMonth' => $startMonth,
                 '%startYear' => $startYear,
             ), Statistic::MESSAGE_DOMAIN);
-        }
-        else {
+        } else {
             $data->title = $this->getTranslator()->trans("Stats between %startDay/%startMonth/%startYear and %endDay/%endMonth/%endYear", array(
-                '%startDay'=>$startDay,
+                '%startDay' => $startDay,
                 '%startMonth' => $startMonth,
                 '%startYear' => $startYear,
-                '%endDay'=>$endDay,
-                '%endMonth'=>$endMonth,
-                '%endYear'=>$endYear
+                '%endDay' => $endDay,
+                '%endMonth' => $endMonth,
+                '%endYear' => $endYear
             ), Statistic::MESSAGE_DOMAIN);
         }
 
-        if ($ghost == 1){
+        if ((int)$ghost === 1) {
 
             $ghostGraph = $this->getBrandStatisticHandler()->getBrandTurnover(
                 $brandId,
@@ -159,7 +154,7 @@ class BrandStatisticController extends BaseAdminController
             $ghostCurve->color = "#38acfc";
             $ghostCurve->graph = $ghostGraph['stats'];
 
-            array_push($data->series, $ghostCurve);
+            $data->series[] = $ghostCurve;
         }
 
 

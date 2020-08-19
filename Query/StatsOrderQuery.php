@@ -14,7 +14,6 @@ use Statistic\Statistic;
 use Thelia\Model\OrderQuery;
 use Thelia\Model\Map\OrderProductTableMap;
 use Thelia\Model\Map\OrderProductTaxTableMap;
-use Thelia\Model\Map\OrderTableMap;
 
 
 class StatsOrderQuery extends OrderQuery
@@ -22,9 +21,10 @@ class StatsOrderQuery extends OrderQuery
     /**
      * @param \DateTime $startDate
      * @param \DateTime $endDate
-     * @param $includeShipping
+     * @param bool $includeShipping
      * @param bool $withTaxes
      * @return float|int
+     * @throws \Propel\Runtime\Exception\PropelException
      */
     public static function getSaleStats(\DateTime $startDate, \DateTime $endDate, $includeShipping, $withTaxes = true)
     {
@@ -36,8 +36,7 @@ class StatsOrderQuery extends OrderQuery
             ->addJoinObject($orderTaxJoin)
             ->withColumn("SUM((`order_product`.QUANTITY * IF(`order_product`.WAS_IN_PROMO,`order_product`.PROMO_PRICE,`order_product`.PRICE)))", 'TOTAL')
             ->withColumn("SUM((`order_product`.QUANTITY * IF(`order_product`.WAS_IN_PROMO,`order_product_tax`.PROMO_AMOUNT,`order_product_tax`.AMOUNT)))", 'TAX')
-            ->select(['TOTAL', 'TAX'])
-        ;
+            ->select(['TOTAL', 'TAX']);
         $arrayAmount = $query->findOne();
 
         $amount = $arrayAmount['TOTAL'] + $arrayAmount['TAX'];
@@ -48,8 +47,7 @@ class StatsOrderQuery extends OrderQuery
 
         $discountQuery = self::baseSaleStats($startDate, $endDate)
             ->withColumn("SUM(`order`.discount)", 'DISCOUNT')
-            ->select('DISCOUNT')
-        ;
+            ->select('DISCOUNT');
 
         $discount = $discountQuery->findOne();
 
@@ -57,13 +55,12 @@ class StatsOrderQuery extends OrderQuery
             $discount = 0;
         }
 
-        $amount = $amount - $discount;
+        $amount -= $discount;
 
         if ($includeShipping) {
             $query = self::baseSaleStats($startDate, $endDate)
                 ->withColumn("SUM(`order`.postage)", 'POSTAGE')
-                ->select('POSTAGE')
-            ;
+                ->select('POSTAGE');
 
             $amount += $query->findOne();
         }
@@ -73,7 +70,7 @@ class StatsOrderQuery extends OrderQuery
 
     protected static function baseSaleStats(\DateTime $startDate, \DateTime $endDate, $modelAlias = null)
     {
-        $status = explode(',',Statistic::getConfigValue('order_types'));
+        $status = explode(',', Statistic::getConfigValue('order_types'));
         return self::create($modelAlias)
             ->filterByInvoiceDate(sprintf("%s 00:00:00", $startDate->format('Y-m-d')), Criteria::GREATER_EQUAL)
             ->filterByInvoiceDate(sprintf("%s 23:59:59", $endDate->format('Y-m-d')), Criteria::LESS_EQUAL)

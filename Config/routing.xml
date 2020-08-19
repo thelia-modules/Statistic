@@ -48,6 +48,10 @@
         <default key="_controller">Statistic\Controller\StatisticController::statOrdersAction</default>
     </route>
 
+    <route id="statistic.tool.general.product.details" path="/admin/module/statistic/getProductDetails" methods="get">
+        <default key="_controller">Statistic\Controller\StatisticController::getProductDetails</default>
+    </route>
+
     <!-- Product statistic -->
     <route id="statistic.tool.product.turnover" path="/admin/module/statistic/product/turnover" methods="get">
         <default key="_controller">Statistic\Controller\ProductStatisticController::statTurnoverAction</default>
