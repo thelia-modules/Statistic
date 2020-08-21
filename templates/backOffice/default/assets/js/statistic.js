@@ -380,7 +380,7 @@ var bestSales;
                     }
                 }
                 cell = row.insertCell(-1);
-                cell.innerHTML = "<button class='btn btn-default glyphicon glyphicon-arrow-down button-details' data-product='" + line['product_id'] + "'/>"
+                cell.innerHTML = "<button class='btn btn-default glyphicon glyphicon-chevron-down button-details' data-product='" + line['product_id'] + "'/>"
             }
             dt = tableJQ.DataTable({
                 "lengthChange": false,
@@ -405,7 +405,7 @@ var bestSales;
                 if (row.child.isShown()) {
                     row.child.hide();
                     tr.removeClass('shown');
-                    button.removeClass("glyphicon-arrow-up").addClass("glyphicon-arrow-down");
+                    button.removeClass("glyphicon-chevron-up").addClass("glyphicon-chevron-down");
                 }
                 else {
                     getDetail(button.attr('data-product'), row, tr, button);
@@ -476,7 +476,7 @@ var bestSales;
 
                 row.child(result).show();
                 tr.addClass('shown');
-                button.removeClass("glyphicon-arrow-down").addClass("glyphicon-arrow-up");
+                button.removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
             })
         }
 
