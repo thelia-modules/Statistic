@@ -12,8 +12,6 @@ namespace Statistic\Controller;
 use Statistic\Form\Configuration;
 use Statistic\Statistic;
 use Thelia\Controller\Admin\BaseAdminController;
-use Thelia\Model\ConfigQuery;
-use TheliaSmarty\Template\Plugins\Form;
 
 class ConfigController extends BaseAdminController
 {
@@ -23,7 +21,7 @@ class ConfigController extends BaseAdminController
         $response = null;
 
         $configForm = $this->validateForm($form);
-        Statistic::setConfigValue('order_types',$configForm->get('order')->getData(),true, true);
+        Statistic::setConfigValue('order_types', $configForm->get('order')->getData(), true, true);
 
         $response = $this->render(
             'module-configure',

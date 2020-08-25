@@ -83,10 +83,38 @@
         <h1 class="hide">Total : <span id="total"></span></h1>
     </div>
     <div class="table-content">
+
+        <div id="best-sales-tool-div" hidden>
+            <div class="form-group col-md-3">
+                <label for="best-sale-brand" class="control-label">
+                    {intl l="Filter by brand :"}
+                </label>
+
+                <select id="best-sale-brand" class="form-control js-refresh-table" data-default="">
+                    <option value="">{intl l="No filter"}</option>
+
+                    {loop name="brand" type="brand" visible="*" return_url=false}
+                        <option value="{$ID}" >{$TITLE}</option>
+                    {/loop}
+                </select>
+            </div>
+
+
+
+            <div class="form-group col-md-3">
+                <label for="best-sale-search" class="control-label">
+                    {intl l="Search"}
+                </label>
+
+                <input type="text" id="best-sale-search" class="form-control">
+            </div>
+        </div>
+
+
         <h2 id="table-title" class="text-center"></h2>
         <table id="table-general" class="table">
-            <tbody></tbody>
         </table>
+
     </div>
 </div>
 
