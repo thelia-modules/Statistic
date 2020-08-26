@@ -6,6 +6,7 @@ return array(
     'Stats for %startDay/%startMonth/%startYear' => ' Stats for %startDay/%startMonth/%startYear',
     'Stats on %startYear' => 'Statistics for %startYear',
     'Stats on %startYear and %endYear' => 'Statistics for %startYear and %endYear',
+    'TOTALS' => 'TOTALS',
     'tool.panel.annual.title' => 'Annual stats',
     'tool.panel.brand.title' => 'Brand stats',
     'tool.panel.general.bestSales.brand' => 'Brand',
