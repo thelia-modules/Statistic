@@ -35,8 +35,7 @@ class OrderByHoursQuery extends BaseOrderQuery
             ->addJoinObject($orderTaxJoin)
             ->withColumn("SUM((`order_product`.QUANTITY * IF(`order_product`.WAS_IN_PROMO,`order_product`.PROMO_PRICE,`order_product`.PRICE)))", 'TOTAL')
             ->withColumn("SUM((`order_product`.QUANTITY * IF(`order_product`.WAS_IN_PROMO,`order_product_tax`.PROMO_AMOUNT,`order_product_tax`.AMOUNT)))", 'TAX')
-            ->select(['TOTAL', 'TAX'])
-        ;
+            ->select(['TOTAL', 'TAX']);
         $arrayAmount = $query->findOne();
 
         $amount = $arrayAmount['TOTAL'] + $arrayAmount['TAX'];
@@ -47,8 +46,7 @@ class OrderByHoursQuery extends BaseOrderQuery
 
         $discountQuery = self::baseSaleStats($startDate, $endDate)
             ->withColumn("SUM(`order`.discount)", 'DISCOUNT')
-            ->select('DISCOUNT')
-        ;
+            ->select('DISCOUNT');
 
         $discount = $discountQuery->findOne();
 
@@ -56,13 +54,12 @@ class OrderByHoursQuery extends BaseOrderQuery
             $discount = 0;
         }
 
-        $amount = $amount - $discount;
+        $amount -= $discount;
 
         if ($includeShipping) {
             $query = self::baseSaleStats($startDate, $endDate)
                 ->withColumn("SUM(`order`.postage)", 'POSTAGE')
-                ->select('POSTAGE')
-            ;
+                ->select('POSTAGE');
 
             $amount += $query->findOne();
         }
@@ -75,7 +72,7 @@ class OrderByHoursQuery extends BaseOrderQuery
         return self::create($modelAlias)
             ->filterByInvoiceDate($startDate->format('Y-m-d H:i:s'), Criteria::GREATER_EQUAL)
             ->filterByInvoiceDate($endDate->format('Y-m-d H:i:s'), Criteria::LESS_EQUAL)
-            ->filterByStatusId(explode(',',Statistic::getConfigValue('order_types')), Criteria::IN);
+            ->filterByStatusId(explode(',', Statistic::getConfigValue('order_types')), Criteria::IN);
     }
 
     public static function getOrdersStats(\DateTime $startDate, \DateTime $endDate, $status = array(1, 2, 3, 4))

@@ -6,3 +6,16 @@
     float: left !important;
     margin-right: 10px;
 }
+
+.button-details{
+    border: none;
+    background-color: inherit;
+}
+
+.button-details:hover {
+    background: inherit;
+}
+
+#table-best-sale-statistic{
+    width: 100% !important;
+}

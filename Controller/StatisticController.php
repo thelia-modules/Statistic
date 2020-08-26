@@ -13,10 +13,9 @@
 namespace Statistic\Controller;
 
 use DateInterval;
-use Propel\Runtime\ActiveQuery\Criteria;
 use Statistic\Statistic;
 use Thelia\Controller\Admin\BaseAdminController;
-use Thelia\Model\OrderQuery;
+use Thelia\Model\Base\ProductQuery;
 
 /**
  * Class StatisticController
@@ -43,10 +42,9 @@ class StatisticController extends BaseAdminController
     public function statAverageCartAction()
     {
         // récupération des paramètres
-        /*$month = $this->getRequest()->query->get('month', date('m'));
-        $year = $this->getRequest()->query->get('year', date('m'));*/
-
-        $this->getRequest()->getSession()->save();
+        if ($session = $this->getRequest()->getSession()) {
+            $session->save();
+        }
 
         $ghost = $this->getRequest()->query->get('ghost');
 
@@ -59,7 +57,7 @@ class StatisticController extends BaseAdminController
         $endYear = $this->getRequest()->query->get('endYear', date('Y'));
 
         $startDate = new \DateTime($startYear . '-' . $startMonth . '-' . $startDay);
-        $endDate = new \DateTime($endYear . '-' . $endMonth . '-' . ($endDay+1));
+        $endDate = new \DateTime($endYear . '-' . $endMonth . '-' . ($endDay + 1));
 
         $result = $this->getStatisticHandler()->averageCart($startDate, $endDate);
         $average = new \stdClass();
@@ -69,21 +67,20 @@ class StatisticController extends BaseAdminController
 
         $data = new \stdClass();
 
-        if ($startDay == $endDay && $startMonth == $endMonth && $startYear == $endYear) {
+        if ($startDay === $endDay && $startMonth === $endMonth && $startYear === $endYear) {
             $data->title = $this->getTranslator()->trans("Stats between %startDay/%startMonth/%startYear", array(
-                '%startDay'=>$startDay,
+                '%startDay' => $startDay,
                 '%startMonth' => $startMonth,
                 '%startYear' => $startYear,
             ), Statistic::MESSAGE_DOMAIN);
-        }
-        else {
+        } else {
             $data->title = $this->getTranslator()->trans("Stats between %startDay/%startMonth/%startYear and %endDay/%endMonth/%endYear", array(
-                '%startDay'=>$startDay,
+                '%startDay' => $startDay,
                 '%startMonth' => $startMonth,
                 '%startYear' => $startYear,
-                '%endDay'=>$endDay,
-                '%endMonth'=>$endMonth,
-                '%endYear'=>$endYear
+                '%endDay' => $endDay,
+                '%endMonth' => $endMonth,
+                '%endYear' => $endYear
             ), Statistic::MESSAGE_DOMAIN);
         }
 
@@ -91,7 +88,7 @@ class StatisticController extends BaseAdminController
             $average,
         );
 
-        if ($ghost == 1){
+        if ((int)$ghost === 1) {
 
             $ghostGraph = $this->getStatisticHandler()->averageCart(
                 $startDate->sub(new DateInterval('P1Y')),
@@ -101,12 +98,16 @@ class StatisticController extends BaseAdminController
             $ghostCurve->color = "#38acfc";
             $ghostCurve->graph = $ghostGraph['stats'];
 
-            array_push($data->series, $ghostCurve);
+            $data->series[] = $ghostCurve;
         }
-
         return $this->jsonResponse(json_encode($data));
     }
 
+    /**
+     * @return \Thelia\Core\HttpFoundation\Response
+     * @throws \Exception
+     * @throws \Propel\Runtime\Exception\PropelException
+     */
     public function statBestSalesAction()
     {
         // récupération des paramètres
@@ -121,16 +122,72 @@ class StatisticController extends BaseAdminController
         $startDate = new \DateTime($startYear . '-' . $startMonth . '-' . $startDay);
         $endDate = new \DateTime($endYear . '-' . $endMonth . '-' . $endDay);
 
+        $productRef = null;
+        if ($productId = $this->getRequest()->query->get('productId')) {
+            $productRef = ProductQuery::create()->findOneById($productId)->getRef();
+        }
+
+        $dateDiff = date_diff($startDate, $endDate);
+
+        $table = [];
+        $locale = $this->getSession()->getLang()->getLocale();
+        $results = $this->getStatisticHandler()->bestSales($this->getRequest(), $startDate, $endDate, $locale, $productRef);
+        $results2 = $this->getStatisticHandler()->bestSales(
+            $this->getRequest(),
+            clone($startDate)->sub($dateDiff),
+            clone($endDate)->sub($dateDiff),
+            $locale,
+            $productRef
+        );
+        $results3 = $this->getStatisticHandler()->bestSales(
+            $this->getRequest(),
+            clone($startDate)->sub(new DateInterval('P1Y')),
+            clone($endDate)->sub(new DateInterval('P1Y')),
+            $locale,
+            $productRef
+        );
+
+        foreach ($results as $result) {
+            $row = $result;
+            $row['total_sold2'] = 0;
+            $row['total_sold3'] = 0;
+            $row['total_ttc2'] = 0;
+            $row['total_ttc3'] = 0;
+
+            if (array_key_exists($result['product_ref'], $results2)) {
+                $row['total_sold2'] = $results2[$result['product_ref']]['total_sold'];
+                $row['total_ttc2'] = $results2[$result['product_ref']]['total_ttc'];
+            }
+
+            if (array_key_exists($result['product_ref'], $results3)) {
+                $row['total_sold3'] = $results3[$result['product_ref']]['total_sold'];
+                $row['total_ttc3'] = $results3[$result['product_ref']]['total_ttc'];
+            }
+
+            if ($row) {
+                $table[] = $row;
+            }
+        }
+
         $bestSales = new \stdClass();
         $bestSales->color = '#5cb85c';
+        $bestSales->mhead = [
+            $this->getTranslator()->trans('tool.panel.general.bestSales.sales', [], Statistic::MESSAGE_DOMAIN),
+            $this->getTranslator()->trans('tool.panel.general.bestSales.totalTTC', [], Statistic::MESSAGE_DOMAIN),
+        ];
+
         $bestSales->thead = array(
             'title' => $this->getTranslator()->trans('tool.panel.general.bestSales.name', [], Statistic::MESSAGE_DOMAIN),
             'pse_ref' => $this->getTranslator()->trans('tool.panel.general.bestSales.reference', [], Statistic::MESSAGE_DOMAIN),
-            'total_sold' => $this->getTranslator()->trans('tool.panel.general.bestSales.totalSold', [], Statistic::MESSAGE_DOMAIN),
-            'total_ht' => $this->getTranslator()->trans('tool.panel.general.bestSales.totalHT', [], Statistic::MESSAGE_DOMAIN),
-            'total_ttc' => $this->getTranslator()->trans('tool.panel.general.bestSales.totalTTC', [], Statistic::MESSAGE_DOMAIN),
+            'brand_title' => $this->getTranslator()->trans('tool.panel.general.bestSales.brand', [], Statistic::MESSAGE_DOMAIN),
+            'total_sold' => $this->getTranslator()->trans('tool.panel.general.bestSales.periode', [], Statistic::MESSAGE_DOMAIN),
+            'total_sold2' => $this->getTranslator()->trans('tool.panel.general.bestSales.periode-1', [], Statistic::MESSAGE_DOMAIN),
+            'total_sold3' => $this->getTranslator()->trans('tool.panel.general.bestSales.periodeN-1', [], Statistic::MESSAGE_DOMAIN),
+            'total_ttc' => $this->getTranslator()->trans('tool.panel.general.bestSales.periode', [], Statistic::MESSAGE_DOMAIN),
+            'total_ttc2' => $this->getTranslator()->trans('tool.panel.general.bestSales.periode-1', [], Statistic::MESSAGE_DOMAIN),
+            'total_ttc3' => $this->getTranslator()->trans('tool.panel.general.bestSales.periodeN-1', [], Statistic::MESSAGE_DOMAIN),
         );
-        $bestSales->table = $this->getStatisticHandler()->bestSales($this->getRequest(), $startDate, $endDate);
+        $bestSales->table = $table;
 
         $data = new \stdClass();
         $data->series = array(
@@ -140,9 +197,38 @@ class StatisticController extends BaseAdminController
         return $this->jsonResponse(json_encode($data));
     }
 
+    /**
+     * @throws \Propel\Runtime\Exception\PropelException
+     */
+    public function getProductDetails()
+    {
+        $productId = $this->getRequest()->query->get('productId');
+
+        $startDay = $this->getRequest()->query->get('startDay', date('d'));
+        $startMonth = $this->getRequest()->query->get('startMonth', date('m'));
+        $startYear = $this->getRequest()->query->get('startYear', date('Y'));
+
+        $endDay = $this->getRequest()->query->get('endDay', date('d'));
+        $endMonth = $this->getRequest()->query->get('endMonth', date('m'));
+        $endYear = $this->getRequest()->query->get('endYear', date('Y'));
+
+        $startDate = new \DateTime($startYear . '-' . $startMonth . '-' . $startDay);
+        $endDate = new \DateTime($endYear . '-' . $endMonth . '-' . $endDay);
+
+        $locale = $this->getSession()->getLang()->getLocale();
+
+        $result = $this->getStatisticHandler()->productDetails($startDate, $endDate, $productId, $locale);
+
+        return $this->jsonResponse(json_encode($result));
+    }
+
+    /**
+     * @return \Thelia\Core\HttpFoundation\Response
+     * @throws \Propel\Runtime\Exception\PropelException
+     */
     public function statDiscountCodeAction()
     {
-        // récupération des paramètres
+        // Get Parameters
         $startDay = $this->getRequest()->query->get('startDay', date('d'));
         $startMonth = $this->getRequest()->query->get('startMonth', date('m'));
         $startYear = $this->getRequest()->query->get('startYear', date('Y'));
@@ -156,16 +242,17 @@ class StatisticController extends BaseAdminController
 
         $discount = new \stdClass();
         $result = $this->getStatisticHandler()->discountCode($startDate, $endDate);
-        foreach( $result as &$coupon ){
+        foreach ($result as &$coupon) {
             /** @var \Thelia\Coupon\Type\CouponInterface $couponService */
             $couponService = $this->getSpecificCouponService($coupon['type']);
             $coupon['rule'] = $couponService->getName();
         }
+        unset($coupon);
         $discount->table = $result;
         $discount->thead = array(
-            'code' => $this->getTranslator()->trans('tool.panel.general.discountCode.code',[], Statistic::MESSAGE_DOMAIN),
-            'rule' => $this->getTranslator()->trans('tool.panel.general.discountCode.rule',[], Statistic::MESSAGE_DOMAIN),
-            'total' => $this->getTranslator()->trans('tool.panel.general.discountCode.nbUse',[], Statistic::MESSAGE_DOMAIN),
+            'code' => $this->getTranslator()->trans('tool.panel.general.discountCode.code', [], Statistic::MESSAGE_DOMAIN),
+            'rule' => $this->getTranslator()->trans('tool.panel.general.discountCode.rule', [], Statistic::MESSAGE_DOMAIN),
+            'total' => $this->getTranslator()->trans('tool.panel.general.discountCode.nbUse', [], Statistic::MESSAGE_DOMAIN),
         );
 
         $data = new \stdClass();
@@ -176,6 +263,10 @@ class StatisticController extends BaseAdminController
         return $this->jsonResponse(json_encode($data));
     }
 
+    /**
+     * @return \Thelia\Core\HttpFoundation\Response
+     * @throws \Propel\Runtime\Exception\PropelException
+     */
     public function statMeansTransportAction()
     {
         // récupération des paramètres
@@ -195,9 +286,9 @@ class StatisticController extends BaseAdminController
         $transport = new \stdClass();
         $transport->table = $this->getStatisticHandler()->meansTransport($startDate, $endDate, $local);
         $transport->thead = array(
-            'code' => $this->getTranslator()->trans('tool.panel.general.meansTransport.means',[], Statistic::MESSAGE_DOMAIN),
-            'title' => $this->getTranslator()->trans('tool.panel.general.meansTransport.description',[], Statistic::MESSAGE_DOMAIN),
-            'total' => $this->getTranslator()->trans('tool.panel.general.meansTransport.nbUse',[], Statistic::MESSAGE_DOMAIN),
+            'code' => $this->getTranslator()->trans('tool.panel.general.meansTransport.means', [], Statistic::MESSAGE_DOMAIN),
+            'title' => $this->getTranslator()->trans('tool.panel.general.meansTransport.description', [], Statistic::MESSAGE_DOMAIN),
+            'total' => $this->getTranslator()->trans('tool.panel.general.meansTransport.nbUse', [], Statistic::MESSAGE_DOMAIN),
         );
 
         $data = new \stdClass();
@@ -208,6 +299,10 @@ class StatisticController extends BaseAdminController
         return $this->jsonResponse(json_encode($data));
     }
 
+    /**
+     * @return \Thelia\Core\HttpFoundation\Response
+     * @throws \Propel\Runtime\Exception\PropelException
+     */
     public function statMeansPaymentAction()
     {
         // récupération des paramètres
@@ -227,9 +322,9 @@ class StatisticController extends BaseAdminController
         $payment = new \stdClass();
         $payment->table = $this->getStatisticHandler()->meansPayment($startDate, $endDate, $local);
         $payment->thead = array(
-            'code' => $this->getTranslator()->trans('tool.panel.general.meansPayment.means',[], Statistic::MESSAGE_DOMAIN),
-            'title' => $this->getTranslator()->trans('tool.panel.general.meansPayment.description',[], Statistic::MESSAGE_DOMAIN),
-            'total' => $this->getTranslator()->trans('tool.panel.general.meansPayment.nbUse',[], Statistic::MESSAGE_DOMAIN),
+            'code' => $this->getTranslator()->trans('tool.panel.general.meansPayment.means', [], Statistic::MESSAGE_DOMAIN),
+            'title' => $this->getTranslator()->trans('tool.panel.general.meansPayment.description', [], Statistic::MESSAGE_DOMAIN),
+            'total' => $this->getTranslator()->trans('tool.panel.general.meansPayment.nbUse', [], Statistic::MESSAGE_DOMAIN),
         );
 
         $data = new \stdClass();
@@ -240,10 +335,17 @@ class StatisticController extends BaseAdminController
         return $this->jsonResponse(json_encode($data));
     }
 
+    /**
+     * @return \Thelia\Core\HttpFoundation\Response
+     * @throws \Exception
+     * @throws \Propel\Runtime\Exception\PropelException
+     */
     public function statTurnoverAction()
     {
-        $this->getRequest()->getSession()->save();
-        setlocale (LC_TIME, 'fr_FR.utf8','fra');
+        if ($session = $this->getRequest()->getSession()) {
+            $session->save();
+        }
+        setlocale(LC_TIME, 'fr_FR.utf8', 'fra');
 
         // récupération des paramètres
 
@@ -270,7 +372,7 @@ class StatisticController extends BaseAdminController
             $turnoverStart,
         );
 
-        if ($startYear != $endYear) {
+        if ($startYear !== $endYear) {
             $result[$endYear] = $this->getStatisticHandler()->getTurnoverYear($endYear);
 
             $turnoverEnd = new \stdClass();
@@ -284,11 +386,11 @@ class StatisticController extends BaseAdminController
                 'TTCWithShippping' => $this->getTranslator()->trans('tool.panel.general.turnover.TTCWithShippping', [], Statistic::MESSAGE_DOMAIN),
                 'TTCWithoutShippping' => $this->getTranslator()->trans('tool.panel.general.turnover.TTCWithoutShippping', [], Statistic::MESSAGE_DOMAIN),
             );
-            array_push($data->series, $turnoverEnd);
+            $data->series[] = $turnoverEnd;
             $data->title = $this->getTranslator()->trans("Stats on %startYear and %endYear", array('%startYear' => $startYear, '%endYear' => $endYear), Statistic::MESSAGE_DOMAIN);
-        }
-        else
+        } else {
             $data->title = $this->getTranslator()->trans("Stats on %startYear", array('%startYear' => $startYear), Statistic::MESSAGE_DOMAIN);
+        }
 
         return $this->jsonResponse(json_encode($data));
     }
@@ -300,7 +402,9 @@ class StatisticController extends BaseAdminController
      */
     public function statRevenueAction()
     {
-        $this->getRequest()->getSession()->save();
+        if ($session = $this->getRequest()->getSession()) {
+            $session->save();
+        }
         $ghost = $this->getRequest()->query->get('ghost');
 
         $startDay = $this->getRequest()->query->get('startDay', date('d'));
@@ -318,10 +422,9 @@ class StatisticController extends BaseAdminController
 
         if ($startDate->diff($endDate)->format('%a') === '0') {
             $result = $this->getStatisticHandler()->getRevenueStatsByHours($startDate);
-        }
-        else{
+        } else {
             $endDate->add(new DateInterval('P1D'));
-            $result = $this->getStatisticHandler()->getRevenueStats($startDate,$endDate);
+            $result = $this->getStatisticHandler()->getRevenueStats($startDate, $endDate);
         }
         $saleSeries->color = '#adadad';
         $saleSeries->graph = $result['stats'];
@@ -329,21 +432,20 @@ class StatisticController extends BaseAdminController
 
         $data = new \stdClass();
 
-        if ($startDay == $endDay && $startMonth == $endMonth && $startYear == $endYear) {
+        if ($startDay === $endDay && $startMonth === $endMonth && $startYear === $endYear) {
             $data->title = $this->getTranslator()->trans("Stats between %startDay/%startMonth/%startYear", array(
-                '%startDay'=>$startDay,
+                '%startDay' => $startDay,
                 '%startMonth' => $startMonth,
                 '%startYear' => $startYear,
             ), Statistic::MESSAGE_DOMAIN);
-        }
-        else {
+        } else {
             $data->title = $this->getTranslator()->trans("Stats between %startDay/%startMonth/%startYear and %endDay/%endMonth/%endYear", array(
-                '%startDay'=>$startDay,
+                '%startDay' => $startDay,
                 '%startMonth' => $startMonth,
                 '%startYear' => $startYear,
-                '%endDay'=>$endDay,
-                '%endMonth'=>$endMonth,
-                '%endYear'=>$endYear
+                '%endDay' => $endDay,
+                '%endMonth' => $endMonth,
+                '%endYear' => $endYear
             ), Statistic::MESSAGE_DOMAIN);
         }
 
@@ -351,11 +453,10 @@ class StatisticController extends BaseAdminController
             $saleSeries,
         );
 
-        if ($ghost == 1){
+        if ((int)$ghost === 1) {
             if ($startDate->diff($endDate)->format('%a') === '0') {
                 $ghostGraph = $this->getStatisticHandler()->getRevenueStatsByHours($startDate->sub(new DateInterval('P1Y')));
-            }
-            else{
+            } else {
                 $ghostGraph = $this->getStatisticHandler()->getRevenueStats(
                     $startDate->sub(new DateInterval('P1Y')),
                     $endDate->sub(new DateInterval('P1Y'))
@@ -365,7 +466,7 @@ class StatisticController extends BaseAdminController
             $ghostCurve->color = "#38acfc";
             $ghostCurve->graph = $ghostGraph['stats'];
 
-            array_push($data->series, $ghostCurve);
+            $data->series[] = $ghostCurve;
         }
 
         return $this->jsonResponse(json_encode($data));
@@ -374,11 +475,12 @@ class StatisticController extends BaseAdminController
     /**
      * @return \Thelia\Core\HttpFoundation\Response
      * @throws \Exception
-     * @throws \Propel\Runtime\Exception\PropelException
      */
     public function statOrdersAction()
     {
-        $this->getRequest()->getSession()->save();
+        if ($session = $this->getRequest()->getSession()) {
+            $session->save();
+        }
         $ghost = $this->getRequest()->query->get('ghost');
 
         $startDay = $this->getRequest()->query->get('startDay', date('d'));
@@ -397,10 +499,9 @@ class StatisticController extends BaseAdminController
 
         if ($startDate->diff($endDate)->format('%a') === '0') {
             $result = $this->getStatisticHandler()->getOrdersStatsByHours($startDate);
-        }
-        else{
+        } else {
             $endDate->add(new DateInterval('P1D'));
-            $result = $this->getStatisticHandler()->getOrdersStats($startDate,$endDate);
+            $result = $this->getStatisticHandler()->getOrdersStats($startDate, $endDate);
         }
         $saleSeries->color = '#d10d0d';
         $saleSeries->graph = $result['stats'];
@@ -408,21 +509,20 @@ class StatisticController extends BaseAdminController
 
         $data = new \stdClass();
 
-        if ($startDay == $endDay && $startMonth == $endMonth && $startYear == $endYear) {
+        if ($startDay === $endDay && $startMonth === $endMonth && $startYear === $endYear) {
             $data->title = $this->getTranslator()->trans("Stats between %startDay/%startMonth/%startYear", array(
-                '%startDay'=>$startDay,
+                '%startDay' => $startDay,
                 '%startMonth' => $startMonth,
                 '%startYear' => $startYear,
             ), Statistic::MESSAGE_DOMAIN);
-        }
-        else {
+        } else {
             $data->title = $this->getTranslator()->trans("Stats between %startDay/%startMonth/%startYear and %endDay/%endMonth/%endYear", array(
-                '%startDay'=>$startDay,
+                '%startDay' => $startDay,
                 '%startMonth' => $startMonth,
                 '%startYear' => $startYear,
-                '%endDay'=>$endDay,
-                '%endMonth'=>$endMonth,
-                '%endYear'=>$endYear
+                '%endDay' => $endDay,
+                '%endMonth' => $endMonth,
+                '%endYear' => $endYear
             ), Statistic::MESSAGE_DOMAIN);
         }
 
@@ -430,11 +530,10 @@ class StatisticController extends BaseAdminController
             $saleSeries,
         );
 
-        if ($ghost == 1){
+        if ((int)$ghost === 1) {
             if ($startDate->diff($endDate)->format('%a') === '0') {
                 $ghostGraph = $this->getStatisticHandler()->getOrdersStatsByHours($startDate->sub(new DateInterval('P1Y')));
-            }
-            else{
+            } else {
                 $ghostGraph = $this->getStatisticHandler()->getOrdersStats(
                     $startDate->sub(new DateInterval('P1Y')),
                     $endDate->sub(new DateInterval('P1Y'))
@@ -444,7 +543,7 @@ class StatisticController extends BaseAdminController
             $ghostCurve->color = "#38acfc";
             $ghostCurve->graph = $ghostGraph['stats'];
 
-            array_push($data->series, $ghostCurve);
+            $data->series[] = $ghostCurve;
         }
 
         return $this->jsonResponse(json_encode($data));
@@ -465,9 +564,9 @@ class StatisticController extends BaseAdminController
     /** @var  \Thelia\Coupon\Type\CouponInterface */
     protected $couponsServices = array();
 
-    protected function getSpecificCouponService( $serviceId)
+    protected function getSpecificCouponService($serviceId)
     {
-        if( !isset( $this->couponsServices[$serviceId])){
+        if (!isset($this->couponsServices[$serviceId])) {
             $this->couponsServices[$serviceId] = $this->getContainer()->get($serviceId);
         }
         return $this->couponsServices[$serviceId];

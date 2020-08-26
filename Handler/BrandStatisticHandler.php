@@ -37,9 +37,9 @@ class BrandStatisticHandler
         $query = $this->brandTurnoverQuery($brandId, $startDate, $endDate, $count);
         $queryResult = $query->find()->toArray('date');
 
-        for ($day=0, $date = clone($startDate); $date <= $endDate; $date->add(new \DateInterval('P1D')), $day++) {
-            array_push($result['stats'], array($day, isset($queryResult[$date->format('Y-n-j')]) ? floatval($queryResult[$date->format('Y-n-j')]['TOTAL']) : 0));
-            array_push($result['label'], array($date->format('d/m')));
+        for ($day = 0, $date = clone($startDate); $date <= $endDate; $date->add(new \DateInterval('P1D')), $day++) {
+            $result['stats'][] = array($day, isset($queryResult[$date->format('Y-n-j')]) ? (float)($queryResult[$date->format('Y-n-j')]['TOTAL']) : 0);
+            $result['label'][] = array($date->format('d/m'));
         }
 
         return $result;
@@ -61,12 +61,12 @@ class BrandStatisticHandler
         for ($hour = 0; $hour < 24; $hour++) {
             $val = $this->brandTurnoverByHourQuery(
                 $brandId,
-                clone ($startDate->setTime($hour,0,0)),
-                clone($startDate->setTime($hour,59,59)),
+                clone ($startDate->setTime($hour, 0, 0)),
+                clone($startDate->setTime($hour, 59, 59)),
                 $count
             );
-            array_push($result['stats'], array($hour, $val? floatval($val) : 0));
-            array_push($result['label'], array(($hour+1) . 'h'));
+            $result['stats'][] = array($hour, $val ? (float)($val) : 0);
+            $result['label'][] = array(($hour + 1) . 'h');
         }
 
         return $result;
@@ -101,23 +101,23 @@ class BrandStatisticHandler
 
         $orderProductJoin->setJoinType(Criteria::INNER_JOIN);
         $query
-           ->innerJoinOrderProduct()
-           ->addJoinObject($orderProductJoin);
+            ->innerJoinOrderProduct()
+            ->addJoinObject($orderProductJoin);
 
         $query->where('product.brand_id = ?', $brandId, \PDO::PARAM_STR);
 
         $query->addGroupByColumn('DAY(order.invoice_date)');
 
-        if ($count){
+        if ($count) {
             $query
                 ->withColumn(
                     "SUM(order_product.quantity)",
                     'TOTAL'
                 );
-        }else{
+        } else {
             $query->withColumn(
-                    "SUM((`order_product`.QUANTITY * IF(`order_product`.WAS_IN_PROMO,`order_product`.PROMO_PRICE,`order_product`.PRICE)))",
-                    'TOTAL'
+                "SUM((`order_product`.QUANTITY * IF(`order_product`.WAS_IN_PROMO,`order_product`.PROMO_PRICE,`order_product`.PRICE)))",
+                'TOTAL'
             );
         }
 
@@ -139,7 +139,7 @@ class BrandStatisticHandler
      * @return \Thelia\Model\Order
      * @throws \Propel\Runtime\Exception\PropelException
      */
-    protected function brandTurnoverByHourQuery ($brandId, \DateTime $startDate, \DateTime $endDate, $count = false)
+    protected function brandTurnoverByHourQuery($brandId, \DateTime $startDate, \DateTime $endDate, $count = false)
     {
         $query = OrderQuery::create();
 
@@ -165,13 +165,13 @@ class BrandStatisticHandler
 
         $query->where('product.brand_id = ?', $brandId, \PDO::PARAM_STR);
 
-        if ($count){
+        if ($count) {
             $query
                 ->withColumn(
                     "SUM(order_product.quantity)",
                     'TOTAL'
                 );
-        }else{
+        } else {
             $query->withColumn(
                 "SUM((`order_product`.QUANTITY * IF(`order_product`.WAS_IN_PROMO,`order_product`.PROMO_PRICE,`order_product`.PRICE)))",
                 'TOTAL'
@@ -182,6 +182,13 @@ class BrandStatisticHandler
         return $query->findOne();
     }
 
+    /**
+     * @param $brandId
+     * @param \DateTime $startDate
+     * @param \DateTime $endDate
+     * @return OrderQuery
+     * @throws \Propel\Runtime\Exception\PropelException
+     */
     protected function brandSaledQuery($brandId, \DateTime $startDate, \DateTime $endDate)
     {
         $query = OrderQuery::create();

@@ -2,11 +2,14 @@
 
 return array(
     'Close' => 'Close',
+    'Filter by brand :' => 'Filter by brand :',
     'Home' => 'Home',
+    'No filter' => 'No filter',
     'No results found for your search.' => 'No results found for your search.',
     'Please wait, loading' => 'Please wait, loading',
     'Search' => 'Search',
     'Select' => 'Select',
+    'Statistics' => 'Statistics',
     'Tools' => 'Tools',
     'search.brand.placeholder' => 'Brand Title',
     'search.brand.title' => 'Brand ',

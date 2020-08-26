@@ -18,6 +18,9 @@ use Propel\Runtime\Propel;
 use Statistic\Query\OrderByHoursQuery;
 use Statistic\Statistic;
 use Thelia\Core\HttpFoundation\Request;
+use Thelia\Model\Base\AttributeAvQuery;
+use Thelia\Model\Base\OrderProduct;
+use Thelia\Model\Base\ProductSaleElementsQuery;
 use Thelia\Model\CountryQuery;
 use Thelia\Model\CouponQuery;
 use Thelia\Model\Map\CouponTableMap;
@@ -56,7 +59,7 @@ class StatisticHandler
     public function averageCart(\DateTime $startDate, \DateTime $endDate)
     {
         $po = $this->getMonthlySaleStats($startDate, $endDate);
-        $order = $this->getMonthlyOrdersStats($startDate, $endDate);
+        $order = self::getMonthlyOrdersStats($startDate, $endDate);
 
         $result = array();
         $result['stats'] = array();
@@ -64,8 +67,8 @@ class StatisticHandler
         $i = 0;
         foreach ($po as $date => $gold) {
             $key = explode('-', $date);
-            array_push($result['stats'],array($i, $gold && isset($order[$date]) ? $gold / $order[$date] : 0));
-            array_push($result['label'], array($i,$key[2] . '/' . $key[1]));
+            $result['stats'][] = array($i, $gold && isset($order[$date]) ? $gold / $order[$date] : 0);
+            $result['label'][] = array($i, $key[2] . '/' . $key[1]);
             $i++;
         }
 
@@ -76,18 +79,20 @@ class StatisticHandler
      * @param Request $request
      * @param \DateTime $startDate
      * @param \DateTime $endDate
+     * @param $locale
+     * @param null $productRef
      * @return array
      * @throws \Propel\Runtime\Exception\PropelException
      */
-    public function bestSales(Request $request, \DateTime $startDate, \DateTime $endDate)
+    public function bestSales(Request $request, \DateTime $startDate, \DateTime $endDate, $locale, $productRef = null)
     {
-        $query = $this->bestSalesQuery($startDate, $endDate);
-        $result = $query->find()->toArray();
+        $queryResult = $this->bestSalesQuery($startDate, $endDate, $productRef)->find()->toArray();
+        $result = [];
 
         $calc = new Calculator();
         $countries = array();
 
-        foreach ($result as &$pse) {
+        foreach ($queryResult as &$pse) {
             $country = isset($countries[$pse['country']])
                 ? $countries[$pse['country']]
                 : $countries[$pse['country']] = CountryQuery::create()->findOneById($pse['country']);
@@ -105,13 +110,63 @@ class StatisticHandler
 
             if (null !== $product) {
                 $calc->load($product, $country);
-                $totalHt = $pse['total_ht'];
+                $totalHt = $pse['total_ht'] ?: 0;
 
-                $pse['total_ht'] = MoneyFormat::getInstance($request)->formatByCurrency($totalHt);
+                $pse['brand_id'] = $product->getBrandId();
+                $pse['brand_title'] = null;
+                if ($brand = $product->getBrand()) {
+                    $pse['brand_title'] = $brand->setLocale($locale)->getTitle();
+                }
+                $pse['product_id'] = $product->getId();
+                //$pse['total_ht'] = MoneyFormat::getInstance($request)->formatByCurrency($totalHt);
                 $pse['total_ttc'] = MoneyFormat::getInstance($request)->formatByCurrency($calc->getTaxedPrice($totalHt));
             }
+
+            $result[$pse['product_ref']] = $pse;
         }
 
+        return $result;
+    }
+
+    /**
+     * @param \DateTime $startDate
+     * @param \DateTime $endDate
+     * @param $productId
+     * @param $locale
+     * @return array
+     * @throws \Propel\Runtime\Exception\PropelException
+     */
+    public function productDetails(\DateTime $startDate, \DateTime $endDate, $productId, $locale)
+    {
+        $product = ProductQuery::create()->findOneById($productId);
+        $productRef = $product->getRef();
+        $query = OrderProductQuery::create()
+            ->useOrderQuery()
+            ->useOrderStatusQuery()
+            ->filterById(explode(',', Statistic::getConfigValue('order_types')))
+            ->endUse()
+            ->endUse();
+        $queryResult = $query
+            ->condition('start', OrderTableMap::INVOICE_DATE . ' >= ?', $startDate->setTime(0, 0))
+            ->condition('end', OrderTableMap::INVOICE_DATE . ' <= ?', $endDate->setTime(23, 59, 59))
+            ->condition('product_ref', OrderProductTableMap::COL_PRODUCT_REF . '= ?', $productRef)
+            ->where(array('start', 'end', 'product_ref'), Criteria::LOGICAL_AND)
+            ->find();
+        $result = [];
+        /** @var OrderProduct $orderProduct */
+        foreach ($queryResult as $orderProduct) {
+            $pse = null;
+            $title = null;
+            $quantity = $orderProduct->getQuantity() > 1 ? ' x' . $orderProduct->getQuantity() : null;
+            if ($pseId = $orderProduct->getProductSaleElementsId()) {
+                $pse = ProductSaleElementsQuery::create()->findOneById($pseId);
+                $combination = $pse->getAttributeCombinations()->toArray() ? $pse->getAttributeCombinations()->toArray()[0] : null;
+                $attributeAv = $combination ? AttributeAvQuery::create()->findOneById($combination['AttributeAvId'])->setLocale($locale)->getTitle() . ' :' : null;
+                $title = $attributeAv;
+            }
+
+            $result[$title][] = $orderProduct->getOrder()->getCreatedAt()->format('d/m/Y') . $quantity;
+        }
         return $result;
     }
 
@@ -123,12 +178,7 @@ class StatisticHandler
      */
     public function discountCode(\DateTime $startDate, \DateTime $endDate)
     {
-        $query = $this->discountCodeQuery($startDate, $endDate);
-
-        $result = $query->find()->toArray();
-
-        return $result;
-
+        return $this->discountCodeQuery($startDate, $endDate)->find()->toArray();
     }
 
     /**
@@ -140,11 +190,7 @@ class StatisticHandler
      */
     public function meansTransport(\DateTime $startDate, \DateTime $endDate, $local)
     {
-        $query = $this->meansTransportQuery($startDate, $endDate, $local);
-
-        $result = $query->find()->toArray();
-
-        return $result;
+        return $this->meansTransportQuery($startDate, $endDate, $local)->find()->toArray();
     }
 
     /**
@@ -156,11 +202,8 @@ class StatisticHandler
      */
     public function meansPayment(\DateTime $startDate, \DateTime $endDate, $local)
     {
-        $query = $this->meansPaymentQuery($startDate, $endDate, $local);
+        return $this->meansPaymentQuery($startDate, $endDate, $local)->find()->toArray();
 
-        $result = $query->find()->toArray();
-
-        return $result;
     }
 
     /**
@@ -170,11 +213,7 @@ class StatisticHandler
      */
     public function turnover($year)
     {
-        $query = $this->turnoverQuery($year);
-
-        $result = $query->find()->toArray('date');
-
-        return $result;
+        return $this->turnoverQuery($year)->find()->toArray('date');
     }
 
     // -----------------
@@ -215,15 +254,15 @@ class StatisticHandler
         $result['stats'] = array();
         $result['label'] = array();
 
-        for ($day=0, $date = clone($startDate); $date <= $endDate; $date->add(new \DateInterval('P1D')), $day++) {
+        for ($day = 0, $date = clone($startDate); $date <= $endDate; $date->add(new \DateInterval('P1D')), $day++) {
             $dayAmount = OrderQuery::getSaleStats(
-               $date->setTime(0,0,0),
-               $date->setTime(23,59,59),
+                $date->setTime(0, 0, 0),
+                $date->setTime(23, 59, 59),
                 false
             );
             $key = explode('-', $date->format('Y-m-d'));
-            array_push($result['stats'], array($day, $dayAmount));
-            array_push($result['label'], array($day,$key[2] . '/' . $key[1]));
+            $result['stats'][] = array($day, $dayAmount);
+            $result['label'][] = array($day, $key[2] . '/' . $key[1]);
         }
 
         return $result;
@@ -240,16 +279,15 @@ class StatisticHandler
         $result['stats'] = array();
         $result['label'] = array();
 
-        for ($hour = 0; $hour < 24; $hour++ ) {
+        for ($hour = 0; $hour < 24; $hour++) {
             $dayAmount = OrderByHoursQuery::getSaleStats(
-                clone ($startDate->setTime($hour,0,0)),
-                clone($startDate->setTime($hour,59,59)),
+                clone ($startDate->setTime($hour, 0, 0)),
+                clone($startDate->setTime($hour, 59, 59)),
                 false
             );
-            array_push($result['stats'], array($hour, $dayAmount));
-            array_push($result['label'], array($hour, ($hour+1).'h' ));
+            $result['stats'][] = array($hour, $dayAmount);
+            $result['label'][] = array($hour, ($hour + 1) . 'h');
         }
-
         return $result;
     }
 
@@ -258,7 +296,6 @@ class StatisticHandler
      * @param \DateTime $endDate
      * @return array
      * @throws \Exception
-     * @throws \Propel\Runtime\Exception\PropelException
      */
     public static function getOrdersStats(\DateTime $startDate, \DateTime $endDate)
     {
@@ -271,15 +308,15 @@ class StatisticHandler
         $statConfig = ModuleConfigQuery::create()->filterByModuleId($statModuleId)->findOneByName('order_types')->getId();
         $status = explode(',', ModuleConfigI18nQuery::create()->findOneById($statConfig));
 
-        for ($day=0, $date = clone($startDate); $date <= $endDate; $date->add(new \DateInterval('P1D')), $day++) {
+        for ($day = 0, $date = clone($startDate); $date <= $endDate; $date->add(new \DateInterval('P1D')), $day++) {
             $dayAmount = OrderQuery::getOrderStats(
-                $date->setTime(0,0,0),
-                $date->setTime(23,59,59),
+                $date->setTime(0, 0, 0),
+                $date->setTime(23, 59, 59),
                 $status
             );
             $key = explode('-', $date->format('Y-m-d'));
-            array_push($result['stats'], array($day, $dayAmount));
-            array_push($result['label'], array($day,$key[2] . '/' . $key[1]));
+            $result['stats'][] = array($day, $dayAmount);
+            $result['label'][] = array($day, $key[2] . '/' . $key[1]);
         }
 
         return $result;
@@ -288,7 +325,6 @@ class StatisticHandler
     /**
      * @param \DateTime $startDate
      * @return array
-     * @throws \Propel\Runtime\Exception\PropelException
      */
     public static function getOrdersStatsByHours(\DateTime $startDate)
     {
@@ -301,19 +337,24 @@ class StatisticHandler
         $status = explode(',', ModuleConfigI18nQuery::create()->findOneById($statConfig));
 
 
-        for ($hour = 0; $hour < 24; $hour++ ) {
+        for ($hour = 0; $hour < 24; $hour++) {
             $dayAmount = OrderByHoursQuery::getOrdersStats(
-                clone ($startDate->setTime($hour,0,0)),
-                clone($startDate->setTime($hour,59,59)),
+                clone ($startDate->setTime($hour, 0, 0)),
+                clone($startDate->setTime($hour, 59, 59)),
                 $status
             );
-            array_push($result['stats'], array($hour, $dayAmount));
-            array_push($result['label'], array($hour, ($hour+1).'h' ));
+            $result['stats'][] = array($hour, $dayAmount);
+            $result['label'][] = array($hour, ($hour + 1) . 'h');
         }
 
         return $result;
     }
 
+    /**
+     * @param \DateTime $startDate
+     * @param \DateTime $endDate
+     * @return array
+     */
     public static function getMonthlyOrdersStats(\DateTime $startDate, \DateTime $endDate)
     {
         $sql = "
@@ -345,15 +386,14 @@ class StatisticHandler
     /**
      * @param \DateTime $startDate
      * @param \DateTime $endDate
-     * @param int $limit
-     * @return \Thelia\Model\OrderProductQuery
+     * @param null $productRef
+     * @return OrderProductQuery
      * @throws \Propel\Runtime\Exception\PropelException
      */
-    public function bestSalesQuery(\DateTime $startDate, \DateTime $endDate, $limit = 20)
+    public function bestSalesQuery(\DateTime $startDate, \DateTime $endDate, $productRef = null)
     {
         /** @var \Thelia\Model\OrderProductQuery $query */
         $query = OrderProductQuery::create()
-            ->limit($limit)
             ->withColumn("SUM(" . OrderProductTableMap::QUANTITY . ")", "total_sold")
             ->withColumn(
                 "SUM( IF(" . OrderProductTableMap::WAS_IN_PROMO . ',' . OrderProductTableMap::PROMO_PRICE . ',' . OrderProductTableMap::PRICE . ") * " . OrderProductTableMap::QUANTITY . ")",
@@ -368,22 +408,28 @@ class StatisticHandler
             ->useOrderQuery()
             ->useOrderAddressRelatedByDeliveryOrderAddressIdQuery()
             ->endUse()
-            ->endUse()
-        ;
+            ->endUse();
 
         // filter with status
         $query
             ->useOrderQuery()
             ->useOrderStatusQuery()
-            ->filterById(explode(',',Statistic::getConfigValue('order_types')))
+            ->filterById(explode(',', Statistic::getConfigValue('order_types')))
             ->endUse()
             ->endUse();
 
         // filtrage sur la date
         $query
-            ->condition('start', OrderProductTableMap::CREATED_AT . ' >= ?', $startDate->setTime(0, 0))
-            ->condition('end', OrderProductTableMap::CREATED_AT . ' <= ?', $endDate->setTime(23, 59, 59))
-            ->where(array('start', 'end'), Criteria::LOGICAL_AND);
+            ->condition('start', OrderTableMap::INVOICE_DATE . ' >= ?', $startDate->setTime(0, 0))
+            ->condition('end', OrderTableMap::INVOICE_DATE . ' <= ?', $endDate->setTime(23, 59, 59));
+        $conditions = ['start', 'end'];
+
+        if ($productRef) {
+            $query->condition('product_ref', OrderProductTableMap::COL_PRODUCT_REF . '= ?', $productRef);
+            $conditions[] = 'product_ref';
+        }
+
+        $query->where($conditions, Criteria::LOGICAL_AND);
 
         // selection des données
         $query
@@ -437,7 +483,7 @@ class StatisticHandler
             ->addAsColumn('code', CouponTableMap::CODE)
             ->addAsColumn('type', CouponTableMap::TYPE)
             ->addAsColumn('rule', CouponTableMap::SERIALIZED_EFFECTS)
-            ->addAsColumn('total', "COUNT(".OrderCouponTableMap::CODE.")");
+            ->addAsColumn('total', "COUNT(" . OrderCouponTableMap::CODE . ")");
         $query->groupBy(CouponTableMap::CODE)->orderBy('total', Criteria::DESC);
         $query->select(array(
             'code',
@@ -462,7 +508,7 @@ class StatisticHandler
 
         // filter with status
         $query->useOrderStatusQuery()
-            ->filterById(explode(',',Statistic::getConfigValue('order_types')), Criteria::IN)
+            ->filterById(explode(',', Statistic::getConfigValue('order_types')), Criteria::IN)
             ->endUse();
 
         // filtrage sur la date
@@ -506,7 +552,7 @@ class StatisticHandler
 
         // filter with status
         $query->useOrderStatusQuery()
-            ->filterById(explode(',',Statistic::getConfigValue('order_types')), Criteria::IN)
+            ->filterById(explode(',', Statistic::getConfigValue('order_types')), Criteria::IN)
             ->endUse();
 
         // filtrage sur la date
@@ -549,7 +595,7 @@ class StatisticHandler
 
         // filtrage sur la date
         $query
-            ->filterByStatusId(explode(',',Statistic::getConfigValue('order_types')), Criteria::IN)
+            ->filterByStatusId(explode(',', Statistic::getConfigValue('order_types')), Criteria::IN)
             ->where('YEAR(order.invoice_date) = ?', $year, \PDO::PARAM_STR);
 
         // jointure sur l'order product
@@ -601,16 +647,17 @@ class StatisticHandler
      * @throws \Exception
      * @throws \Propel\Runtime\Exception\PropelException
      */
-    public function getTurnoverYear($year){
+    public function getTurnoverYear($year)
+    {
 
-        $result =  $this->turnover($year);
+        $result = $this->turnover($year);
 
         $table = array();
         $graph = array();
         $month = array();
         for ($i = 1; $i <= 12; ++$i) {
-            $date = new \DateTime($year.'-'.$i);
-            if(!isset($result[$date->format('Y-n')])){
+            $date = new \DateTime($year . '-' . $i);
+            if (!isset($result[$date->format('Y-n')])) {
                 $table[$i] = array(
                     'TTCWithShippping' => 0,
                     'TTCWithoutShippping' => 0
@@ -619,7 +666,7 @@ class StatisticHandler
                     $i - 1,
                     0
                 );
-            }else{
+            } else {
                 $tmp = $result[$date->format('Y-n')];
 
                 //Get first day of month
@@ -628,19 +675,19 @@ class StatisticHandler
 
                 //Get last day of month (first + total of month day -1)
                 $endDate = clone($startDate);
-                $endDate->add(new \DateInterval('P' . (cal_days_in_month(CAL_GREGORIAN, $i, $year)-1) . 'D'));
+                $endDate->add(new \DateInterval('P' . (cal_days_in_month(CAL_GREGORIAN, $i, $year) - 1) . 'D'));
 
                 $discount = OrderQuery::create()
                     ->filterByInvoiceDate(sprintf("%s 00:00:00", $startDate->format('Y-m-d')), Criteria::GREATER_EQUAL)
                     ->filterByInvoiceDate(sprintf("%s 23:59:59", $endDate->format('Y-m-d')), Criteria::LESS_EQUAL)
-                    ->filterByStatusId(explode(',',Statistic::getConfigValue('order_types')), Criteria::IN)
+                    ->filterByStatusId(explode(',', Statistic::getConfigValue('order_types')), Criteria::IN)
                     ->withColumn("SUM(`order`.discount)", 'DISCOUNT')
                     ->select('DISCOUNT')->findOne();
 
                 $postage = OrderQuery::create()
                     ->filterByInvoiceDate(sprintf("%s 00:00:00", $startDate->format('Y-m-d')), Criteria::GREATER_EQUAL)
                     ->filterByInvoiceDate(sprintf("%s 23:59:59", $endDate->format('Y-m-d')), Criteria::LESS_EQUAL)
-                    ->filterByStatusId(explode(',',Statistic::getConfigValue('order_types')), Criteria::IN)
+                    ->filterByStatusId(explode(',', Statistic::getConfigValue('order_types')), Criteria::IN)
                     ->withColumn("SUM(`order`.postage)", 'POSTAGE')
                     ->select('POSTAGE')->findOne();
 
@@ -656,10 +703,10 @@ class StatisticHandler
                 $graph[] = array(
                     $i - 1,
                     // We just want the HT turnover here
-                    intval($tmp['TOTAL'] - $discount) //intval($tmp['TOTAL']+$tmp['TAX'] - $discount)
+                    (int)($tmp['TOTAL'] - $discount) //intval($tmp['TOTAL']+$tmp['TAX'] - $discount)
                 );
             }
-            $month[] = array($i-1,$date->format('M'));
+            $month[] = array($i - 1, $date->format('M'));
             $table[$i]['month'] = $date->format('M');
         }
         $result['graph'] = $graph;

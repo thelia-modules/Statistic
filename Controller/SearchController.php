@@ -9,16 +9,12 @@
 namespace Statistic\Controller;
 
 
-use Propel\Runtime\ActiveQuery\Criteria;
 use Statistic\Statistic;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Core\Security\AccessManager;
 use Thelia\Core\Security\Resource\AdminResources;
-use Thelia\Model\Base\BrandI18n;
 use Thelia\Model\Base\BrandI18nQuery;
-use Thelia\Model\Base\BrandQuery;
 use Thelia\Model\CategoryI18nQuery;
-use Thelia\Model\ProductI18nQuery;
 use Thelia\Model\ProductQuery;
 
 class SearchController extends BaseAdminController
@@ -33,7 +29,7 @@ class SearchController extends BaseAdminController
             return $response;
         }
 
-        $search = '%'.$this->getRequest()->query->get('q').'%';
+        $search = '%' . $this->getRequest()->query->get('q') . '%';
 
         $resultArray = array();
 
@@ -46,7 +42,7 @@ class SearchController extends BaseAdminController
             ->select(array('Id', 'ref', 'ProductI18n.title'));
 
         $category_id = $this->getRequest()->query->get('category_id');
-        if($category_id != null){
+        if ($category_id !== null) {
             $productQuery
                 ->useProductCategoryQuery()
                 ->filterByCategoryId($category_id)

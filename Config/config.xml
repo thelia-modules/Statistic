@@ -36,6 +36,11 @@
         <hook id="statistic.hook.admin.home" class="Statistic\Hook\AdminHomeHook" scope="request">
             <tag name="hook.event_listener" event="hook_home_stats" type="back"  method="onMainHomeAdmin" />
         </hook>
+
+        <hook id="statistic.product.module" class="Statistic\Hook\ProductModuleHook" scope="request">
+            <tag name="hook.event_listener" event="product.tab-content" type="back"  method="onProductTabContent" />
+            <tag name="hook.event_listener" event="product.edit-js" type="back"  method="insertJS" />
+        </hook>
     </hooks>
 
     <forms>
