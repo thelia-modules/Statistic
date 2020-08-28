@@ -382,6 +382,12 @@ var bestSales;
                 cell = row.insertCell(-1);
                 cell.innerHTML = "<button class='btn btn-default glyphicon glyphicon-chevron-down button-details' data-product='" + line['product_id'] + "'/>"
             }
+            var footer = table.appendChild(document.createElement('tfoot')).insertRow(-1);
+            var footerData = json.series[0].footer;
+            for(var id in footerData){
+                cell = footer.insertCell(-1);
+                cell.innerHTML = footerData[id];
+            }
             dt = tableJQ.DataTable({
                 "lengthChange": false,
                 "pageLength": 30,

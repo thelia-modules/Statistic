@@ -16,6 +16,7 @@ use DateInterval;
 use Statistic\Statistic;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Model\Base\ProductQuery;
+use Thelia\Tools\MoneyFormat;
 
 /**
  * Class StatisticController
@@ -147,21 +148,30 @@ class StatisticController extends BaseAdminController
             $productRef
         );
 
+        $p1sold = $p2sold = $p3sold = $p1ttc = $p2ttc = $p3ttc = 0;
+
         foreach ($results as $result) {
             $row = $result;
             $row['total_sold2'] = 0;
             $row['total_sold3'] = 0;
             $row['total_ttc2'] = 0;
             $row['total_ttc3'] = 0;
+            $row['total_ttc'] = MoneyFormat::getInstance($this->getRequest())->formatByCurrency($row['total_ttc']);
+            $p1sold += $result["total_sold"];
+            $p1ttc += $result["total_ttc"];
 
             if (array_key_exists($result['product_ref'], $results2)) {
                 $row['total_sold2'] = $results2[$result['product_ref']]['total_sold'];
-                $row['total_ttc2'] = $results2[$result['product_ref']]['total_ttc'];
+                $row['total_ttc2'] = MoneyFormat::getInstance($this->getRequest())->formatByCurrency($results2[$result['product_ref']]['total_ttc']);
+                $p2sold += $results2[$result['product_ref']]['total_sold'];
+                $p2ttc += $results2[$result['product_ref']]['total_ttc'];
             }
 
             if (array_key_exists($result['product_ref'], $results3)) {
                 $row['total_sold3'] = $results3[$result['product_ref']]['total_sold'];
-                $row['total_ttc3'] = $results3[$result['product_ref']]['total_ttc'];
+                $row['total_ttc3'] =  MoneyFormat::getInstance($this->getRequest())->formatByCurrency($results3[$result['product_ref']]['total_ttc']);
+                $p3sold += $results3[$result['product_ref']]['total_sold'];
+                $p3ttc += $results3[$result['product_ref']]['total_ttc'];
             }
 
             if ($row) {
@@ -188,6 +198,17 @@ class StatisticController extends BaseAdminController
             'total_ttc3' => $this->getTranslator()->trans('tool.panel.general.bestSales.periodeN-1', [], Statistic::MESSAGE_DOMAIN),
         );
         $bestSales->table = $table;
+
+        $bestSales->footer = [
+            $this->getTranslator()->trans('TOTALS', [], Statistic::MESSAGE_DOMAIN),
+            '', '',
+            $p1sold,
+            $p2sold,
+            $p3sold,
+            MoneyFormat::getInstance($this->getRequest())->formatByCurrency($p1ttc),
+            MoneyFormat::getInstance($this->getRequest())->formatByCurrency($p2ttc),
+            MoneyFormat::getInstance($this->getRequest())->formatByCurrency($p3ttc)
+        ];
 
         $data = new \stdClass();
         $data->series = array(

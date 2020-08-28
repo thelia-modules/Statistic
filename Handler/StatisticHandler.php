@@ -38,7 +38,6 @@ use Thelia\Model\OrderProductQuery;
 use Thelia\Model\OrderQuery;
 use Thelia\Model\ProductQuery;
 use Thelia\TaxEngine\Calculator;
-use Thelia\Tools\MoneyFormat;
 
 /**
  * Class StatisticHandler
@@ -119,7 +118,7 @@ class StatisticHandler
                 }
                 $pse['product_id'] = $product->getId();
                 //$pse['total_ht'] = MoneyFormat::getInstance($request)->formatByCurrency($totalHt);
-                $pse['total_ttc'] = MoneyFormat::getInstance($request)->formatByCurrency($calc->getTaxedPrice($totalHt));
+                $pse['total_ttc'] = $calc->getTaxedPrice($totalHt);
             }
 
             $result[$pse['product_ref']] = $pse;
