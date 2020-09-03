@@ -21,12 +21,10 @@ use Thelia\Core\HttpFoundation\Request;
 use Thelia\Model\Base\AttributeAvQuery;
 use Thelia\Model\Base\OrderProduct;
 use Thelia\Model\Base\ProductSaleElementsQuery;
-use Thelia\Model\CountryQuery;
 use Thelia\Model\CouponQuery;
 use Thelia\Model\Map\CouponTableMap;
 use Thelia\Model\Map\ModuleI18nTableMap;
 use Thelia\Model\Map\ModuleTableMap;
-use Thelia\Model\Map\OrderAddressTableMap;
 use Thelia\Model\Map\OrderCouponTableMap;
 use Thelia\Model\Map\OrderProductTableMap;
 use Thelia\Model\Map\OrderProductTaxTableMap;
@@ -37,7 +35,6 @@ use Thelia\Model\ModuleQuery;
 use Thelia\Model\OrderProductQuery;
 use Thelia\Model\OrderQuery;
 use Thelia\Model\ProductQuery;
-use Thelia\TaxEngine\Calculator;
 
 /**
  * Class StatisticHandler
@@ -88,14 +85,7 @@ class StatisticHandler
         $queryResult = $this->bestSalesQuery($startDate, $endDate, $productRef)->find()->toArray();
         $result = [];
 
-        $calc = new Calculator();
-        $countries = array();
-
         foreach ($queryResult as &$pse) {
-            $country = isset($countries[$pse['country']])
-                ? $countries[$pse['country']]
-                : $countries[$pse['country']] = CountryQuery::create()->findOneById($pse['country']);
-
             $product = ProductQuery::create()
                 ->useProductSaleElementsQuery()
                 ->filterById($pse['product_sale_elements_id'])
@@ -108,7 +98,6 @@ class StatisticHandler
             }
 
             if (null !== $product) {
-                $calc->load($product, $country);
                 $totalHt = $pse['total_ht'] ?: 0;
 
                 $pse['brand_id'] = $product->getBrandId();
@@ -117,8 +106,7 @@ class StatisticHandler
                     $pse['brand_title'] = $brand->setLocale($locale)->getTitle();
                 }
                 $pse['product_id'] = $product->getId();
-                //$pse['total_ht'] = MoneyFormat::getInstance($request)->formatByCurrency($totalHt);
-                $pse['total_ttc'] = $calc->getTaxedPrice($totalHt);
+                $pse['total_ttc'] = $totalHt + $pse['tax'] - $pse['discount'];
             }
 
             $result[$pse['product_ref']] = $pse;
@@ -386,69 +374,57 @@ class StatisticHandler
      * @param \DateTime $startDate
      * @param \DateTime $endDate
      * @param null $productRef
-     * @return OrderProductQuery
+     * @return OrderQuery
      * @throws \Propel\Runtime\Exception\PropelException
      */
     public function bestSalesQuery(\DateTime $startDate, \DateTime $endDate, $productRef = null)
     {
-        /** @var \Thelia\Model\OrderProductQuery $query */
-        $query = OrderProductQuery::create()
+        /** @var \Thelia\Model\OrderQuery $query */
+        $query = OrderQuery::create()
+            ->filterByInvoiceDate(sprintf("%s 00:00:00", $startDate->format('Y-m-d')), Criteria::GREATER_EQUAL)
+            ->filterByInvoiceDate(sprintf("%s 23:59:59", $endDate->format('Y-m-d')), Criteria::LESS_EQUAL)
+            ->filterByStatusId(explode(',', Statistic::getConfigValue('order_types')), Criteria::IN)
+            ->innerJoinOrderProduct()
             ->withColumn("SUM(" . OrderProductTableMap::QUANTITY . ")", "total_sold")
             ->withColumn(
-                "SUM( IF(" . OrderProductTableMap::WAS_IN_PROMO . ',' . OrderProductTableMap::PROMO_PRICE . ',' . OrderProductTableMap::PRICE . ") * " . OrderProductTableMap::QUANTITY . ")",
+                "SUM((`order_product`.QUANTITY * IF(`order_product`.WAS_IN_PROMO,`order_product`.PROMO_PRICE,`order_product`.PRICE)))",
                 "total_ht"
             )
-            ->addDescendingOrderByColumn("total_sold");
-
-        $query->groupBy(OrderProductTableMap::PRODUCT_SALE_ELEMENTS_REF);
-
-        // jointure de l'address de livraison pour le pays
-        $query
-            ->useOrderQuery()
-            ->useOrderAddressRelatedByDeliveryOrderAddressIdQuery()
+            ->useOrderProductQuery()
+            ->useOrderProductTaxQuery()
+            ->withColumn("SUM((`order_product`.QUANTITY * IF(`order_product`.WAS_IN_PROMO,`order_product_tax`.PROMO_AMOUNT,`order_product_tax`.AMOUNT)))", 'tax')
             ->endUse()
-            ->endUse();
-
-        // filter with status
-        $query
-            ->useOrderQuery()
-            ->useOrderStatusQuery()
-            ->filterById(explode(',', Statistic::getConfigValue('order_types')))
             ->endUse()
-            ->endUse();
+            ->withColumn("SUM(`order`.discount)", 'discount');
 
-        // filtrage sur la date
-        $query
-            ->condition('start', OrderTableMap::INVOICE_DATE . ' >= ?', $startDate->setTime(0, 0))
-            ->condition('end', OrderTableMap::INVOICE_DATE . ' <= ?', $endDate->setTime(23, 59, 59));
-        $conditions = ['start', 'end'];
+        $query->groupBy(OrderProductTableMap::PRODUCT_REF);
 
         if ($productRef) {
-            $query->condition('product_ref', OrderProductTableMap::COL_PRODUCT_REF . '= ?', $productRef);
-            $conditions[] = 'product_ref';
+            $query
+                ->useOrderProductQuery()
+                ->filterByProductRef($productRef)
+                ->endUse();
         }
-
-        $query->where($conditions, Criteria::LOGICAL_AND);
 
         // selection des données
         $query
             ->addAsColumn('title', OrderProductTableMap::TITLE)
             ->addAsColumn('product_ref', OrderProductTableMap::PRODUCT_REF)
             ->addAsColumn('pse_ref', OrderProductTableMap::PRODUCT_SALE_ELEMENTS_REF)
-            ->addAsColumn('country', OrderAddressTableMap::COUNTRY_ID);
+            ->addAsColumn('product_sale_elements_id', OrderProductTableMap::PRODUCT_SALE_ELEMENTS_ID);
         $query->select(array(
             'title',
-            'product_sale_elements_id',
             'product_ref',
             'pse_ref',
             'total_sold',
             'total_ht',
-            'country'
+            'tax',
+            'discount',
+            'postage',
+            'product_sale_elements_id',
         ));
 
-
         return $query;
-
     }
 
     /**
