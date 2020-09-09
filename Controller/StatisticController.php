@@ -128,8 +128,7 @@ class StatisticController extends BaseAdminController
             $productRef = ProductQuery::create()->findOneById($productId)->getRef();
         }
 
-        $dateDiff = date_diff($startDate, $endDate);
-
+        $dateDiff = date_diff($startDate, (new \DateTime($endDate->format("Y-m-d")))->add(new DateInterval('P1D')));
         $table = [];
         $locale = $this->getSession()->getLang()->getLocale();
         $results = $this->getStatisticHandler()->bestSales($this->getRequest(), $startDate, $endDate, $locale, $productRef);
@@ -165,6 +164,7 @@ class StatisticController extends BaseAdminController
                 $row['total_ttc2'] = MoneyFormat::getInstance($this->getRequest())->formatByCurrency($results2[$result['product_ref']]['total_ttc']);
                 $p2sold += $results2[$result['product_ref']]['total_sold'];
                 $p2ttc += $results2[$result['product_ref']]['total_ttc'];
+                unset($results2[$result['product_ref']]);
             }
 
             if (array_key_exists($result['product_ref'], $results3)) {
@@ -172,7 +172,48 @@ class StatisticController extends BaseAdminController
                 $row['total_ttc3'] =  MoneyFormat::getInstance($this->getRequest())->formatByCurrency($results3[$result['product_ref']]['total_ttc']);
                 $p3sold += $results3[$result['product_ref']]['total_sold'];
                 $p3ttc += $results3[$result['product_ref']]['total_ttc'];
+                unset($results3[$result['product_ref']]);
             }
+
+            if ($row) {
+                $table[] = $row;
+            }
+        }
+
+        foreach ($results2 as $result) {
+            $row = $result;
+            $row['total_sold'] = 0;
+            $row['total_sold2'] = $result['total_sold'];
+            $row['total_sold3'] = 0;
+            $row['total_ttc'] = 0;
+            $row['total_ttc2'] = MoneyFormat::getInstance($this->getRequest())->formatByCurrency($result['total_ttc']);
+            $row['total_ttc3'] = 0;
+            $p2sold += $result["total_sold"];
+            $p2ttc += $result["total_ttc"];
+
+            if (array_key_exists($result['product_ref'], $results3)) {
+                $row['total_sold3'] = $results3[$result['product_ref']]['total_sold'];
+                $row['total_ttc3'] =  MoneyFormat::getInstance($this->getRequest())->formatByCurrency($results3[$result['product_ref']]['total_ttc']);
+                $p3sold += $results3[$result['product_ref']]['total_sold'];
+                $p3ttc += $results3[$result['product_ref']]['total_ttc'];
+                unset($results3[$result['product_ref']]);
+            }
+
+            if ($row) {
+                $table[] = $row;
+            }
+        }
+
+        foreach ($results3 as $result) {
+            $row = $result;
+            $row['total_sold'] = 0;
+            $row['total_sold2'] = 0;
+            $row['total_sold3'] = $result['total_sold'];
+            $row['total_ttc'] = 0;
+            $row['total_ttc2'] = 0;
+            $row['total_ttc3'] = MoneyFormat::getInstance($this->getRequest())->formatByCurrency($result['total_ttc']);
+            $p3sold += $result["total_sold"];
+            $p3ttc += $result["total_ttc"];
 
             if ($row) {
                 $table[] = $row;
@@ -188,7 +229,7 @@ class StatisticController extends BaseAdminController
 
         $bestSales->thead = array(
             'title' => $this->getTranslator()->trans('tool.panel.general.bestSales.name', [], Statistic::MESSAGE_DOMAIN),
-            'pse_ref' => $this->getTranslator()->trans('tool.panel.general.bestSales.reference', [], Statistic::MESSAGE_DOMAIN),
+            'product_ref' => $this->getTranslator()->trans('tool.panel.general.bestSales.reference', [], Statistic::MESSAGE_DOMAIN),
             'brand_title' => $this->getTranslator()->trans('tool.panel.general.bestSales.brand', [], Statistic::MESSAGE_DOMAIN),
             'total_sold' => $this->getTranslator()->trans('tool.panel.general.bestSales.periode', [], Statistic::MESSAGE_DOMAIN),
             'total_sold2' => $this->getTranslator()->trans('tool.panel.general.bestSales.periode-1', [], Statistic::MESSAGE_DOMAIN),
@@ -199,7 +240,7 @@ class StatisticController extends BaseAdminController
         );
         $bestSales->table = $table;
 
-        $bestSales->footer = [
+        $bestSales->totals = [
             $this->getTranslator()->trans('TOTALS', [], Statistic::MESSAGE_DOMAIN),
             '', '',
             $p1sold,
@@ -207,7 +248,8 @@ class StatisticController extends BaseAdminController
             $p3sold,
             MoneyFormat::getInstance($this->getRequest())->formatByCurrency($p1ttc),
             MoneyFormat::getInstance($this->getRequest())->formatByCurrency($p2ttc),
-            MoneyFormat::getInstance($this->getRequest())->formatByCurrency($p3ttc)
+            MoneyFormat::getInstance($this->getRequest())->formatByCurrency($p3ttc),
+            ''
         ];
 
         $data = new \stdClass();

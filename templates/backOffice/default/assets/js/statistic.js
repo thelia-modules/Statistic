@@ -382,12 +382,8 @@ var bestSales;
                 cell = row.insertCell(-1);
                 cell.innerHTML = "<button class='btn btn-default glyphicon glyphicon-chevron-down button-details' data-product='" + line['product_id'] + "'/>"
             }
-            var footer = table.appendChild(document.createElement('tfoot')).insertRow(-1);
-            var footerData = json.series[0].footer;
-            for(var id in footerData){
-                cell = footer.insertCell(-1);
-                cell.innerHTML = footerData[id];
-            }
+
+
             dt = tableJQ.DataTable({
                 "lengthChange": false,
                 "pageLength": 30,
@@ -399,7 +395,15 @@ var bestSales;
                         "className": 'best-sales-details',
                         "orderable": false
                     }
-                ]
+                ],
+                "fnDrawCallback": function( oSettings ) {
+                    row = body.insertRow(0);
+                    const TotalData = json.series[0].totals;
+                    for(const data of TotalData){
+                        cell = row.insertCell(-1);
+                        cell.innerHTML = data;
+                    }
+                }
             });
 
             $('.dataTables_filter').hide();
