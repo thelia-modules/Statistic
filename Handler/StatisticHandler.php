@@ -94,7 +94,8 @@ class StatisticHandler
 
             if (null === $product) {
                 $product = ProductQuery::create()
-                    ->findOneByRef($pse['product_ref']);
+                    ->filterByRef($pse['product_ref'])
+                    ->findOne();
             }
 
             if (null !== $product) {
@@ -124,7 +125,7 @@ class StatisticHandler
      */
     public function productDetails(\DateTime $startDate, \DateTime $endDate, $productId, $locale)
     {
-        $product = ProductQuery::create()->findOneById($productId);
+        $product = ProductQuery::create()->filterById($productId)->findOne();
         $productRef = $product->getRef();
         $query = OrderProductQuery::create()
             ->useOrderQuery()
@@ -144,9 +145,9 @@ class StatisticHandler
             $pse = null;
             $title = null;
             $quantity = $orderProduct->getQuantity() > 1 ? ' x' . $orderProduct->getQuantity() : null;
-            if ($pse = ProductSaleElementsQuery::create()->findOneById($orderProduct->getProductSaleElementsId())) {
+            if ($pse = ProductSaleElementsQuery::create()->filterById($orderProduct->getProductSaleElementsId())->findOne()) {
                 $combination = $pse->getAttributeCombinations()->toArray() ? $pse->getAttributeCombinations()->toArray()[0] : null;
-                $attributeAv = $combination ? AttributeAvQuery::create()->findOneById($combination['AttributeAvId'])->setLocale($locale)->getTitle() . ' :' : null;
+                $attributeAv = $combination ? AttributeAvQuery::create()->filterById($combination['AttributeAvId'])->findOne()->setLocale($locale)->getTitle() . ' :' : null;
                 $title = $attributeAv;
             }
 
@@ -289,9 +290,9 @@ class StatisticHandler
         $result['stats'] = array();
         $result['label'] = array();
 
-        $statModuleId = ModuleQuery::create()->findOneByCode('Statistic')->getId();
-        $statConfig = ModuleConfigQuery::create()->filterByModuleId($statModuleId)->findOneByName('order_types')->getId();
-        $status = explode(',', ModuleConfigI18nQuery::create()->findOneById($statConfig));
+        $statModuleId = ModuleQuery::create()->filterByCode('Statistic')->findOne()->getId();
+        $statConfig = ModuleConfigQuery::create()->filterByModuleId($statModuleId)->filterByName('order_types')->findOne()->getId();
+        $status = explode(',', ModuleConfigI18nQuery::create()->filterById($statConfig)->findOne());
 
         for ($day = 0, $date = clone($startDate); $date <= $endDate; $date->add(new \DateInterval('P1D')), $day++) {
             $dayAmount = OrderQuery::getOrderStats(
@@ -317,9 +318,9 @@ class StatisticHandler
         $result['stats'] = array();
         $result['label'] = array();
 
-        $statModuleId = ModuleQuery::create()->findOneByCode('Statistic')->getId();
-        $statConfig = ModuleConfigQuery::create()->filterByModuleId($statModuleId)->findOneByName('order_types')->getId();
-        $status = explode(',', ModuleConfigI18nQuery::create()->findOneById($statConfig));
+        $statModuleId = ModuleQuery::create()->filterByCode('Statistic')->findOne()->getId();
+        $statConfig = ModuleConfigQuery::create()->filterByModuleId($statModuleId)->filterByName('order_types')->findOne()->getId();
+        $status = explode(',', ModuleConfigI18nQuery::create()->filterById($statConfig)->findOne());
 
 
         for ($hour = 0; $hour < 24; $hour++) {
