@@ -98,16 +98,15 @@ class StatisticHandler
             }
 
             if (null !== $product) {
-                $totalHt = $pse['total_ht'] ?: 0;
-
                 $pse['brand_id'] = $product->getBrandId();
                 $pse['brand_title'] = null;
                 if ($brand = $product->getBrand()) {
                     $pse['brand_title'] = $brand->setLocale($locale)->getTitle();
                 }
                 $pse['product_id'] = $product->getId();
-                $pse['total_ttc'] = $totalHt + $pse['tax'] - $pse['discount'];
             }
+            $totalHt = $pse['total_ht'] ?: 0;
+            $pse['total_ttc'] = $totalHt + $pse['tax'] - $pse['discount'];
 
             $result[$pse['product_ref']] = $pse;
         }
@@ -145,8 +144,7 @@ class StatisticHandler
             $pse = null;
             $title = null;
             $quantity = $orderProduct->getQuantity() > 1 ? ' x' . $orderProduct->getQuantity() : null;
-            if ($pseId = $orderProduct->getProductSaleElementsId()) {
-                $pse = ProductSaleElementsQuery::create()->findOneById($pseId);
+            if ($pse = ProductSaleElementsQuery::create()->findOneById($orderProduct->getProductSaleElementsId())) {
                 $combination = $pse->getAttributeCombinations()->toArray() ? $pse->getAttributeCombinations()->toArray()[0] : null;
                 $attributeAv = $combination ? AttributeAvQuery::create()->findOneById($combination['AttributeAvId'])->setLocale($locale)->getTitle() . ' :' : null;
                 $title = $attributeAv;

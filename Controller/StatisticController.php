@@ -240,7 +240,7 @@ class StatisticController extends BaseAdminController
         );
         $bestSales->table = $table;
 
-        $bestSales->footer = [
+        $bestSales->totals = [
             $this->getTranslator()->trans('TOTALS', [], Statistic::MESSAGE_DOMAIN),
             '', '',
             $p1sold,
@@ -248,7 +248,8 @@ class StatisticController extends BaseAdminController
             $p3sold,
             MoneyFormat::getInstance($this->getRequest())->formatByCurrency($p1ttc),
             MoneyFormat::getInstance($this->getRequest())->formatByCurrency($p2ttc),
-            MoneyFormat::getInstance($this->getRequest())->formatByCurrency($p3ttc)
+            MoneyFormat::getInstance($this->getRequest())->formatByCurrency($p3ttc),
+            ''
         ];
 
         $data = new \stdClass();

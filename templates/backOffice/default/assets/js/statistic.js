@@ -382,33 +382,6 @@ var bestSales;
                 cell = row.insertCell(-1);
                 cell.innerHTML = "<button class='btn btn-default glyphicon glyphicon-chevron-down button-details' data-product='" + line['product_id'] + "'/>"
             }
-            var footer = table.appendChild(document.createElement('tfoot'));
-            row = footer.insertRow(-1);
-            var footerData = json.series[0].footer;
-            for(var id in footerData){
-                cell = row.insertCell(-1);
-                cell.innerHTML = footerData[id];
-            }
-            row = footer.insertRow(-1);
-            titles = json.series[0].thead;
-            var valFooter;
-            for (key in titles) {
-                console.log(key);
-                valFooter = key.match('total*') ? titles[key] : '';
-                keys.push(key);
-                cell = row.insertCell(-1);
-                cell.innerHTML = valFooter;
-            }
-            row = footer.insertRow(-1);
-            cell = row.insertCell(-1);
-            cell.innerHTML = '';
-            cell.colSpan = 3;
-            for (index in mhead){
-                cell = row.insertCell(-1);
-                cell.innerHTML = mhead[index];
-                cell.colSpan = 3;
-                cell.classList.add('text-center');
-            }
 
 
             dt = tableJQ.DataTable({
@@ -422,7 +395,15 @@ var bestSales;
                         "className": 'best-sales-details',
                         "orderable": false
                     }
-                ]
+                ],
+                "fnDrawCallback": function( oSettings ) {
+                    row = body.insertRow(0);
+                    const TotalData = json.series[0].totals;
+                    for(const data of TotalData){
+                        cell = row.insertCell(-1);
+                        cell.innerHTML = data;
+                    }
+                }
             });
 
             $('.dataTables_filter').hide();
