@@ -404,7 +404,7 @@ var bestSales;
                         cell.innerHTML = totalData[i];
                         let api = this.api();
                         if(i>2 && i<9){
-                            cell.innerHTML = api.column(i, {page:'applied'}).data().reduce( function (a, b) {
+                            cell.innerHTML = api.column(i, {filter:'applied'}).data().reduce( function (a, b) {
                                 return parseFloat(a) + parseFloat(b);
                             }, 0 );
                         }
