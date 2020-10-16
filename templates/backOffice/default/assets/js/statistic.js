@@ -475,10 +475,17 @@ var bestSales;
                 '&productId=' + productId
             }).success(function (json) {
                 var result = '<table>';
+                let total = 0;
+                for(let x in json){
+                    for(let y in json[x]){
+                        total ++
+                    }
+                }
                 for (var size in json){
+
                     result += '<tr>' +
                         '<td rowspan="'+ json[size].length +'" style="vertical-align: top;" >' +
-                        size +
+                        size + ' ('+' '+ Math.round((json[size].length/total)*10000)/100 + '% et ' + json[size].length + ' ventes )' +
                         '</td>' +
                         '<td>' +
                         json[size][0] +
