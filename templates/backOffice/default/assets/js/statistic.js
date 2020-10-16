@@ -398,10 +398,16 @@ var bestSales;
                 ],
                 "fnDrawCallback": function( oSettings ) {
                     row = body.insertRow(0);
-                    const TotalData = json.series[0].totals;
-                    for(const data of TotalData){
+                    const totalData = json.series[0].totals;
+                    for(const i in totalData){
                         cell = row.insertCell(-1);
-                        cell.innerHTML = data;
+                        cell.innerHTML = totalData[i];
+                        let api = this.api();
+                        if(i>2 && i<9){
+                            cell.innerHTML = api.column(i, {page:'applied'}).data().reduce( function (a, b) {
+                                return parseFloat(a) + parseFloat(b);
+                            }, 0 );
+                        }
                     }
                 }
             });
