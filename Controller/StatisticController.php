@@ -147,8 +147,6 @@ class StatisticController extends BaseAdminController
             $productRef
         );
 
-        $p1sold = $p2sold = $p3sold = $p1ttc = $p2ttc = $p3ttc = 0;
-
         foreach ($results as $result) {
             $row = $result;
             $row['total_sold2'] = 0;
@@ -156,22 +154,16 @@ class StatisticController extends BaseAdminController
             $row['total_ttc2'] = 0;
             $row['total_ttc3'] = 0;
             $row['total_ttc'] = MoneyFormat::getInstance($this->getRequest())->formatByCurrency($row['total_ttc']);
-            $p1sold += $result["total_sold"];
-            $p1ttc += $result["total_ttc"];
 
             if (array_key_exists($result['product_ref'], $results2)) {
                 $row['total_sold2'] = $results2[$result['product_ref']]['total_sold'];
                 $row['total_ttc2'] = MoneyFormat::getInstance($this->getRequest())->formatByCurrency($results2[$result['product_ref']]['total_ttc']);
-                $p2sold += $results2[$result['product_ref']]['total_sold'];
-                $p2ttc += $results2[$result['product_ref']]['total_ttc'];
                 unset($results2[$result['product_ref']]);
             }
 
             if (array_key_exists($result['product_ref'], $results3)) {
                 $row['total_sold3'] = $results3[$result['product_ref']]['total_sold'];
                 $row['total_ttc3'] =  MoneyFormat::getInstance($this->getRequest())->formatByCurrency($results3[$result['product_ref']]['total_ttc']);
-                $p3sold += $results3[$result['product_ref']]['total_sold'];
-                $p3ttc += $results3[$result['product_ref']]['total_ttc'];
                 unset($results3[$result['product_ref']]);
             }
 
@@ -188,14 +180,10 @@ class StatisticController extends BaseAdminController
             $row['total_ttc'] = 0;
             $row['total_ttc2'] = MoneyFormat::getInstance($this->getRequest())->formatByCurrency($result['total_ttc']);
             $row['total_ttc3'] = 0;
-            $p2sold += $result["total_sold"];
-            $p2ttc += $result["total_ttc"];
 
             if (array_key_exists($result['product_ref'], $results3)) {
                 $row['total_sold3'] = $results3[$result['product_ref']]['total_sold'];
                 $row['total_ttc3'] =  MoneyFormat::getInstance($this->getRequest())->formatByCurrency($results3[$result['product_ref']]['total_ttc']);
-                $p3sold += $results3[$result['product_ref']]['total_sold'];
-                $p3ttc += $results3[$result['product_ref']]['total_ttc'];
                 unset($results3[$result['product_ref']]);
             }
 
@@ -212,8 +200,6 @@ class StatisticController extends BaseAdminController
             $row['total_ttc'] = 0;
             $row['total_ttc2'] = 0;
             $row['total_ttc3'] = MoneyFormat::getInstance($this->getRequest())->formatByCurrency($result['total_ttc']);
-            $p3sold += $result["total_sold"];
-            $p3ttc += $result["total_ttc"];
 
             if ($row) {
                 $table[] = $row;
@@ -243,12 +229,12 @@ class StatisticController extends BaseAdminController
         $bestSales->totals = [
             $this->getTranslator()->trans('TOTALS', [], Statistic::MESSAGE_DOMAIN),
             '', '',
-            $p1sold,
-            $p2sold,
-            $p3sold,
-            MoneyFormat::getInstance($this->getRequest())->formatByCurrency($p1ttc),
-            MoneyFormat::getInstance($this->getRequest())->formatByCurrency($p2ttc),
-            MoneyFormat::getInstance($this->getRequest())->formatByCurrency($p3ttc),
+            'total_sold',
+            'total_sold2',
+            'total_sold3',
+            'total_ttc',
+            'total_ttc2',
+            'total_ttc3',
             ''
         ];
 

@@ -398,10 +398,16 @@ var bestSales;
                 ],
                 "fnDrawCallback": function( oSettings ) {
                     row = body.insertRow(0);
-                    const TotalData = json.series[0].totals;
-                    for(const data of TotalData){
+                    const totalData = json.series[0].totals;
+                    for(const i in totalData){
                         cell = row.insertCell(-1);
-                        cell.innerHTML = data;
+                        cell.innerHTML = totalData[i];
+                        let api = this.api();
+                        if(i>2 && i<9){
+                            cell.innerHTML = api.column(i, {filter:'applied'}).data().reduce( function (a, b) {
+                                return parseFloat(a) + parseFloat(b);
+                            }, 0 );
+                        }
                     }
                 }
             });
@@ -469,10 +475,17 @@ var bestSales;
                 '&productId=' + productId
             }).success(function (json) {
                 var result = '<table>';
+                let total = 0;
+                for(let x in json){
+                    for(let y in json[x]){
+                        total ++
+                    }
+                }
                 for (var size in json){
+
                     result += '<tr>' +
                         '<td rowspan="'+ json[size].length +'" style="vertical-align: top;" >' +
-                        size +
+                        size + ' ('+' '+ Math.round((json[size].length/total)*10000)/100 + '% et ' + json[size].length + ' ventes )' +
                         '</td>' +
                         '<td>' +
                         json[size][0] +
