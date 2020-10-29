@@ -403,10 +403,24 @@ var bestSales;
                         cell = row.insertCell(-1);
                         cell.innerHTML = totalData[i];
                         let api = this.api();
-                        if(i>2 && i<9){
+
+                        if(i>2 && i<6){
                             cell.innerHTML = api.column(i, {filter:'applied'}).data().reduce( function (a, b) {
-                                return parseFloat(a) + parseFloat(b);
+                                return parseFloat(a.toString().replace(/\s/g, ''))
+                                  + parseFloat(b.toString().replace(/\s/g, ''));
                             }, 0 );
+                        }
+
+                        if(i>5 && i<9){
+                            cell.innerHTML = api.column(i, {filter:'applied'}).data().reduce( function (a, b) {
+                                return (parseFloat(a.toString()
+                                                        .replace(/\s/g, '')
+                                                        .replace(/,/g, '.'))
+                                  + parseFloat(b.toString()
+                                                        .replace(/\s/g, '')
+                                                        .replace(/,/g, '.'))
+                                ).toFixed(2);
+                            }, 0 ) + " €";
                         }
                     }
                 }
