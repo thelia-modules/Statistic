@@ -128,25 +128,26 @@ class StatisticController extends BaseAdminController
             $productRef = ProductQuery::create()->findOneById($productId)->getRef();
         }
 
-        $dateDiff = date_diff($startDate, (new \DateTime($endDate->format("Y-m-d")))->add(new DateInterval('P1D')));
+        $dateDiff = date_diff($startDate, (new \DateTime($endDate->format("Y-m-d"))));
         $table = [];
         $locale = $this->getSession()->getLang()->getLocale();
         $results = $this->getStatisticHandler()->bestSales($this->getRequest(), $startDate, $endDate, $locale, $productRef);
         $results2 = $this->getStatisticHandler()->bestSales(
             $this->getRequest(),
-            clone($startDate)->sub($dateDiff),
-            clone($endDate)->sub($dateDiff),
+            (clone($startDate))->sub($dateDiff),
+            (clone($endDate))->sub($dateDiff),
             $locale,
             $productRef
         );
         $results3 = $this->getStatisticHandler()->bestSales(
             $this->getRequest(),
-            clone($startDate)->sub(new DateInterval('P1Y')),
-            clone($endDate)->sub(new DateInterval('P1Y')),
+            (clone($startDate))->sub(new DateInterval('P1Y')),
+            (clone($endDate))->sub(new DateInterval('P1Y')),
             $locale,
             $productRef
         );
 
+        /** @var 'N (Période)' $result */
         foreach ($results as $result) {
             $row = $result;
             $row['total_sold2'] = 0;
@@ -172,6 +173,7 @@ class StatisticController extends BaseAdminController
             }
         }
 
+        /** @var '(Période-1)' $result */
         foreach ($results2 as $result) {
             $row = $result;
             $row['total_sold'] = 0;
@@ -192,6 +194,7 @@ class StatisticController extends BaseAdminController
             }
         }
 
+        /** @var 'N-1 (Période N-1)' $result */
         foreach ($results3 as $result) {
             $row = $result;
             $row['total_sold'] = 0;
