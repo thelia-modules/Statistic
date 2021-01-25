@@ -16,6 +16,7 @@ use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\Join;
 use Propel\Runtime\Propel;
 use Statistic\Query\OrderByHoursQuery;
+use Statistic\Query\StatsOrderQuery;
 use Statistic\Statistic;
 use Thelia\Core\HttpFoundation\Request;
 use Thelia\Model\Base\AttributeAvQuery;
@@ -216,7 +217,7 @@ class StatisticHandler
         $result = array();
         /** @var \DateTime $date */
         for ($date = clone($startDate); $date <= $endDate; $date->add(new \DateInterval('P1D'))) {
-            $result[$date->format('Y-m-d')] = OrderQuery::getSaleStats(
+            $result[$date->format('Y-m-d')] = StatsOrderQuery::getSaleStats(
                 $date->setTime(0, 0),
                 $date->setTime(23, 59, 59),
                 false
@@ -241,7 +242,7 @@ class StatisticHandler
         $result['label'] = array();
 
         for ($day = 0, $date = clone($startDate); $date <= $endDate; $date->add(new \DateInterval('P1D')), $day++) {
-            $dayAmount = OrderQuery::getSaleStats(
+            $dayAmount = StatsOrderQuery::getSaleStats(
                 $date->setTime(0, 0, 0),
                 $date->setTime(23, 59, 59),
                 false
@@ -290,9 +291,7 @@ class StatisticHandler
         $result['stats'] = array();
         $result['label'] = array();
 
-        $statModuleId = ModuleQuery::create()->filterByCode('Statistic')->findOne()->getId();
-        $statConfig = ModuleConfigQuery::create()->filterByModuleId($statModuleId)->filterByName('order_types')->findOne()->getId();
-        $status = explode(',', ModuleConfigI18nQuery::create()->filterById($statConfig)->findOne());
+        $status = explode(',', Statistic::getConfigValue('order_types'));
 
         for ($day = 0, $date = clone($startDate); $date <= $endDate; $date->add(new \DateInterval('P1D')), $day++) {
             $dayAmount = OrderQuery::getOrderStats(
@@ -318,9 +317,7 @@ class StatisticHandler
         $result['stats'] = array();
         $result['label'] = array();
 
-        $statModuleId = ModuleQuery::create()->filterByCode('Statistic')->findOne()->getId();
-        $statConfig = ModuleConfigQuery::create()->filterByModuleId($statModuleId)->filterByName('order_types')->findOne()->getId();
-        $status = explode(',', ModuleConfigI18nQuery::create()->filterById($statConfig)->findOne());
+        $status = explode(',', Statistic::getConfigValue('order_types'));
 
 
         for ($hour = 0; $hour < 24; $hour++) {
@@ -351,12 +348,18 @@ class StatisticHandler
             WHERE created_at >= '%startDate'
             AND
             created_at <= '%endDate'
+            AND 
+            status_id IN ('%statusId')
             GROUP BY Date(created_at)
         ";
 
         $sql = str_replace(
-            array('%startDate', '%endDate'),
-            array($startDate->format(self::START_DAY_FORMAT), $endDate->format(self::END_DAY_FORMAT)),
+            array('%startDate', '%endDate', '%statusId'),
+            array(
+                $startDate->format(self::START_DAY_FORMAT),
+                $endDate->format(self::END_DAY_FORMAT),
+                Statistic::getConfigValue('order_types')
+            ),
             $sql
         );
 
