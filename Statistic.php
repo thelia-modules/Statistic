@@ -13,6 +13,7 @@
 namespace Statistic;
 
 use Propel\Runtime\Connection\ConnectionInterface;
+use Symfony\Component\DependencyInjection\Loader\Configurator\ServicesConfigurator;
 use Thelia\Core\Template\TemplateDefinition;
 use Thelia\Module\BaseModule;
 
@@ -59,8 +60,17 @@ class Statistic extends BaseModule
         );
     }
 
-    public function postActivation(ConnectionInterface $con = null)
+    public function postActivation(ConnectionInterface $con = null): void
     {
         self::setConfigValue('order_types', '2,3,4');
     }
+
+    public static function configureServices(ServicesConfigurator $servicesConfigurator): void
+    {
+        $servicesConfigurator->load(self::getModuleCode().'\\', __DIR__)
+            ->exclude([THELIA_MODULE_DIR . ucfirst(self::getModuleCode()). "/I18n/*"])
+            ->autowire(true)
+            ->autoconfigure(true);
+    }
+
 }

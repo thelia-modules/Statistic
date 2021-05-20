@@ -11,6 +11,7 @@ namespace Statistic\Controller;
 
 use Statistic\Statistic;
 use Thelia\Controller\Admin\BaseAdminController;
+use Thelia\Core\HttpFoundation\Request;
 use Thelia\Core\Security\AccessManager;
 use Thelia\Core\Security\Resource\AdminResources;
 use Thelia\Model\Base\BrandI18nQuery;
@@ -23,13 +24,13 @@ class SearchController extends BaseAdminController
      * @return mixed|\Thelia\Core\HttpFoundation\Response
      * @throws \Propel\Runtime\Exception\PropelException
      */
-    public function searchProductAction()
+    public function searchProductAction(Request $request)
     {
         if (null !== $response = $this->checkAuth(AdminResources::MODULE, Statistic::MESSAGE_DOMAIN, AccessManager::VIEW)) {
             return $response;
         }
 
-        $search = '%' . $this->getRequest()->query->get('q') . '%';
+        $search = '%' . $request->query->get('q') . '%';
 
         $resultArray = array();
 
@@ -41,7 +42,7 @@ class SearchController extends BaseAdminController
             ->filterByVisible(1)
             ->select(array('Id', 'ref', 'ProductI18n.title'));
 
-        $category_id = $this->getRequest()->query->get('category_id');
+        $category_id = $request->query->get('category_id');
         if ($category_id !== null) {
             $productQuery
                 ->useProductCategoryQuery()
@@ -62,13 +63,13 @@ class SearchController extends BaseAdminController
      * @return mixed|\Thelia\Core\HttpFoundation\Response
      * @throws \Propel\Runtime\Exception\PropelException
      */
-    public function searchCategoryAction()
+    public function searchCategoryAction(Request $request)
     {
         if (null !== $response = $this->checkAuth(AdminResources::MODULE, Statistic::MESSAGE_DOMAIN, AccessManager::VIEW)) {
             return $response;
         }
 
-        $search = '%' . $this->getRequest()->query->get('q') . '%';
+        $search = '%' . $request->query->get('q') . '%';
 
         $resultArray = array();
 
@@ -89,13 +90,13 @@ class SearchController extends BaseAdminController
     /**
      * @return mixed|\Thelia\Core\HttpFoundation\Response
      */
-    public function searchBrandAction()
+    public function searchBrandAction(Request $request)
     {
         if (null !== $response = $this->checkAuth(AdminResources::MODULE, Statistic::MESSAGE_DOMAIN, AccessManager::VIEW)) {
             return $response;
         }
 
-        $search = '%' . $this->getRequest()->query->get('q') . '%';
+        $search = '%' . $request->query->get('q') . '%';
 
         $resultArray = array();
 

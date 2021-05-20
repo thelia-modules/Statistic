@@ -9,8 +9,10 @@
 namespace Statistic\Controller;
 
 
+use Statistic\Handler\BrandStatisticHandler;
 use Statistic\Statistic;
 use Thelia\Controller\Admin\BaseAdminController;
+use Thelia\Core\HttpFoundation\Request;
 use Thelia\Model\Base\OrderQuery;
 
 class BrandStatisticController extends BaseAdminController
@@ -18,29 +20,29 @@ class BrandStatisticController extends BaseAdminController
     /**
      * @throws \Exception
      */
-    public function brandTurnoverAction()
+    public function brandTurnoverAction(Request $request, BrandStatisticHandler $brandStatisticHandler)
     {
-        $brandId = $this->getRequest()->get('brandId');
+        $brandId = $request->get('brandId');
 
-        $ghost = $this->getRequest()->query->get('ghost');
+        $ghost = $request->query->get('ghost');
 
-        $startDay = $this->getRequest()->query->get('startDay', date('d'));
-        $startMonth = $this->getRequest()->query->get('startMonth', date('m'));
-        $startYear = $this->getRequest()->query->get('startYear', date('Y'));
+        $startDay = $request->query->get('startDay', date('d'));
+        $startMonth = $request->query->get('startMonth', date('m'));
+        $startYear = $request->query->get('startYear', date('Y'));
 
-        $endDay = $this->getRequest()->query->get('endDay', date('d'));
-        $endMonth = $this->getRequest()->query->get('endMonth', date('m'));
-        $endYear = $this->getRequest()->query->get('endYear', date('Y'));
+        $endDay = $request->query->get('endDay', date('d'));
+        $endMonth = $request->query->get('endMonth', date('m'));
+        $endYear = $request->query->get('endYear', date('Y'));
 
         $startDate = new \DateTime($startYear . '-' . $startMonth . '-' . $startDay);
         $endDate = new \DateTime($endYear . '-' . $endMonth . '-' . $endDay);
 
 
         if ($startDate->diff($endDate)->format('%a') === '0') {
-            $result = $this->getBrandStatisticHandler()->getBrandTurnoverByHours($brandId, $startDate);
+            $result = $brandStatisticHandler->getBrandTurnoverByHours($brandId, $startDate);
         } else {
             /** @var OrderQuery $query */
-            $result = $this->getBrandStatisticHandler()->getBrandTurnover($brandId, $startDate, $endDate);
+            $result = $brandStatisticHandler->getBrandTurnover($brandId, $startDate, $endDate);
         }
 
 
@@ -72,7 +74,7 @@ class BrandStatisticController extends BaseAdminController
 
         if ((int)$ghost === 1) {
 
-            $ghostGraph = $this->getBrandStatisticHandler()->getBrandTurnover(
+            $ghostGraph = $brandStatisticHandler->getBrandTurnover(
                 $brandId,
                 $startDate->sub(new \DateInterval('P1Y')),
                 $endDate->sub(new \DateInterval('P1Y'))
@@ -92,28 +94,28 @@ class BrandStatisticController extends BaseAdminController
      * @return \Thelia\Core\HttpFoundation\Response
      * @throws \Exception
      */
-    public function brandSalesAction()
+    public function brandSalesAction(Request $request, BrandStatisticHandler $brandStatisticHandler)
     {
-        $brandId = $this->getRequest()->get('brandId');
+        $brandId = $request->get('brandId');
 
-        $ghost = $this->getRequest()->query->get('ghost');
+        $ghost = $request->query->get('ghost');
 
-        $startDay = $this->getRequest()->query->get('startDay', date('d'));
-        $startMonth = $this->getRequest()->query->get('startMonth', date('m'));
-        $startYear = $this->getRequest()->query->get('startYear', date('Y'));
+        $startDay = $request->query->get('startDay', date('d'));
+        $startMonth = $request->query->get('startMonth', date('m'));
+        $startYear = $request->query->get('startYear', date('Y'));
 
-        $endDay = $this->getRequest()->query->get('endDay', date('d'));
-        $endMonth = $this->getRequest()->query->get('endMonth', date('m'));
-        $endYear = $this->getRequest()->query->get('endYear', date('Y'));
+        $endDay = $request->query->get('endDay', date('d'));
+        $endMonth = $request->query->get('endMonth', date('m'));
+        $endYear = $request->query->get('endYear', date('Y'));
 
         $startDate = new \DateTime($startYear . '-' . $startMonth . '-' . $startDay);
         $endDate = new \DateTime($endYear . '-' . $endMonth . '-' . $endDay);
 
         if ($startDate->diff($endDate)->format('%a') === '0') {
-            $result = $this->getBrandStatisticHandler()->getBrandTurnoverByHours($brandId, $startDate, true);
+            $result = $brandStatisticHandler->getBrandTurnoverByHours($brandId, $startDate, true);
         } else {
             /** @var OrderQuery $query */
-            $result = $this->getBrandStatisticHandler()->getBrandTurnover($brandId, $startDate, $endDate, true);
+            $result = $brandStatisticHandler->getBrandTurnover($brandId, $startDate, $endDate, true);
         }
 
         $plot = new \stdClass();
@@ -144,7 +146,7 @@ class BrandStatisticController extends BaseAdminController
 
         if ((int)$ghost === 1) {
 
-            $ghostGraph = $this->getBrandStatisticHandler()->getBrandTurnover(
+            $ghostGraph = $brandStatisticHandler->getBrandTurnover(
                 $brandId,
                 $startDate->sub(new \DateInterval('P1Y')),
                 $endDate->sub(new \DateInterval('P1Y')),
@@ -159,17 +161,6 @@ class BrandStatisticController extends BaseAdminController
 
 
         return $this->jsonResponse(json_encode($data));
-    }
-
-    protected $brandStatisticHandler;
-
-    protected function getBrandStatisticHandler()
-    {
-        if (!isset($this->brandStatisticHandler)) {
-            $this->brandStatisticHandler = $this->getContainer()->get('statistic.handler.brand');
-        }
-
-        return $this->brandStatisticHandler;
     }
 
 }

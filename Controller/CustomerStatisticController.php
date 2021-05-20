@@ -12,8 +12,10 @@
 
 namespace Statistic\Controller;
 
+use Statistic\Handler\CustomerStatHandler;
 use Statistic\Statistic;
 use Thelia\Controller\Admin\BaseAdminController;
+use Thelia\Core\HttpFoundation\Request;
 use Thelia\Core\Security\AccessManager;
 
 
@@ -31,21 +33,21 @@ class CustomerStatisticController extends BaseAdminController
      * @return mixed|\Thelia\Core\HttpFoundation\Response
      * @throws \Exception
      */
-    public function statisticAction()
+    public function statisticAction(Request $request, CustomerStatHandler $customerStatHandler)
     {
         if (null !== $response = $this->checkAuth(self::RESOURCE_CODE, array(), AccessManager::VIEW)) {
             return $response;
         }
 
-        $ghost = $this->getRequest()->query->get('ghost');
+        $ghost = $request->query->get('ghost');
 
-        $startDay = $this->getRequest()->query->get('startDay', date('d'));
-        $startMonth = $this->getRequest()->query->get('startMonth', date('m'));
-        $startYear = $this->getRequest()->query->get('startYear', date('Y'));
+        $startDay = $request->query->get('startDay', date('d'));
+        $startMonth = $request->query->get('startMonth', date('m'));
+        $startYear = $request->query->get('startYear', date('Y'));
 
-        $endDay = $this->getRequest()->query->get('endDay', date('d'));
-        $endMonth = $this->getRequest()->query->get('endMonth', date('m'));
-        $endYear = $this->getRequest()->query->get('endYear', date('Y'));
+        $endDay = $request->query->get('endDay', date('d'));
+        $endMonth = $request->query->get('endMonth', date('m'));
+        $endYear = $request->query->get('endYear', date('Y'));
 
         $data = new \stdClass();
 
@@ -64,13 +66,13 @@ class CustomerStatisticController extends BaseAdminController
         $endDate = new \DateTime($endYear . '-' . $endMonth . '-' . $endDay);
 
         if ($startDate->diff($endDate)->format('%a') === '0') {
-            $result = $this->getCustomerStatHandler()->getNewCustomersStatsByHours($startDate);
+            $result = $customerStatHandler->getNewCustomersStatsByHours($startDate);
         } else {
-            $result = $this->getCustomerStatHandler()->getNewCustomersStats($startDate, $endDate);
+            $result = $customerStatHandler->getNewCustomersStats($startDate, $endDate);
         }
 
         $newCustomerSeries = new \stdClass();
-        $newCustomerSeries->color = $this->getRequest()->query->get('customers_color', '#f39922');
+        $newCustomerSeries->color = $request->query->get('customers_color', '#f39922');
         $newCustomerSeries->graphLabel = $result['label'];
         $newCustomerSeries->graph = $result['stats'];
 
@@ -80,9 +82,9 @@ class CustomerStatisticController extends BaseAdminController
 
         if ((int)$ghost === 1) {
             if ($startDate->diff($endDate)->format('%a') === '0') {
-                $ghostGraph = $this->getCustomerStatHandler()->getNewCustomersStatsByHours($startDate->sub(new \DateInterval('P1Y')));
+                $ghostGraph = $customerStatHandler->getNewCustomersStatsByHours($startDate->sub(new \DateInterval('P1Y')));
             } else {
-                $ghostGraph = $this->getCustomerStatHandler()->getNewCustomersStats(
+                $ghostGraph = $customerStatHandler->getNewCustomersStats(
                     $startDate->sub(new \DateInterval('P1Y')),
                     $endDate->sub(new \DateInterval('P1Y'))
                 );
@@ -97,17 +99,5 @@ class CustomerStatisticController extends BaseAdminController
         $json = json_encode($data);
 
         return $this->jsonResponse($json);
-    }
-
-    /** @var Statistic/Handler/CustomerStatHandler */
-    protected $customerStatHandler;
-
-    protected function getCustomerStatHandler()
-    {
-        if (!isset($this->customerStatHandler)) {
-            $this->customerStatHandler = $this->getContainer()->get('statistic.handler.customer');
-        }
-
-        return $this->customerStatHandler;
     }
 }

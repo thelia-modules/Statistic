@@ -4,21 +4,6 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://thelia.net/schema/dic/config http://thelia.net/schema/dic/config/thelia-1.0.xsd">
 
-    <services>
-        <service id="statistic.handler.customer" class="Statistic\Handler\CustomerStatHandler">
-        </service>
-
-        <service id="statistic.handler.statistic" class="Statistic\Handler\StatisticHandler">
-        </service>
-
-        <service id="statistic.handler.brand" class="Statistic\Handler\BrandStatisticHandler">
-        </service>
-
-        <service id="statistic.handler.product" class="Statistic\Handler\ProductStatisticHandler">
-            <argument type="service" id="statistic.handler.statistic"/>
-        </service>
-    </services>
-
     <hooks>
         <hook id="statistic.hook" class="Statistic\Hook\AdminToolHook" scope="request">
             <tag name="hook.event_listener" event="main.top-menu-tools" type="back" method="onMainTopMenuTools" />

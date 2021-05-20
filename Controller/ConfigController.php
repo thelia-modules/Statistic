@@ -17,7 +17,7 @@ class ConfigController extends BaseAdminController
 {
     public function setAction()
     {
-        $form = new Configuration($this->getRequest());
+        $form = $this->createForm(Configuration::getName());
         $response = null;
 
         $configForm = $this->validateForm($form);

@@ -10,6 +10,7 @@ namespace Statistic\Form;
 
 
 use Statistic\Statistic;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Thelia\Form\BaseForm;
 
 class Configuration extends BaseForm
@@ -18,12 +19,12 @@ class Configuration extends BaseForm
     {
         $form = $this->formBuilder;
 
-        $form->add('order', 'text', [
+        $form->add('order', TextType::class, [
             'data' => Statistic::getConfigValue('order_types')
         ]);
     }
 
-    public function getName()
+    public static function getName()
     {
         return 'statistic_configuration';
     }

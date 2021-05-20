@@ -12,9 +12,11 @@
 
 namespace Statistic\Controller;
 
+use Statistic\Handler\ProductStatisticHandler;
 use Statistic\Statistic;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Thelia\Controller\Admin\BaseAdminController;
+use Thelia\Core\HttpFoundation\Request;
 use Thelia\Core\Template\Loop\Product;
 
 /**
@@ -25,9 +27,9 @@ use Thelia\Core\Template\Loop\Product;
 class ProductStatisticController extends BaseAdminController
 {
 
-    public function listProductAction()
+    public function listProductAction(Request $request)
     {
-        $category = $this->getRequest()->get('category');
+        $category = $request->get('category');
 
         $loop = new Product($this->container);
         $loop->initializeArgs([
@@ -41,19 +43,19 @@ class ProductStatisticController extends BaseAdminController
         return new JsonResponse($result);
     }
 
-    public function statTurnoverAction()
+    public function statTurnoverAction(ProductStatisticHandler $productStatisticHandler, Request $request)
     {
         // récupération des paramètres
-        $productRef = $this->getRequest()->query->get('ref', '141_4_91359672');
+        $productRef = $request->query->get('ref', '141_4_91359672');
 
-        $year = $this->getRequest()->query->get('year', date('Y'));
-        $year2 = $this->getRequest()->query->get('year2', date('Y'));
+        $year = $request->query->get('year', date('Y'));
+        $year2 = $request->query->get('year2', date('Y'));
 
         $results = array();
-        $results[0] = $this->getProductStatisticHandler()->turnover($productRef, $year);
+        $results[0] = $productStatisticHandler->turnover($productRef, $year);
 
         if ($year !== $year2) {
-            $results[1] = $this->getProductStatisticHandler()->turnover($productRef, $year2);
+            $results[1] = $productStatisticHandler->turnover($productRef, $year2);
         }
 
         $data = $this->prepareData($year, $year2, $results, "TOTAL");
@@ -61,19 +63,19 @@ class ProductStatisticController extends BaseAdminController
         return $this->jsonResponse(json_encode($data));
     }
 
-    public function statSaleAction()
+    public function statSaleAction(ProductStatisticHandler $productStatisticHandler, Request $request)
     {
         // récupération des paramètres
-        $productId = $this->getRequest()->query->get('ref', '141_4_91359672');
+        $productId = $request->query->get('ref', '141_4_91359672');
 
-        $year = $this->getRequest()->query->get('year', date('Y'));
-        $year2 = $this->getRequest()->query->get('year2', date('Y'));
+        $year = $request->query->get('year', date('Y'));
+        $year2 = $request->query->get('year2', date('Y'));
 
         $results = array();
-        $results[0] = $this->getProductStatisticHandler()->sale($productId, $year);
+        $results[0] = $productStatisticHandler->sale($productId, $year);
 
         if ($year !== $year2) {
-            $results[1] = $this->getProductStatisticHandler()->sale($productId, $year2);
+            $results[1] = $productStatisticHandler->sale($productId, $year2);
         }
 
         $data = $this->prepareData($year, $year2, $results, "total");
@@ -126,31 +128,4 @@ class ProductStatisticController extends BaseAdminController
 
         return $data;
     }
-
-    // Protected methods
-    // -----------------
-
-    /** @var  \Statistic\Handler\StatisticHandler */
-    protected $statisticHandler;
-
-    protected function getStatisticHandler()
-    {
-        if (!isset($this->statisticHandler)) {
-            $this->statisticHandler = $this->getContainer()->get('statistic.handler.statistic');
-        }
-
-        return $this->statisticHandler;
-    }
-
-    /** @var  \Statistic\Handler\ProductStatisticHandler */
-    protected $productHandler;
-
-    protected function getProductStatisticHandler()
-    {
-        if (!isset($this->productHandler)) {
-            $this->productHandler = $this->getContainer()->get('statistic.handler.product');
-        }
-        return $this->productHandler;
-    }
-
 }
