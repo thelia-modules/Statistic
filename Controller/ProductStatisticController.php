@@ -14,9 +14,15 @@ namespace Statistic\Controller;
 
 use Statistic\Handler\ProductStatisticHandler;
 use Statistic\Statistic;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\Translation\TranslatableInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Core\HttpFoundation\Request;
+use Thelia\Core\Security\SecurityContext;
 use Thelia\Core\Template\Loop\Product;
 
 /**
@@ -27,11 +33,11 @@ use Thelia\Core\Template\Loop\Product;
 class ProductStatisticController extends BaseAdminController
 {
 
-    public function listProductAction(Request $request)
+    public function listProductAction(Request $request, RequestStack $requestStack, EventDispatcherInterface $eventDispatcher, SecurityContext $securityContext, TranslatorInterface $translator, $theliaParserLoops, $kernelEnvironment)
     {
         $category = $request->get('category');
 
-        $loop = new Product($this->container);
+        $loop = new Product($this->container, $requestStack, $eventDispatcher, $securityContext, $translator, $theliaParserLoops, $kernelEnvironment);
         $loop->initializeArgs([
             "category" => $category,
             "depth" => "10"
