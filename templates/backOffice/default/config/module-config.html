@@ -24,7 +24,7 @@
 
                     {form_error form=$form field="order"}
                     <br />
-                    <span class="error">{$message}</span>
+                    <span class="error">{$message|default:''}</span>
                     {/form_error}
 
                     <input type="text" name="{$name}" class="form-control" value="{$value}" \>
@@ -112,7 +112,7 @@
                                 <div class="toolbar-options hidden">
                                     {loop type="auth" name="can_change" role="ADMIN" resource="admin.order-status" access="UPDATE"}
                                     <a title="{intl l='tool.config.edit_order_status' d='statistic.bo.default'}" href="{url path="/admin/configuration/order-status/update/%id" id=$ID}"><span class="glyphicon glyphicon-edit"></span></a>
-                                    {if !$DELETABLE}
+                                    {if !$DELETABLE|default:1}
                                     <a class="order-status-cancel" title="{intl l='tool.config.delete_order_status' d='statistic.bo.default'}" href="#cancel_order-status_dialog" data-id="{$ID}" data-toggle="modal"><span class="glyphicon glyphicon-remove-sign"></span></a>
                                     {/if}
                                     {/loop}
