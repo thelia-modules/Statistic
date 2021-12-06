@@ -38,6 +38,11 @@ class AdminStatisticHook extends BaseHook
                 'content' => $this->render('hook/statistic-product.html')
             ))
             ->add(array(
+                'tab_id' => 'category-statistic',
+                'tab_nav_title' => $this->trans('tool.panel.category.title', [], Statistic::MESSAGE_DOMAIN),
+                'content' => $this->render('hook/statistic-category.html')
+            ))
+            ->add(array(
                 'tab_id' => 'brand-statistic',
                 'tab_nav_title' => $this->trans('tool.panel.brand.title', [], Statistic::MESSAGE_DOMAIN),
                 'content' => $this->render('hook/statistic-brand.html')
@@ -82,6 +87,9 @@ class AdminStatisticHook extends BaseHook
 
         $productJs = $this->addJS('assets/js/statistic-product.js');
         $event->add($productJs);
+
+        $categoryJs = $this->addJS('assets/js/statistic-category.js');
+        $event->add($categoryJs);
 
         $brandJs = $this->addJS('assets/js/statistic-brand.js');
         $event->add($brandJs);

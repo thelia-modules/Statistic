@@ -9,6 +9,7 @@ return array(
     'TOTALS' => 'TOTALS',
     'tool.panel.annual.title' => 'Annual stats',
     'tool.panel.brand.title' => 'Brand stats',
+    'tool.panel.category.title' => 'Category stats',
     'tool.panel.general.bestSales.brand' => 'Brand',
     'tool.panel.general.bestSales.name' => 'Name',
     'tool.panel.general.bestSales.periode' => 'Period',

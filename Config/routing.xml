@@ -74,6 +74,17 @@
         <default key="_controller">Statistic\Controller\BrandStatisticController::brandSalesAction</default>
     </route>
 
+    <!-- category statistic -->
+    <route id="statistic.tool.category.turnover" path="/admin/module/statistic/category/turnover" methods="get">
+        <default key="_controller">Statistic\Controller\CategoryStatisticController::categoryTurnoverAction</default>
+    </route>
+
+    <route id="statistic.tool.category.sale" path="/admin/module/statistic/category/sale" methods="get">
+        <default key="_controller">Statistic\Controller\CategoryStatisticController::categorySalesAction</default>
+    </route>
+
+
+
     <!-- Configuration -->
 
     <route id="statistic.configuration" path="/admin/module/statistic/config" methods="post">
