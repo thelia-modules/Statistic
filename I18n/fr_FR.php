@@ -9,6 +9,7 @@ return array(
     'TOTALS' => 'TOTAUX',
     'tool.panel.annual.title' => 'Statistiques annuelles',
     'tool.panel.brand.title' => 'Statistiques par marque',
+    'tool.panel.category.title' => 'Statistiques par catégorie',
     'tool.panel.general.bestSales.brand' => 'Marque',
     'tool.panel.general.bestSales.name' => 'Nom',
     'tool.panel.general.bestSales.periode' => 'Période',
