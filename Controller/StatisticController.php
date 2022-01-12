@@ -15,6 +15,7 @@ namespace Statistic\Controller;
 use DateInterval;
 use Statistic\Statistic;
 use Thelia\Controller\Admin\BaseAdminController;
+use Thelia\Core\HttpFoundation\JsonResponse;
 use Thelia\Model\Base\ProductQuery;
 use Thelia\Tools\MoneyFormat;
 
@@ -58,7 +59,7 @@ class StatisticController extends BaseAdminController
         $endYear = $this->getRequest()->query->get('endYear', date('Y'));
 
         $startDate = new \DateTime($startYear . '-' . $startMonth . '-' . $startDay);
-        $endDate = new \DateTime($endYear . '-' . $endMonth . '-' . ($endDay + 1));
+        $endDate = new \DateTime($endYear . '-' . $endMonth . '-' . $endDay);
 
         $result = $this->getStatisticHandler()->averageCart($startDate, $endDate);
         $average = new \stdClass();
@@ -131,16 +132,14 @@ class StatisticController extends BaseAdminController
         $dateDiff = date_diff($startDate, (new \DateTime($endDate->format("Y-m-d"))));
         $table = [];
         $locale = $this->getSession()->getLang()->getLocale();
-        $results = $this->getStatisticHandler()->bestSales($this->getRequest(), $startDate, $endDate, $locale, $productRef);
+        $results = $this->getStatisticHandler()->bestSales($startDate, $endDate, $locale, $productRef);
         $results2 = $this->getStatisticHandler()->bestSales(
-            $this->getRequest(),
             (clone($startDate))->sub($dateDiff),
             (clone($endDate))->sub($dateDiff),
             $locale,
             $productRef
         );
         $results3 = $this->getStatisticHandler()->bestSales(
-            $this->getRequest(),
             (clone($startDate))->sub(new DateInterval('P1Y')),
             (clone($endDate))->sub(new DateInterval('P1Y')),
             $locale,
@@ -475,7 +474,6 @@ class StatisticController extends BaseAdminController
         if ($startDate->diff($endDate)->format('%a') === '0') {
             $result = $this->getStatisticHandler()->getRevenueStatsByHours($startDate);
         } else {
-            $endDate->add(new DateInterval('P1D'));
             $result = $this->getStatisticHandler()->getRevenueStats($startDate, $endDate);
         }
         $saleSeries->color = '#adadad';
