@@ -61,7 +61,7 @@ class StatisticController extends BaseAdminController
         $endYear = $request->query->get('endYear', date('Y'));
 
         $startDate = new \DateTime($startYear . '-' . $startMonth . '-' . $startDay);
-        $endDate = new \DateTime($endYear . '-' . $endMonth . '-' . ($endDay + 1));
+        $endDate = new \DateTime($endYear . '-' . $endMonth . '-' . $endDay);
 
         $result = $statisticHandler->averageCart($startDate, $endDate);
         $average = new \stdClass();
@@ -133,17 +133,15 @@ class StatisticController extends BaseAdminController
 
         $dateDiff = date_diff($startDate, (new \DateTime($endDate->format("Y-m-d"))));
         $table = [];
-        $locale = $this->getSession()->getLang()->getLocale();
-        $results = $statisticHandler->bestSales($request, $startDate, $endDate, $locale, $productRef);
+        $locale = $request->getSession()->getLang()->getLocale();
+        $results = $statisticHandler->bestSales($startDate, $endDate, $locale, $productRef);
         $results2 = $statisticHandler->bestSales(
-            $request,
             (clone($startDate))->sub($dateDiff),
             (clone($endDate))->sub($dateDiff),
             $locale,
             $productRef
         );
         $results3 = $statisticHandler->bestSales(
-            $request,
             (clone($startDate))->sub(new DateInterval('P1Y')),
             (clone($endDate))->sub(new DateInterval('P1Y')),
             $locale,
@@ -255,7 +253,7 @@ class StatisticController extends BaseAdminController
     /**
      * @throws \Propel\Runtime\Exception\PropelException
      */
-    public function getProductDetails(Request $request)
+    public function getProductDetails(Request $request, StatisticHandler $statisticHandler)
     {
         $productId = $request->query->get('productId');
 
@@ -270,7 +268,7 @@ class StatisticController extends BaseAdminController
         $startDate = new \DateTime($startYear . '-' . $startMonth . '-' . $startDay);
         $endDate = new \DateTime($endYear . '-' . $endMonth . '-' . $endDay);
 
-        $locale = $this->getSession()->getLang()->getLocale();
+        $locale = $request->getSession()->getLang()->getLocale();
 
         $result = $statisticHandler->productDetails($startDate, $endDate, $productId, $locale);
 
@@ -336,7 +334,7 @@ class StatisticController extends BaseAdminController
         $startDate = new \DateTime($startYear . '-' . $startMonth . '-' . $startDay);
         $endDate = new \DateTime($endYear . '-' . $endMonth . '-' . $endDay);
 
-        $local = $this->getSession()->getLang()->getLocale();
+        $local = $request->getSession()->getLang()->getLocale();
 
         $transport = new \stdClass();
         $transport->table = $statisticHandler->meansTransport($startDate, $endDate, $local);
@@ -372,7 +370,7 @@ class StatisticController extends BaseAdminController
         $startDate = new \DateTime($startYear . '-' . $startMonth . '-' . $startDay);
         $endDate = new \DateTime($endYear . '-' . $endMonth . '-' . $endDay);
 
-        $local = $this->getSession()->getLang()->getLocale();
+        $local = $request->getSession()->getLang()->getLocale();
 
         $payment = new \stdClass();
         $payment->table = $statisticHandler->meansPayment($startDate, $endDate, $local);

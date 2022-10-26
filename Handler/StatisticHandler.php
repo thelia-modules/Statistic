@@ -14,11 +14,9 @@ namespace Statistic\Handler;
 
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\Join;
-use Propel\Runtime\Propel;
 use Statistic\Query\OrderByHoursQuery;
 use Statistic\Query\StatsOrderQuery;
 use Statistic\Statistic;
-use Thelia\Core\HttpFoundation\Request;
 use Thelia\Model\Base\AttributeAvQuery;
 use Thelia\Model\Base\OrderProduct;
 use Thelia\Model\Base\ProductSaleElementsQuery;
@@ -30,9 +28,6 @@ use Thelia\Model\Map\OrderCouponTableMap;
 use Thelia\Model\Map\OrderProductTableMap;
 use Thelia\Model\Map\OrderProductTaxTableMap;
 use Thelia\Model\Map\OrderTableMap;
-use Thelia\Model\ModuleConfigI18nQuery;
-use Thelia\Model\ModuleConfigQuery;
-use Thelia\Model\ModuleQuery;
 use Thelia\Model\OrderProductQuery;
 use Thelia\Model\OrderQuery;
 use Thelia\Model\ProductQuery;
@@ -56,24 +51,25 @@ class StatisticHandler
     public function averageCart(\DateTime $startDate, \DateTime $endDate)
     {
         $po = $this->getMonthlySaleStats($startDate, $endDate);
-        $order = self::getMonthlyOrdersStats($startDate, $endDate);
+        $order = StatsOrderQuery::getOrderNumber($startDate,  $endDate);
 
         $result = array();
         $result['stats'] = array();
         $result['label'] = array();
-        $i = 0;
-        foreach ($po as $date => $gold) {
-            $key = explode('-', $date);
-            $result['stats'][] = array($i, $gold && isset($order[$date]) ? $gold / $order[$date] : 0);
-            $result['label'][] = array($i, $key[2] . '/' . $key[1]);
-            $i++;
+
+        for ($day = 0, $date = clone($startDate); $date <= $endDate; $date->add(new \DateInterval('P1D')), $day++) {
+            $currentStat = 0;
+            if (isset($order[$date->format('Y-n-j')]) && isset($po[$date->format('Y-n-j')])){
+                $currentStat = round($po[$date->format('Y-n-j')] / $order[$date->format('Y-n-j')], 2);
+            }
+            $result['stats'][] = [$day, $currentStat];
+            $result['label'][] = [$day, $date->format('d/m')];
         }
 
         return $result;
     }
 
     /**
-     * @param Request $request
      * @param \DateTime $startDate
      * @param \DateTime $endDate
      * @param $locale
@@ -81,7 +77,7 @@ class StatisticHandler
      * @return array
      * @throws \Propel\Runtime\Exception\PropelException
      */
-    public function bestSales(Request $request, \DateTime $startDate, \DateTime $endDate, $locale, $productRef = null)
+    public function bestSales(\DateTime $startDate, \DateTime $endDate, $locale, $productRef = null)
     {
         $queryResult = $this->bestSalesQuery($startDate, $endDate, $productRef)->find()->toArray();
         $result = [];
@@ -101,7 +97,7 @@ class StatisticHandler
 
             if (null !== $product) {
                 $pse['brand_id'] = $product->getBrandId();
-                $pse['brand_title'] = null;
+                $pse['brand_title'] = '';
                 if ($brand = $product->getBrand()) {
                     $pse['brand_title'] = $brand->setLocale($locale)->getTitle();
                 }
@@ -214,15 +210,12 @@ class StatisticHandler
      */
     public function getMonthlySaleStats(\DateTime $startDate, \DateTime $endDate)
     {
-        $result = array();
         /** @var \DateTime $date */
-        for ($date = clone($startDate); $date <= $endDate; $date->add(new \DateInterval('P1D'))) {
-            $result[$date->format('Y-m-d')] = StatsOrderQuery::getSaleStats(
-                $date->setTime(0, 0),
-                $date->setTime(23, 59, 59),
-                false
-            );
-        }
+        $result = StatsOrderQuery::getSaleStats(
+            clone($startDate)->setTime(0, 0),
+            clone($endDate)->setTime(23, 59, 59),
+            false
+        );
 
         return $result;
     }
@@ -241,15 +234,19 @@ class StatisticHandler
         $result['stats'] = array();
         $result['label'] = array();
 
-        for ($day = 0, $date = clone($startDate); $date <= $endDate; $date->add(new \DateInterval('P1D')), $day++) {
-            $dayAmount = StatsOrderQuery::getSaleStats(
-                $date->setTime(0, 0, 0),
-                $date->setTime(23, 59, 59),
-                false
-            );
-            $key = explode('-', $date->format('Y-m-d'));
-            $result['stats'][] = array($day, $dayAmount);
-            $result['label'][] = array($day, $key[2] . '/' . $key[1]);
+        $queryResult = StatsOrderQuery::getSaleStats(
+            clone($startDate)->setTime(0, 0),
+            clone($endDate)->setTime(23, 59, 59),
+            false
+        );
+
+        for($day = 0, $date = clone($startDate); $date <= $endDate; $date->add(new \DateInterval('P1D')), $day++) {
+            $currentStat = 0;
+            if (isset($queryResult[$date->format('Y-n-j')])){
+                $currentStat = $queryResult[$date->format('Y-n-j')];
+            }
+            $result['stats'][] = [$day, $currentStat];
+            $result['label'][] = [$day, $date->format('d/m')];
         }
 
         return $result;
@@ -336,45 +333,6 @@ class StatisticHandler
     /**
      * @param \DateTime $startDate
      * @param \DateTime $endDate
-     * @return array
-     */
-    public static function getMonthlyOrdersStats(\DateTime $startDate, \DateTime $endDate)
-    {
-        $sql = "
-            SELECT
-            DATE(created_at) `date`,
-            COUNT(DISTINCT id) total
-            FROM `order`
-            WHERE created_at >= '%startDate'
-            AND
-            created_at <= '%endDate'
-            AND 
-            status_id IN ('%statusId')
-            GROUP BY Date(created_at)
-        ";
-
-        $sql = str_replace(
-            array('%startDate', '%endDate', '%statusId'),
-            array(
-                $startDate->format(self::START_DAY_FORMAT),
-                $endDate->format(self::END_DAY_FORMAT),
-                Statistic::getConfigValue('order_types')
-            ),
-            $sql
-        );
-
-        /** @var \Propel\Runtime\Connection\ConnectionWrapper $con */
-        $con = Propel::getConnection(OrderTableMap::DATABASE_NAME);
-        /** @var \Propel\Runtime\Connection\StatementWrapper $query */
-        $query = $con->prepare($sql);
-        $query->execute();
-
-        return $query->fetchAll(\PDO::FETCH_COLUMN | \PDO::FETCH_UNIQUE);
-    }
-
-    /**
-     * @param \DateTime $startDate
-     * @param \DateTime $endDate
      * @param null $productRef
      * @return OrderQuery
      * @throws \Propel\Runtime\Exception\PropelException
@@ -424,6 +382,8 @@ class StatisticHandler
             'discount',
             'postage',
             'product_sale_elements_id',
+            OrderTableMap::COL_INVOICE_DATE,
+            OrderTableMap::COL_ID,
         ));
 
         return $query;

@@ -18,15 +18,13 @@ class ConfigController extends BaseAdminController
     public function setAction()
     {
         $form = $this->createForm(Configuration::getName());
-        $response = null;
 
         $configForm = $this->validateForm($form);
         Statistic::setConfigValue('order_types', $configForm->get('order')->getData(), true, true);
 
-        $response = $this->render(
+        return $this->render(
             'module-configure',
             ['module_code' => 'Statistic']
         );
-        return $response;
     }
 }
