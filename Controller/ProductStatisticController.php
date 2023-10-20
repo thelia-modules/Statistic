@@ -35,11 +35,13 @@ class ProductStatisticController extends BaseAdminController
     {
         $category = $request->get('category');
 
-        $loop = new Product($this->container, $requestStack, $eventDispatcher, $securityContext, $translator, $theliaParserLoops, $kernelEnvironment);
+        $loop = new Product();
+        $loop->init($this->container, $requestStack, $eventDispatcher, $securityContext, $translator, $theliaParserLoops, $kernelEnvironment);
         $loop->initializeArgs([
             "category" => $category,
             "depth" => "10"
         ]);
+
 
         $query = $loop->buildModelCriteria();
         $result = $query->find()->toArray();
