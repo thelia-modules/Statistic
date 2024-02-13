@@ -214,7 +214,7 @@ class StatisticHandler
         $result = StatsOrderQuery::getSaleStats(
             clone($startDate)->setTime(0, 0),
             clone($endDate)->setTime(23, 59, 59),
-            false
+            (bool) Statistic::getConfigValue(Statistic::INCLUDE_SHIPPING)
         );
 
         return $result;
@@ -237,7 +237,7 @@ class StatisticHandler
         $queryResult = StatsOrderQuery::getSaleStats(
             clone($startDate)->setTime(0, 0),
             clone($endDate)->setTime(23, 59, 59),
-            false
+            (bool) Statistic::getConfigValue(Statistic::INCLUDE_SHIPPING)
         );
 
         for($day = 0, $date = clone($startDate); $date <= $endDate; $date->add(new \DateInterval('P1D')), $day++) {

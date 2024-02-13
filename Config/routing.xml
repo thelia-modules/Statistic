@@ -90,6 +90,9 @@
     <route id="statistic.configuration" path="/admin/module/statistic/config" methods="post">
         <default key="_controller">Statistic\Controller\ConfigController::setAction</default>
     </route>
+    <route id="statistic.include_shipping" path="/admin/module/statistic/include_shipping" methods="post">
+        <default key="_controller">Statistic\Controller\ConfigController::setIncludeShipping</default>
+    </route>
 
     <!-- Search -->
 
