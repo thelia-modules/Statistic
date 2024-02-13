@@ -1,6 +1,7 @@
 <?php
 
 return array(
+    'Include delivery fee in the statistics dashboard ?' => 'Ajouter les frais de livraison au tableau des statistiques ?',
     'Stats between %startDay/%startMonth/%startYear' => 'Statistiques du %startDay/%startMonth/%startYear',
     'Stats between %startDay/%startMonth/%startYear and %endDay/%endMonth/%endYear' => 'Statistiques entre le %startDay/%startMonth/%startYear et le %endDay/%endMonth/%endYear',
     'Stats for %startDay/%startMonth/%startYear' => 'Statistic pour le %startDay/%startMonth/%startYear',

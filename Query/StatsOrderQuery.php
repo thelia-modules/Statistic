@@ -35,10 +35,10 @@ class StatsOrderQuery extends OrderQuery
             ->innerJoinOrderProduct()
             ->addJoinObject($orderTaxJoin)
             ->withColumn( 'CONCAT(YEAR(`order`.`invoice_date`),"-",MONTH(`order`.`invoice_date`),"-",DAY(`order`.`invoice_date`))', 'DATE')
-            ->withColumn("SUM((`order_product`.QUANTITY * IF(`order_product`.WAS_IN_PROMO,`order_product`.PROMO_PRICE,`order_product`.PRICE)))", 'TOTAL')
-            ->withColumn("SUM((`order_product`.QUANTITY * IF(`order_product`.WAS_IN_PROMO,`order_product_tax`.PROMO_AMOUNT,`order_product_tax`.AMOUNT)))", 'TAX')
-            ->withColumn("SUM(`order`.discount)", 'DISCOUNT')
-            ->withColumn("SUM(`order`.postage)", 'POSTAGE')
+            ->withColumn("SUM(ROUND(`order_product`.QUANTITY * IF(`order_product`.WAS_IN_PROMO,`order_product`.PROMO_PRICE,`order_product`.PRICE), 2))", 'TOTAL')
+            ->withColumn("SUM(ROUND(`order_product`.QUANTITY * IF(`order_product`.WAS_IN_PROMO,`order_product_tax`.PROMO_AMOUNT,`order_product_tax`.AMOUNT), 2))", 'TAX')
+            ->withColumn("SUM(DISTINCT(`order`.discount))", 'DISCOUNT')
+            ->withColumn("SUM(DISTINCT(`order`.postage))", 'POSTAGE')
             ->groupBy('DATE')
             ->select(['TOTAL', 'TAX', 'DATE', 'DISCOUNT', 'POSTAGE']);
         $arrayResults = $query->find();

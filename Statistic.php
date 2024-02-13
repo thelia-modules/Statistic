@@ -21,6 +21,8 @@ class Statistic extends BaseModule
 {
     const MESSAGE_DOMAIN = "statistic";
 
+    public const INCLUDE_SHIPPING = "statistic_include_shipping";
+
     public function getHooks()
     {
         return array(

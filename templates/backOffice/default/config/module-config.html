@@ -29,8 +29,8 @@
 
                     <input type="text" name="{$name}" class="form-control" value="{$value}" \>
                     <span class="input-group-btn">
-                                <button type="submit" class="form-submit-button btn btn-default" >Set</button>
-                            </span>
+                        <button type="submit" class="form-submit-button btn btn-default" >Set</button>
+                    </span>
                 </div>
                 {/form_field}
                 </form>
@@ -38,6 +38,15 @@
                 <span class="help-block">
                     {intl l='tool.config.help' d='statistic'}
                 </span>
+                {form name = "statistic_form_include_shipping"}
+                <form method="POST" action="{url path="/admin/module/statistic/include_shipping"}" >
+                    {form_hidden_fields}
+                    {render_form_field field='include_shipping'}
+                    <span class="input-group-btn">
+                        <button type="submit" class="form-submit-button btn btn-success" >{intl l='Save'}</button>
+                    </span>
+                </form>
+                {/form}
                 <hr>
                 <div class="table-responsive">
                     <table class="table table-striped table-condensed table-left-aligned">
