@@ -7,7 +7,7 @@ use Thelia\Core\Hook\BaseHook;
 
 class AdminHomeHook extends BaseHook
 {
-    public function onMainHomeAdmin(HookRenderEvent $event)
+    public function onMainHomeAdmin(HookRenderEvent $event): void
     {
         $content = $this->render("statistic-content-tool.html");
         $event->add($content);

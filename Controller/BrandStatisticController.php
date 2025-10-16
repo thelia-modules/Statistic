@@ -1,16 +1,14 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: nicolasbarbey
- * Date: 22/07/2020
- * Time: 16:08
- */
 
 namespace Statistic\Controller;
 
-
+use DateInterval;
+use DateTime;
+use Exception;
 use Statistic\Handler\BrandStatisticHandler;
 use Statistic\Statistic;
+use stdClass;
+use Symfony\Component\HttpFoundation\Response;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Core\HttpFoundation\Request;
 use Thelia\Model\Base\OrderQuery;
@@ -18,9 +16,9 @@ use Thelia\Model\Base\OrderQuery;
 class BrandStatisticController extends BaseAdminController
 {
     /**
-     * @throws \Exception
+     * @throws Exception
      */
-    public function brandTurnoverAction(Request $request, BrandStatisticHandler $brandStatisticHandler)
+    public function brandTurnoverAction(Request $request, BrandStatisticHandler $brandStatisticHandler): Response
     {
         $brandId = $request->get('brandId');
 
@@ -34,8 +32,8 @@ class BrandStatisticController extends BaseAdminController
         $endMonth = $request->query->get('endMonth', date('m'));
         $endYear = $request->query->get('endYear', date('Y'));
 
-        $startDate = new \DateTime($startYear . '-' . $startMonth . '-' . $startDay);
-        $endDate = new \DateTime($endYear . '-' . $endMonth . '-' . $endDay);
+        $startDate = new DateTime($startYear . '-' . $startMonth . '-' . $startDay);
+        $endDate = new DateTime($endYear . '-' . $endMonth . '-' . $endDay);
 
 
         if ($startDate->diff($endDate)->format('%a') === '0') {
@@ -45,9 +43,8 @@ class BrandStatisticController extends BaseAdminController
             $result = $brandStatisticHandler->getBrandTurnover($brandId, $startDate, $endDate);
         }
 
-
-        $plot = new \stdClass();
-        $data = new \stdClass();
+        $plot = new stdClass();
+        $data = new stdClass();
 
         $plot->color = '#f39922';
         $plot->graph = $result['stats'];
@@ -76,10 +73,10 @@ class BrandStatisticController extends BaseAdminController
 
             $ghostGraph = $brandStatisticHandler->getBrandTurnover(
                 $brandId,
-                $startDate->sub(new \DateInterval('P1Y')),
-                $endDate->sub(new \DateInterval('P1Y'))
+                $startDate->sub(new DateInterval('P1Y')),
+                $endDate->sub(new DateInterval('P1Y'))
             );
-            $ghostCurve = new \stdClass();
+            $ghostCurve = new stdClass();
             $ghostCurve->color = "#38acfc";
             $ghostCurve->graph = $ghostGraph['stats'];
 
@@ -91,10 +88,9 @@ class BrandStatisticController extends BaseAdminController
     }
 
     /**
-     * @return \Thelia\Core\HttpFoundation\Response
-     * @throws \Exception
+     * @throws Exception
      */
-    public function brandSalesAction(Request $request, BrandStatisticHandler $brandStatisticHandler)
+    public function brandSalesAction(Request $request, BrandStatisticHandler $brandStatisticHandler): Response
     {
         $brandId = $request->get('brandId');
 
@@ -108,8 +104,8 @@ class BrandStatisticController extends BaseAdminController
         $endMonth = $request->query->get('endMonth', date('m'));
         $endYear = $request->query->get('endYear', date('Y'));
 
-        $startDate = new \DateTime($startYear . '-' . $startMonth . '-' . $startDay);
-        $endDate = new \DateTime($endYear . '-' . $endMonth . '-' . $endDay);
+        $startDate = new DateTime($startYear . '-' . $startMonth . '-' . $startDay);
+        $endDate = new DateTime($endYear . '-' . $endMonth . '-' . $endDay);
 
         if ($startDate->diff($endDate)->format('%a') === '0') {
             $result = $brandStatisticHandler->getBrandTurnoverByHours($brandId, $startDate, true);
@@ -118,8 +114,8 @@ class BrandStatisticController extends BaseAdminController
             $result = $brandStatisticHandler->getBrandTurnover($brandId, $startDate, $endDate, true);
         }
 
-        $plot = new \stdClass();
-        $data = new \stdClass();
+        $plot = new stdClass();
+        $data = new stdClass();
 
         $plot->color = '#5cb85c';
         $plot->graph = $result['stats'];
@@ -148,11 +144,11 @@ class BrandStatisticController extends BaseAdminController
 
             $ghostGraph = $brandStatisticHandler->getBrandTurnover(
                 $brandId,
-                $startDate->sub(new \DateInterval('P1Y')),
-                $endDate->sub(new \DateInterval('P1Y')),
+                $startDate->sub(new DateInterval('P1Y')),
+                $endDate->sub(new DateInterval('P1Y')),
                 true
             );
-            $ghostCurve = new \stdClass();
+            $ghostCurve = new stdClass();
             $ghostCurve->color = "#38acfc";
             $ghostCurve->graph = $ghostGraph['stats'];
 

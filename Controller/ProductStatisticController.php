@@ -12,16 +12,20 @@
 
 namespace Statistic\Controller;
 
+use DateTime;
 use Statistic\Handler\ProductStatisticHandler;
 use Statistic\Statistic;
+use stdClass;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Core\HttpFoundation\Request;
 use Thelia\Core\Security\SecurityContext;
 use Thelia\Core\Template\Loop\Product;
+use Thelia\Domain\Taxation\TaxEngine\TaxEngine;
 
 /**
  * Class ProductController
@@ -30,12 +34,20 @@ use Thelia\Core\Template\Loop\Product;
  */
 class ProductStatisticController extends BaseAdminController
 {
-
-    public function listProductAction(Request $request, RequestStack $requestStack, EventDispatcherInterface $eventDispatcher, SecurityContext $securityContext, TranslatorInterface $translator, $theliaParserLoops, $kernelEnvironment)
+    public function listProductAction(
+        Request $request,
+        RequestStack $requestStack,
+        EventDispatcherInterface $eventDispatcher,
+        SecurityContext $securityContext,
+        TranslatorInterface $translator,
+        TaxEngine $taxEngine,
+        $theliaParserLoops,
+        $kernelEnvironment
+    ): JsonResponse
     {
         $category = $request->get('category');
 
-        $loop = new Product();
+        $loop = new Product($taxEngine);
         $loop->init($this->container, $requestStack, $eventDispatcher, $securityContext, $translator, $theliaParserLoops, $kernelEnvironment);
         $loop->initializeArgs([
             "category" => $category,
@@ -49,7 +61,7 @@ class ProductStatisticController extends BaseAdminController
         return new JsonResponse($result);
     }
 
-    public function statTurnoverAction(ProductStatisticHandler $productStatisticHandler, Request $request)
+    public function statTurnoverAction(ProductStatisticHandler $productStatisticHandler, Request $request): Response
     {
         // récupération des paramètres
         $productRef = $request->query->get('ref', '141_4_91359672');
@@ -69,7 +81,7 @@ class ProductStatisticController extends BaseAdminController
         return $this->jsonResponse(json_encode($data));
     }
 
-    public function statSaleAction(ProductStatisticHandler $productStatisticHandler, Request $request)
+    public function statSaleAction(ProductStatisticHandler $productStatisticHandler, Request $request): Response
     {
         // récupération des paramètres
         $productId = $request->query->get('ref', '141_4_91359672');
@@ -90,17 +102,17 @@ class ProductStatisticController extends BaseAdminController
 
     }
 
-    public function prepareData($year, $year2, $results, $type)
+    public function prepareData($year, $year2, $results, $type): stdClass
     {
         $graph = array();
         $graphLabel = array();
-        $turnover = new \stdClass();
-        $turnover2 = new \stdClass();
+        $turnover = new stdClass();
+        $turnover2 = new stdClass();
         $productYear = $year;
 
         foreach ($results as $index => $result) {
             for ($i = 1; $i <= 12; ++$i) {
-                $date = new \DateTime($productYear . '-' . $i);
+                $date = new DateTime($productYear . '-' . $i);
                 if (!isset($result[$date->format('Y-n')])) {
                     $graph[$index][] = [$i - 1, 0];
                 } else {
@@ -115,7 +127,7 @@ class ProductStatisticController extends BaseAdminController
         $turnover->graph = $graph[0];
         $turnover->graphLabel = $graphLabel[0];
 
-        $data = new \stdClass();
+        $data = new stdClass();
 
         $data->series = array(
             $turnover

@@ -23,7 +23,7 @@ class Statistic extends BaseModule
 
     public const INCLUDE_SHIPPING = "statistic_include_shipping";
 
-    public function getHooks()
+    public function getHooks(): array
     {
         return array(
             array(
@@ -71,8 +71,7 @@ class Statistic extends BaseModule
     {
         $servicesConfigurator->load(self::getModuleCode().'\\', __DIR__)
             ->exclude([THELIA_MODULE_DIR . ucfirst(self::getModuleCode()). "/I18n/*"])
-            ->autowire(true)
-            ->autoconfigure(true);
+            ->autowire()
+            ->autoconfigure();
     }
-
 }

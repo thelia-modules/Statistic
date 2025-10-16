@@ -15,7 +15,7 @@ use Thelia\Form\BaseForm;
 
 class Configuration extends BaseForm
 {
-    protected function buildForm()
+    protected function buildForm(): void
     {
         $form = $this->formBuilder;
 
@@ -24,7 +24,7 @@ class Configuration extends BaseForm
         ]);
     }
 
-    public static function getName()
+    public static function getName(): string
     {
         return 'statistic_configuration';
     }

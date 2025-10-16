@@ -1,15 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: nicolasbarbey
- * Date: 18/07/2019
- * Time: 10:13
- */
 
 namespace Statistic\Query;
 
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\Join;
+use Propel\Runtime\Exception\PropelException;
 use Statistic\Statistic;
 use Thelia\Model\OrderQuery;
 use Thelia\Model\Map\OrderProductTableMap;
@@ -19,14 +14,9 @@ use Thelia\Model\Map\OrderProductTaxTableMap;
 class StatsOrderQuery extends OrderQuery
 {
     /**
-     * @param \DateTime $startDate
-     * @param \DateTime $endDate
-     * @param bool $includeShipping
-     * @param bool $withTaxes
-     * @return array
-     * @throws \Propel\Runtime\Exception\PropelException
+     * @throws PropelException
      */
-    public static function getSaleStats(\DateTime $startDate, \DateTime $endDate, $includeShipping, $withTaxes = true)
+    public static function getStatisticSaleStats(\DateTime $startDate, \DateTime $endDate, bool $includeShipping): array
     {
         $orderTaxJoin = new Join();
         $orderTaxJoin->addExplicitCondition(OrderProductTableMap::TABLE_NAME, 'ID', null, OrderProductTaxTableMap::TABLE_NAME, 'ORDER_PRODUCT_ID', null);
@@ -61,7 +51,7 @@ class StatsOrderQuery extends OrderQuery
         return $results;
     }
 
-    public static function getOrderNumber(\DateTime $startDate, \DateTime $endDate)
+    public static function getOrderNumber(\DateTime $startDate, \DateTime $endDate): array
     {
         $query = self::baseSaleStats($startDate, $endDate, 'o')
             ->withColumn('COUNT(DISTINCT id)', 'TOTAL')
@@ -78,7 +68,7 @@ class StatsOrderQuery extends OrderQuery
         return $results;
     }
 
-    protected static function baseSaleStats(\DateTime $startDate, \DateTime $endDate, $modelAlias = null)
+    protected static function baseSaleStats(\DateTime $startDate, \DateTime $endDate, $modelAlias = null): OrderQuery
     {
         $status = explode(',', Statistic::getConfigValue('order_types'));
         return self::create($modelAlias)

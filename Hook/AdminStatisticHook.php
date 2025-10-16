@@ -24,7 +24,7 @@ use Thelia\Core\Hook\BaseHook;
  */
 class AdminStatisticHook extends BaseHook
 {
-    public function onStatisticTab(HookRenderBlockEvent $event)
+    public function onStatisticTab(HookRenderBlockEvent $event): void
     {
         $event
             ->add(array(
@@ -56,7 +56,7 @@ class AdminStatisticHook extends BaseHook
 
     }
 
-    public function insertionJS(HookRenderEvent $event)
+    public function insertionJS(HookRenderEvent $event): void
     {
         $css = $this->addCSS('assets/css/bootstrap-datepicker3.css');
         $event->add($css);

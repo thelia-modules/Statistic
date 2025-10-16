@@ -1,25 +1,18 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: nicolasbarbey
- * Date: 18/08/2020
- * Time: 11:46
- */
 
 namespace Statistic\Hook;
-
 
 use Thelia\Core\Event\Hook\HookRenderEvent;
 use Thelia\Core\Hook\BaseHook;
 
 class ProductModuleHook extends BaseHook
 {
-    public function onProductTabContent(HookRenderEvent $event)
+    public function onProductTabContent(HookRenderEvent $event): void
     {
         $event->add($this->render('hook/best-sale-product.html'));
     }
 
-    public function insertJS(HookRenderEvent $event)
+    public function insertJS(HookRenderEvent $event): void
     {
         $css = $this->addCSS('assets/css/bootstrap-datepicker3.css');
         $event->add($css);

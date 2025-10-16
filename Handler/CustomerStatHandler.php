@@ -17,24 +17,21 @@ namespace Statistic\Handler;
  * @package Statistic\Handler
  * @author David Gros <dgros@openstudio.fr>
  */
+
+use DateInterval;
+use DateTime;
 use Thelia\Model\Base\CustomerQuery as BaseCustomerQuery;
 use Propel\Runtime\ActiveQuery\Criteria;
 
 class CustomerStatHandler extends BaseCustomerQuery
 {
-    /**
-     * @param \DateTime $start
-     * @param \DateTime $end
-     * @return array
-     * @throws \Exception
-     */
-    public static function getNewCustomersStats(\DateTime $start, \DateTime $end)
+    public static function getNewCustomersStats(DateTime $start, DateTime $end): array
     {
         $result = array();
         $result['stats'] = array();
         $result['label'] = array();
 
-        for ($day = 0, $date = clone($start); $date <= $end; $date->add(new \DateInterval('P1D')), $day++) {
+        for ($day = 0, $date = clone($start); $date <= $end; $date->add(new DateInterval('P1D')), $day++) {
             $dayCustomers = self::create()
                 ->filterByCreatedAt($date->format('Y-m-d') . "00:00:00", Criteria::GREATER_EQUAL)
                 ->filterByCreatedAt($date->format('Y-m-d') . "23:59:59", Criteria::LESS_EQUAL)
@@ -48,7 +45,7 @@ class CustomerStatHandler extends BaseCustomerQuery
         return $result;
     }
 
-    public static function getNewCustomersStatsByHours(\DateTime $start)
+    public static function getNewCustomersStatsByHours(DateTime $start): array
     {
         $result = array();
         $result['stats'] = array();

@@ -1,34 +1,22 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: nicolasbarbey
- * Date: 23/07/2020
- * Time: 09:27
- */
+
 
 namespace Statistic\Handler;
 
-
+use DateInterval;
+use DateTime;
+use PDO;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\Join;
 use Statistic\Statistic;
 use Thelia\Model\Map\OrderProductTableMap;
 use Thelia\Model\Map\ProductTableMap;
+use Thelia\Model\Order;
 use Thelia\Model\OrderQuery;
 
 class BrandStatisticHandler
 {
-
-    /**
-     * @param $brandId
-     * @param \DateTime $startDate
-     * @param \DateTime $endDate
-     * @param bool $count
-     * @return array
-     * @throws \Exception
-     * @throws \Propel\Runtime\Exception\PropelException
-     */
-    public function getBrandTurnover($brandId, \DateTime $startDate, \DateTime $endDate, $count = false)
+    public function getBrandTurnover($brandId, DateTime $startDate, DateTime $endDate, $count = false): array
     {
         $result = array();
         $result['stats'] = array();
@@ -37,7 +25,7 @@ class BrandStatisticHandler
         $query = $this->brandTurnoverQuery($brandId, $startDate, $endDate, $count);
         $queryResult = $query->find()->toArray('date');
 
-        for ($day = 0, $date = clone($startDate); $date <= $endDate; $date->add(new \DateInterval('P1D')), $day++) {
+        for ($day = 0, $date = clone($startDate); $date <= $endDate; $date->add(new DateInterval('P1D')), $day++) {
             $result['stats'][] = array($day, isset($queryResult[$date->format('Y-n-j')]) ? (float)($queryResult[$date->format('Y-n-j')]['TOTAL']) : 0);
             $result['label'][] = array($date->format('d/m'));
         }
@@ -45,14 +33,7 @@ class BrandStatisticHandler
         return $result;
     }
 
-    /**
-     * @param $brandId
-     * @param \DateTime $startDate
-     * @param bool $count
-     * @return array
-     * @throws \Propel\Runtime\Exception\PropelException
-     */
-    public function getBrandTurnoverByHours($brandId, \DateTime $startDate, $count = false)
+    public function getBrandTurnoverByHours($brandId, DateTime $startDate, $count = false): array
     {
         $result = array();
         $result['stats'] = array();
@@ -72,15 +53,7 @@ class BrandStatisticHandler
         return $result;
     }
 
-    /**
-     * @param $brandId
-     * @param \DateTime $startDate
-     * @param \DateTime $endDate
-     * @param bool $count
-     * @return OrderQuery
-     * @throws \Propel\Runtime\Exception\PropelException
-     */
-    protected function brandTurnoverQuery($brandId, \DateTime $startDate, \DateTime $endDate, $count = false)
+    protected function brandTurnoverQuery($brandId, DateTime $startDate, DateTime $endDate, $count = false): OrderQuery
     {
         $query = OrderQuery::create();
 
@@ -104,7 +77,7 @@ class BrandStatisticHandler
             ->innerJoinOrderProduct()
             ->addJoinObject($orderProductJoin);
 
-        $query->where('product.brand_id = ?', $brandId, \PDO::PARAM_STR);
+        $query->where('product.brand_id = ?', $brandId, PDO::PARAM_STR);
 
         $query->addGroupByColumn('DAY(order.invoice_date)');
 
@@ -131,15 +104,7 @@ class BrandStatisticHandler
         return $query;
     }
 
-    /**
-     * @param $brandId
-     * @param \DateTime $startDate
-     * @param \DateTime $endDate
-     * @param bool $count
-     * @return \Thelia\Model\Order
-     * @throws \Propel\Runtime\Exception\PropelException
-     */
-    protected function brandTurnoverByHourQuery($brandId, \DateTime $startDate, \DateTime $endDate, $count = false)
+    protected function brandTurnoverByHourQuery($brandId, DateTime $startDate, DateTime $endDate, $count = false): ?Order
     {
         $query = OrderQuery::create();
 
@@ -163,7 +128,7 @@ class BrandStatisticHandler
             ->innerJoinOrderProduct()
             ->addJoinObject($orderProductJoin);
 
-        $query->where('product.brand_id = ?', $brandId, \PDO::PARAM_STR);
+        $query->where('product.brand_id = ?', $brandId, PDO::PARAM_STR);
 
         if ($count) {
             $query
@@ -182,14 +147,7 @@ class BrandStatisticHandler
         return $query->findOne();
     }
 
-    /**
-     * @param $brandId
-     * @param \DateTime $startDate
-     * @param \DateTime $endDate
-     * @return OrderQuery
-     * @throws \Propel\Runtime\Exception\PropelException
-     */
-    protected function brandSaledQuery($brandId, \DateTime $startDate, \DateTime $endDate)
+    protected function brandSaledQuery($brandId, DateTime $startDate, DateTime $endDate): OrderQuery
     {
         $query = OrderQuery::create();
 
@@ -213,7 +171,7 @@ class BrandStatisticHandler
             ->innerJoinOrderProduct()
             ->addJoinObject($orderProductJoin);
 
-        $query->where('product.brand_id = ?', $brandId, \PDO::PARAM_STR);
+        $query->where('product.brand_id = ?', $brandId, PDO::PARAM_STR);
 
         $query->addGroupByColumn('DAY(order.invoice_date)');
 
@@ -231,5 +189,4 @@ class BrandStatisticHandler
 
         return $query;
     }
-
 }

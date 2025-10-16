@@ -12,9 +12,12 @@
 
 namespace Statistic\Handler;
 
+use PDO;
 use Propel\Runtime\ActiveQuery\Criteria;
+use Propel\Runtime\Exception\PropelException;
 use Statistic\Statistic;
 use Thelia\Model\OrderProductQuery;
+use Thelia\Model\OrderQuery;
 
 
 /**
@@ -24,20 +27,17 @@ use Thelia\Model\OrderProductQuery;
  */
 class ProductStatisticHandler
 {
-    protected $statisticHandler;
-
-    public function __construct(StatisticHandler $statisticHandler)
+    public function __construct(protected StatisticHandler $statisticHandler)
     {
-        $this->statisticHandler = $statisticHandler;
     }
 
     /**
      * @param $productId
      * @param $year
      * @return array
-     * @throws \Propel\Runtime\Exception\PropelException
+     * @throws PropelException
      */
-    public function turnover($productId, $year)
+    public function turnover($productId, $year): array
     {
         return $this->turnoverQuery($productId, $year)->find()->toArray('date');
     }
@@ -46,9 +46,9 @@ class ProductStatisticHandler
      * @param $productRef
      * @param $year
      * @return array
-     * @throws \Propel\Runtime\Exception\PropelException
+     * @throws PropelException
      */
-    public function sale($productRef, $year)
+    public function sale($productRef, $year): array
     {
         return $this->saleQuery($productRef, $year)->find()->toArray('date');
     }
@@ -58,15 +58,12 @@ class ProductStatisticHandler
     // -------------
 
     /**
-     * @param $productRef
-     * @param $year
-     * @return \Thelia\Model\OrderQuery
-     * @throws \Propel\Runtime\Exception\PropelException
+     * @throws PropelException
      */
-    public function turnoverQuery($productRef, $year)
+    public function turnoverQuery(string $productRef, string $year): OrderQuery
     {
         $query = $this->statisticHandler->turnoverQuery($year);
-        $query->where('order_product.product_ref = ?', $productRef, \PDO::PARAM_STR);
+        $query->where('order_product.product_ref = ?', $productRef, PDO::PARAM_STR);
 
         return $query;
     }
@@ -75,9 +72,9 @@ class ProductStatisticHandler
      * @param $productRef
      * @param $year
      * @return OrderProductQuery
-     * @throws \Propel\Runtime\Exception\PropelException
+     * @throws PropelException
      */
-    public function saleQuery($productRef, $year)
+    public function saleQuery($productRef, $year): OrderProductQuery
     {
         $query = OrderProductQuery::create();
 
@@ -93,7 +90,7 @@ class ProductStatisticHandler
         $query->filterByProductRef($productRef);
 
         // filtrage par date
-        $query->where('YEAR(order_product.created_at) = ?', $year, \PDO::PARAM_STR);
+        $query->where('YEAR(order_product.created_at) = ?', $year, PDO::PARAM_STR);
 
         // ajout des colonnes AS
         $query

@@ -24,7 +24,7 @@ use Thelia\Tools\URL;
  */
 class AdminToolHook extends BaseHook
 {
-    public function onMainTopMenuTools(HookRenderBlockEvent $event)
+    public function onMainTopMenuTools(HookRenderBlockEvent $event): void
     {
         $event->add(array(
             "url" => URL::getInstance()->absoluteUrl("/admin/module/statistic/tool"),

@@ -9,22 +9,24 @@
 namespace Statistic\Controller;
 
 
+use Propel\Runtime\Exception\PropelException;
 use Statistic\Statistic;
+use Symfony\Component\HttpFoundation\Response;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Core\HttpFoundation\Request;
 use Thelia\Core\Security\AccessManager;
 use Thelia\Core\Security\Resource\AdminResources;
 use Thelia\Model\Base\BrandI18nQuery;
+use Thelia\Model\CategoryI18n;
 use Thelia\Model\CategoryI18nQuery;
 use Thelia\Model\ProductQuery;
 
 class SearchController extends BaseAdminController
 {
     /**
-     * @return mixed|\Thelia\Core\HttpFoundation\Response
-     * @throws \Propel\Runtime\Exception\PropelException
+     * @throws PropelException
      */
-    public function searchProductAction(Request $request)
+    public function searchProductAction(Request $request): ?Response
     {
         if (null !== $response = $this->checkAuth(AdminResources::MODULE, Statistic::MESSAGE_DOMAIN, AccessManager::VIEW)) {
             return $response;
@@ -60,10 +62,9 @@ class SearchController extends BaseAdminController
 
 
     /**
-     * @return mixed|\Thelia\Core\HttpFoundation\Response
-     * @throws \Propel\Runtime\Exception\PropelException
+     * @throws PropelException
      */
-    public function searchCategoryAction(Request $request)
+    public function searchCategoryAction(Request $request): ?Response
     {
         if (null !== $response = $this->checkAuth(AdminResources::MODULE, Statistic::MESSAGE_DOMAIN, AccessManager::VIEW)) {
             return $response;
@@ -78,7 +79,7 @@ class SearchController extends BaseAdminController
             ->limit(100)
             ->find();
 
-        /** @var \Thelia\Model\CategoryI18n $categoryI18n */
+        /** @var CategoryI18n $categoryI18n */
         foreach ($categoriesI18n as $categoryI18n) {
             $category = $categoryI18n->getCategory();
             $resultArray[$category->getId()] = $categoryI18n->getTitle();
@@ -87,10 +88,7 @@ class SearchController extends BaseAdminController
         return $this->jsonResponse(json_encode($resultArray));
     }
 
-    /**
-     * @return mixed|\Thelia\Core\HttpFoundation\Response
-     */
-    public function searchBrandAction(Request $request)
+    public function searchBrandAction(Request $request): ?Response
     {
         if (null !== $response = $this->checkAuth(AdminResources::MODULE, Statistic::MESSAGE_DOMAIN, AccessManager::VIEW)) {
             return $response;

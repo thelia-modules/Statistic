@@ -12,8 +12,13 @@
 
 namespace Statistic\Controller;
 
+use DateInterval;
+use DateTime;
+use Exception;
 use Statistic\Handler\CustomerStatHandler;
 use Statistic\Statistic;
+use stdClass;
+use Symfony\Component\HttpFoundation\Response;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Core\HttpFoundation\Request;
 use Thelia\Core\Security\AccessManager;
@@ -30,10 +35,9 @@ class CustomerStatisticController extends BaseAdminController
     const RESOURCE_CODE = "admin.home";
 
     /**
-     * @return mixed|\Thelia\Core\HttpFoundation\Response
-     * @throws \Exception
+     * @throws Exception
      */
-    public function statisticAction(Request $request, CustomerStatHandler $customerStatHandler)
+    public function statisticAction(Request $request, CustomerStatHandler $customerStatHandler): ?Response
     {
         if (null !== $response = $this->checkAuth(self::RESOURCE_CODE, array(), AccessManager::VIEW)) {
             return $response;
@@ -49,7 +53,7 @@ class CustomerStatisticController extends BaseAdminController
         $endMonth = $request->query->get('endMonth', date('m'));
         $endYear = $request->query->get('endYear', date('Y'));
 
-        $data = new \stdClass();
+        $data = new stdClass();
 
         $data->title = $this->getTranslator()->trans(
             "Stats between %startDay/%startMonth/%startYear and %endDay/%endMonth/%endYear", array(
@@ -62,8 +66,8 @@ class CustomerStatisticController extends BaseAdminController
         ), Statistic::MESSAGE_DOMAIN
         );
 
-        $startDate = new \DateTime($startYear . '-' . $startMonth . '-' . $startDay);
-        $endDate = new \DateTime($endYear . '-' . $endMonth . '-' . $endDay);
+        $startDate = new DateTime($startYear . '-' . $startMonth . '-' . $startDay);
+        $endDate = new DateTime($endYear . '-' . $endMonth . '-' . $endDay);
 
         if ($startDate->diff($endDate)->format('%a') === '0') {
             $result = $customerStatHandler->getNewCustomersStatsByHours($startDate);
@@ -71,7 +75,7 @@ class CustomerStatisticController extends BaseAdminController
             $result = $customerStatHandler->getNewCustomersStats($startDate, $endDate);
         }
 
-        $newCustomerSeries = new \stdClass();
+        $newCustomerSeries = new stdClass();
         $newCustomerSeries->color = $request->query->get('customers_color', '#f39922');
         $newCustomerSeries->graphLabel = $result['label'];
         $newCustomerSeries->graph = $result['stats'];
@@ -82,14 +86,14 @@ class CustomerStatisticController extends BaseAdminController
 
         if ((int)$ghost === 1) {
             if ($startDate->diff($endDate)->format('%a') === '0') {
-                $ghostGraph = $customerStatHandler->getNewCustomersStatsByHours($startDate->sub(new \DateInterval('P1Y')));
+                $ghostGraph = $customerStatHandler->getNewCustomersStatsByHours($startDate->sub(new DateInterval('P1Y')));
             } else {
                 $ghostGraph = $customerStatHandler->getNewCustomersStats(
-                    $startDate->sub(new \DateInterval('P1Y')),
-                    $endDate->sub(new \DateInterval('P1Y'))
+                    $startDate->sub(new DateInterval('P1Y')),
+                    $endDate->sub(new DateInterval('P1Y'))
                 );
             }
-            $ghostCurve = new \stdClass();
+            $ghostCurve = new stdClass();
             $ghostCurve->color = "#38acfc";
             $ghostCurve->graph = $ghostGraph['stats'];
 

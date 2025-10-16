@@ -2,19 +2,24 @@
 
 namespace Statistic\Controller;
 
+use DateInterval;
+use DateTime;
+use PDO;
 use Propel\Runtime\Propel;
 use Statistic\Statistic;
+use stdClass;
+use Symfony\Component\HttpFoundation\Response;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Model\Base\CategoryQuery;
 use Thelia\Model\OrderQuery;
 
 class CategoryStatisticController extends BaseAdminController
 {
-    public function categorySalesAction()
+    public function categorySalesAction(): Response
     {
         $this->getDataFromRequest($categories, $startDate, $endDate, $ghost);
-        $plot = new \stdClass();
-        $data = new \stdClass();
+        $plot = new stdClass();
+        $data = new stdClass();
 
         if ($startDate->diff($endDate)->format('%a') === '0') {
 
@@ -49,11 +54,11 @@ class CategoryStatisticController extends BaseAdminController
 
             $ghostGraph = $this->getCategorySales(
                 $categories,
-                $startDate->sub(new \DateInterval('P1Y')),
-                $endDate->sub(new \DateInterval('P1Y')),
+                $startDate->sub(new DateInterval('P1Y')),
+                $endDate->sub(new DateInterval('P1Y')),
                 true
             );
-            $ghostCurve = new \stdClass();
+            $ghostCurve = new stdClass();
             $ghostCurve->color = "#38acfc";
             $ghostCurve->graph = $ghostGraph['stats'];
 
@@ -64,11 +69,11 @@ class CategoryStatisticController extends BaseAdminController
         return $this->jsonResponse(json_encode($data));
     }
 
-    public function categoryTurnoverAction()
+    public function categoryTurnoverAction(): Response
     {
         $this->getDataFromRequest($categories, $startDate, $endDate, $ghost);
-        $plot = new \stdClass();
-        $data = new \stdClass();
+        $plot = new stdClass();
+        $data = new stdClass();
 
         if ($startDate->diff($endDate)->format('%a') === '0') {
 
@@ -102,10 +107,10 @@ class CategoryStatisticController extends BaseAdminController
 
             $ghostGraph = $this->getCategorySales(
                 $categories,
-                $startDate->sub(new \DateInterval('P1Y')),
-                $endDate->sub(new \DateInterval('P1Y'))
+                $startDate->sub(new DateInterval('P1Y')),
+                $endDate->sub(new DateInterval('P1Y'))
             );
-            $ghostCurve = new \stdClass();
+            $ghostCurve = new stdClass();
             $ghostCurve->color = "#38acfc";
             $ghostCurve->graph = $ghostGraph['stats'];
 
@@ -116,7 +121,7 @@ class CategoryStatisticController extends BaseAdminController
         return $this->jsonResponse(json_encode($data));
     }
 
-    private function getCategorySales($brandId, \DateTime $startDate, \DateTime $endDate, $count = false)
+    private function getCategorySales($brandId, DateTime $startDate, DateTime $endDate, $count = false): array
     {
         $result = array();
         $result['stats'] = array();
@@ -134,7 +139,7 @@ class CategoryStatisticController extends BaseAdminController
             $queryData[$queryResult['date']] = $queryResult['TOTAL'];
         }
 
-        for ($day = 0, $date = clone($startDate); $date <= $endDate; $date->add(new \DateInterval('P1D')), $day++) {
+        for ($day = 0, $date = clone($startDate); $date <= $endDate; $date->add(new DateInterval('P1D')), $day++) {
             $result['stats'][] = array($day, isset($queryData[$date->format('Y-n-j')]) ? (float)($queryData[$date->format('Y-n-j')]) : 0);
             $result['label'][] = array($date->format('d/m'));
         }
@@ -142,7 +147,7 @@ class CategoryStatisticController extends BaseAdminController
         return $result;
     }
 
-    private function getCategorySalesByHours($categories, \DateTime $startDate, $count = false)
+    private function getCategorySalesByHours($categories, DateTime $startDate, $count = false): array
     {
         $result = array();
         $result['stats'] = array();
@@ -162,7 +167,7 @@ class CategoryStatisticController extends BaseAdminController
         return $result;
     }
 
-    protected function categorySalesQuery($categories, \DateTime $startDate, \DateTime $endDate, $count = false)
+    protected function categorySalesQuery($categories, DateTime $startDate, DateTime $endDate, $count = false): array
     {
         $con = Propel::getConnection();
 
@@ -191,15 +196,15 @@ class CategoryStatisticController extends BaseAdminController
 
             $stmt = $con->prepare($sql);
 
-            $stmt->bindValue(':p1', $startDate->format('Y-m-d H:i:s'), \PDO::PARAM_STR);
-            $stmt->bindValue(':p2', $endDate->format('Y-m-d H:i:s'), \PDO::PARAM_STR);
+            $stmt->bindValue(':p1', $startDate->format('Y-m-d H:i:s'), PDO::PARAM_STR);
+            $stmt->bindValue(':p2', $endDate->format('Y-m-d H:i:s'), PDO::PARAM_STR);
 
             $stmt->execute();
 
             return $stmt->fetchAll();
     }
 
-    protected function getDataFromRequest(&$categories, &$startDate, &$endDate, &$ghost)
+    protected function getDataFromRequest(&$categories, &$startDate, &$endDate, &$ghost): void
     {
         $categoryId = $this->getRequest()->get('categoryId');
 
@@ -215,8 +220,8 @@ class CategoryStatisticController extends BaseAdminController
         $endMonth = $this->getRequest()->query->get('endMonth', date('m'));
         $endYear = $this->getRequest()->query->get('endYear', date('Y'));
 
-        $startDate = new \DateTime($startYear . '-' . $startMonth . '-' . $startDay);
-        $endDate = new \DateTime($endYear . '-' . $endMonth . '-' . $endDay);
+        $startDate = new DateTime($startYear . '-' . $startMonth . '-' . $startDay);
+        $endDate = new DateTime($endYear . '-' . $endMonth . '-' . $endDay);
     }
 
     protected function getCategoryChildren($parentCategory, $categories)
