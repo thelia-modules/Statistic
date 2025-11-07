@@ -123,8 +123,8 @@ class StatisticHandler
             ->endUse()
             ->endUse();
         $queryResult = $query
-            ->condition('start', OrderTableMap::INVOICE_DATE . ' >= ?', $startDate->setTime(0, 0))
-            ->condition('end', OrderTableMap::INVOICE_DATE . ' <= ?', $endDate->setTime(23, 59, 59))
+            ->condition('start', OrderTableMap::COL_INVOICE_DATE . ' >= ?', $startDate->setTime(0, 0))
+            ->condition('end', OrderTableMap::COL_INVOICE_DATE . ' <= ?', $endDate->setTime(23, 59, 59))
             ->condition('product_ref', OrderProductTableMap::COL_PRODUCT_REF . '= ?', $productRef)
             ->where(array('start', 'end', 'product_ref'), Criteria::LOGICAL_AND)
             ->find();
@@ -373,11 +373,11 @@ class StatisticHandler
 
         // Ajout du select
         $query
-            ->addAsColumn('code', CouponTableMap::CODE)
-            ->addAsColumn('type', CouponTableMap::TYPE)
-            ->addAsColumn('rule', CouponTableMap::SERIALIZED_EFFECTS)
-            ->addAsColumn('total', "COUNT(" . OrderCouponTableMap::CODE . ")");
-        $query->groupBy(CouponTableMap::CODE)->orderBy('total', Criteria::DESC);
+            ->addAsColumn('code', CouponTableMap::COL_CODE)
+            ->addAsColumn('type', CouponTableMap::COL_TYPE)
+            ->addAsColumn('rule', CouponTableMap::COL_SERIALIZED_EFFECTS)
+            ->addAsColumn('total', "COUNT(" . OrderCouponTableMap::COL_CODE . ")");
+        $query->groupBy(CouponTableMap::COL_CODE)->orderBy('total', Criteria::DESC);
         $query->select(array(
             'code',
             'type',
@@ -402,8 +402,8 @@ class StatisticHandler
 
         // filtrage sur la date
         $query
-            ->condition('start', OrderTableMap::CREATED_AT . ' >= ?', $startDate->setTime(0, 0))
-            ->condition('end', OrderTableMap::CREATED_AT . ' <= ?', $endDate->setTime(23, 59, 59))
+            ->condition('start', OrderTableMap::COL_CREATED_AT . ' >= ?', $startDate->setTime(0, 0))
+            ->condition('end', OrderTableMap::COL_CREATED_AT . ' <= ?', $endDate->setTime(23, 59, 59))
             ->where(array('start', 'end'), Criteria::LOGICAL_AND);
 
         // Jointure sur les modules de transport
@@ -414,9 +414,9 @@ class StatisticHandler
 
         // select
         $query
-            ->addAsColumn('code', ModuleTableMap::CODE)
-            ->addAsColumn('title', ModuleI18nTableMap::TITLE)
-            ->addAsColumn('total', 'COUNT(' . ModuleTableMap::CODE . ')');
+            ->addAsColumn('code', ModuleTableMap::COL_CODE)
+            ->addAsColumn('title', ModuleI18nTableMap::COL_TITLE)
+            ->addAsColumn('total', 'COUNT(' . ModuleTableMap::COL_CODE . ')');
 
         $query->groupBy('code');
         $query->select(array(
@@ -442,8 +442,8 @@ class StatisticHandler
 
         // filtrage sur la date
         $query
-            ->condition('start', OrderTableMap::CREATED_AT . ' >= ?', $startDate->setTime(0, 0))
-            ->condition('end', OrderTableMap::CREATED_AT . ' <= ?', $endDate->setTime(23, 59, 59))
+            ->condition('start', OrderTableMap::COL_CREATED_AT . ' >= ?', $startDate->setTime(0, 0))
+            ->condition('end', OrderTableMap::COL_CREATED_AT . ' <= ?', $endDate->setTime(23, 59, 59))
             ->where(array('start', 'end'), Criteria::LOGICAL_AND);
 
         // Jointure sur le module de payement
@@ -455,9 +455,9 @@ class StatisticHandler
 
         // select
         $query
-            ->addAsColumn('code', ModuleTableMap::CODE)
-            ->addAsColumn('title', ModuleI18nTableMap::TITLE)
-            ->addAsColumn('total', 'COUNT(' . ModuleTableMap::CODE . ')');
+            ->addAsColumn('code', ModuleTableMap::COL_CODE)
+            ->addAsColumn('title', ModuleI18nTableMap::COL_TITLE)
+            ->addAsColumn('total', 'COUNT(' . ModuleTableMap::COL_CODE . ')');
 
         $query->groupBy('code');
         $query->select(array(
