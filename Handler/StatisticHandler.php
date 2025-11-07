@@ -304,7 +304,7 @@ class StatisticHandler
             ->filterByInvoiceDate(sprintf("%s 23:59:59", $endDate->format('Y-m-d')), Criteria::LESS_EQUAL)
             ->filterByStatusId(explode(',', Statistic::getConfigValue('order_types')), Criteria::IN)
             ->innerJoinOrderProduct()
-            ->withColumn("SUM(" . OrderProductTableMap::QUANTITY . ")", "total_sold")
+            ->withColumn("SUM(" . OrderProductTableMap::COL_QUANTITY . ")", "total_sold")
             ->withColumn(
                 "SUM((`order_product`.QUANTITY * IF(`order_product`.WAS_IN_PROMO,`order_product`.PROMO_PRICE,`order_product`.PRICE)))",
                 "total_ht"
@@ -316,7 +316,7 @@ class StatisticHandler
             ->endUse()
             ->withColumn("SUM(`order`.discount)", 'discount');
 
-        $query->groupBy(OrderProductTableMap::PRODUCT_REF);
+        $query->groupBy(OrderProductTableMap::COL_PRODUCT_REF);
 
         if ($productRef) {
             $query
@@ -327,10 +327,10 @@ class StatisticHandler
 
         // selection des données
         $query
-            ->addAsColumn('title', OrderProductTableMap::TITLE)
-            ->addAsColumn('product_ref', OrderProductTableMap::PRODUCT_REF)
-            ->addAsColumn('pse_ref', OrderProductTableMap::PRODUCT_SALE_ELEMENTS_REF)
-            ->addAsColumn('product_sale_elements_id', OrderProductTableMap::PRODUCT_SALE_ELEMENTS_ID);
+            ->addAsColumn('title', OrderProductTableMap::COL_TITLE)
+            ->addAsColumn('product_ref', OrderProductTableMap::COL_PRODUCT_REF)
+            ->addAsColumn('pse_ref', OrderProductTableMap::COL_PRODUCT_SALE_ELEMENTS_REF)
+            ->addAsColumn('product_sale_elements_id', OrderProductTableMap::COL_PRODUCT_SALE_ELEMENTS_ID);
         $query->select(array(
             'title',
             'product_ref',
