@@ -1,11 +1,11 @@
 {# Statistic dashboard front-end stack. The default-twig BO ships no jQuery; the legacy dashboard
    is built on jQuery + jqplot + DataTables + bootstrap-datepicker. jqplot has no maintained CDN, so
    it is loaded from a pinned CDN mirror; jQuery/DataTables/datepicker likewise. The module's own
-   behaviour scripts are loaded from its published asset folder. See uncertainties in the migration
-   report: the published module-asset URL prefix and the jqplot CDN availability must be runtime-verified. #}
+   behaviour scripts are served from /assets/modules/statistic/ — Thelia publishes the module's
+   templates/backOffice/default-twig/assets/ folder under that URL prefix at activation time. #}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqplot/1.0.9/jquery.jqplot.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/css/bootstrap-datepicker3.min.css">
-<link rel="stylesheet" href="/assets/modules/statistic/assets/css/stats.css">
+<link rel="stylesheet" href="/assets/modules/statistic/stats.css">
 
 <script>
     if (typeof jQuery === 'undefined') {
@@ -22,10 +22,10 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/js/bootstrap-datepicker.min.js"></script>
 
-<script src="/assets/modules/statistic/assets/js/blocksit.min.js"></script>
-<script src="/assets/modules/statistic/assets/js/modalSearch.js"></script>
-<script src="/assets/modules/statistic/assets/js/statistic.js"></script>
-<script src="/assets/modules/statistic/assets/js/statistic-product.js"></script>
-<script src="/assets/modules/statistic/assets/js/statistic-category.js"></script>
-<script src="/assets/modules/statistic/assets/js/statistic-brand.js"></script>
-<script src="/assets/modules/statistic/assets/js/statistic-annual.js"></script>
+<script src="/assets/modules/statistic/blocksit.min.js"></script>
+<script src="/assets/modules/statistic/modalSearch.js"></script>
+<script src="/assets/modules/statistic/statistic.js"></script>
+<script src="/assets/modules/statistic/statistic-product.js"></script>
+<script src="/assets/modules/statistic/statistic-category.js"></script>
+<script src="/assets/modules/statistic/statistic-brand.js"></script>
+<script src="/assets/modules/statistic/statistic-annual.js"></script>

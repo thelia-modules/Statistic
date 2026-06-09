@@ -1,7 +1,8 @@
-{# product.edit-js asset stack for the best-sales tab. See migration report uncertainties for the
-   published module-asset URL prefix and CDN availability. #}
+{# product.edit-js asset stack for the best-sales tab. Module assets are served from
+   /assets/modules/statistic/ — Thelia publishes the module's templates/backOffice/default-twig/assets/
+   folder under that URL prefix at activation time. #}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/css/bootstrap-datepicker3.min.css">
-<link rel="stylesheet" href="/assets/modules/statistic/assets/css/stats.css">
+<link rel="stylesheet" href="/assets/modules/statistic/stats.css">
 
 <script>
     if (typeof jQuery === 'undefined') {
@@ -10,4 +11,4 @@
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/js/bootstrap-datepicker.min.js"></script>
-<script src="/assets/modules/statistic/assets/js/product-best-sales.js"></script>
+<script src="/assets/modules/statistic/product-best-sales.js"></script>
