@@ -42,9 +42,11 @@ class StatisticController extends BaseAdminController
      *
      * fr_FR Affichage de la page de statistique.
      */
-    public function toolShow(): Response
+    public function toolShow(\Twig\Environment $twig): Response
     {
-        return $this->render('statistic-tool');
+        return new Response(
+            $twig->render('@StatisticModule/backOffice/default-twig/statistic-tool.html.twig')
+        );
     }
 
     /**

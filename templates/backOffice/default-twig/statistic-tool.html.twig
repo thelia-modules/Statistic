@@ -1,0 +1,15 @@
+{% extends '@BackOfficeDefaultTwig/base.html.twig' %}
+
+{% block title %}{{ 'tool.title'|trans({}, 'statistic') }}{% endblock %}
+
+{% block breadcrumb %}
+    <li class="breadcrumb-item"><a href="{{ path('admin.home') }}">{{ 'Home'|trans({}, 'statistic') }}</a></li>
+    <li class="breadcrumb-item"><a href="{{ path('admin.tools') }}">{{ 'Tools'|trans({}, 'statistic') }}</a></li>
+    <li class="breadcrumb-item active">{{ 'tool.title'|trans({}, 'statistic') }}</li>
+{% endblock %}
+
+{% block content %}
+    {% if is_granted('VIEW', {resource: 'admin.module', module: 'Statistic'}) %}
+        {% include '@StatisticModule/backOffice/default-twig/Statistic/statistic-content-tool.html.twig' %}
+    {% endif %}
+{% endblock %}

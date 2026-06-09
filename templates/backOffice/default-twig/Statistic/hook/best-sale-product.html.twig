@@ -1,0 +1,17 @@
+<div class="row clearfix">
+    <div class="col-md-3 card-title">{{ 'Statistics'|trans({}, 'statistic') }}</div>
+    <div class="col-md-3 float-end">
+        <div class="input-group">
+            <span class="input-group-text">{{ 'tool.from'|trans({}, 'statistic') }}</span>
+            <input id="selectedDate" type="text" class="form-control date-picker"/>
+            <span class="input-group-text">{{ 'tool.to'|trans({}, 'statistic') }}</span>
+            <input id="selectedEndDate" type="text" class="form-control end-date-picker"/>
+        </div>
+    </div>
+</div>
+
+<table class="table" id="table-best-sale-statistic" data-product_id="{{ product_id }}"></table>
+
+<script>
+    window.baseAdminUrl = "{{ path('admin.home') }}".replace(/\/home$/, '');
+</script>

@@ -1,0 +1,29 @@
+<div class="statistic_tool">
+    <div role="tabpanel">
+        {% set tabs = hook_block('statistic.tab') %}
+        <ul class="nav nav-tabs" role="tablist">
+            {% for tab in tabs %}
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link{% if loop.first %} active{% endif %}" href="#{{ tab.tab_id }}"
+                       role="tab" data-bs-toggle="tab">
+                        {{ tab.tab_nav_title }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+
+        <div class="tab-content">
+            {% for tab in tabs %}
+                <div class="tab-pane{% if loop.first %} active{% endif %}" id="{{ tab.tab_id }}" role="tabpanel">
+                    {{ tab.content|raw }}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+    window.baseAdminUrl = "{{ path('admin.home') }}".replace(/\/home$/, '');
+</script>
+
+{{ safe_hook('statistic.footer.js') }}

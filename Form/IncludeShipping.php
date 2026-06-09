@@ -30,4 +30,9 @@ class IncludeShipping extends BaseForm
             ]
         );
     }
+
+    public static function getName(): string
+    {
+        return 'statistic_include_shipping_form';
+    }
 }

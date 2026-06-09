@@ -1,0 +1,27 @@
+<div class="card dashboard">
+    <div class="card-body">
+        <div class="text-center clearfix">
+            <div class="btn-group">
+                <button type="button" class="btn btn-secondary annual-graph-select" role="group"
+                        data-type="jqplot" data-toggle="jqplot-annual"
+                        data-url="{{ path('statistic.tool.annual.turnover') }}"
+                        data-target="turnover">
+                    <i class="bi bi-currency-euro"></i> {{ 'tool.panel.general.turnover.title'|trans({}, 'statistic') }}
+                </button>
+            </div>
+        </div>
+        <div class="col-sm-2 input-group float-end">
+            <span class="input-group-text"><i class="bi bi-calendar"></i></span>
+            <input id="annualSelectedDate" type="text" class="form-control annual-date-picker"/>
+            <input id="annualSelectedDate2" type="text" class="form-control annual-date-picker2"/>
+        </div>
+
+        <hr/>
+        <div class="jqplot-content">
+            <div id="jqplot-annual"></div>
+        </div>
+        <div class="total">
+            <h1 class="d-none">Total : <span id="total-annual"></span></h1>
+        </div>
+    </div>
+</div>

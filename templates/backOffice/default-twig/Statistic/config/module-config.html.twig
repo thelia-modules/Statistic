@@ -1,0 +1,93 @@
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title mb-0">{{ 'tool.config.order_types'|trans({}, 'statistic') }}</h3>
+    </div>
+    <div class="card-body">
+
+        <form method="POST" action="{{ path('statistic.configuration') }}">
+            {{ form_widget(configuration_form._token) }}
+            {% if configuration_form.vars.errors|length > 0 %}
+                <div class="alert alert-danger">{{ form_errors(configuration_form) }}</div>
+            {% endif %}
+
+            <div class="mb-3 row">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <input type="text"
+                               name="{{ configuration_form.order.vars.full_name }}"
+                               class="form-control{% if configuration_form.order.vars.errors|length > 0 %} is-invalid{% endif %}"
+                               value="{{ configuration_form.order.vars.value }}">
+                        <button type="submit" class="btn btn-secondary">{{ 'Set'|trans({}, 'statistic') }}</button>
+                    </div>
+                    {{ form_errors(configuration_form.order) }}
+                </div>
+            </div>
+            {% do configuration_form.order.setRendered %}
+        </form>
+        <p class="form-text">{{ 'tool.config.help'|trans({}, 'statistic') }}</p>
+
+        <form method="POST" action="{{ path('statistic.include_shipping') }}">
+            {{ form_widget(include_shipping_form._token) }}
+            <div class="form-check mb-3">
+                <input type="checkbox"
+                       class="form-check-input"
+                       id="{{ include_shipping_form.include_shipping.vars.id }}"
+                       name="{{ include_shipping_form.include_shipping.vars.full_name }}"
+                       {% if include_shipping_form.include_shipping.vars.checked %}checked{% endif %}>
+                <label class="form-check-label" for="{{ include_shipping_form.include_shipping.vars.id }}">
+                    {{ include_shipping_form.include_shipping.vars.label }}
+                </label>
+            </div>
+            {% do include_shipping_form.include_shipping.setRendered %}
+            <button type="submit" class="btn btn-success">{{ 'Save'|trans({}, 'statistic') }}</button>
+        </form>
+
+        <hr>
+
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <caption>{{ 'tool.config.order_status'|trans({}, 'statistic') }}</caption>
+                <thead>
+                    <tr>
+                        <th>{{ 'tool.config.id'|trans({}, 'statistic') }}</th>
+                        <th>{{ 'tool.config.code'|trans({}, 'statistic') }}</th>
+                        <th>{{ 'tool.config.title'|trans({}, 'statistic') }}</th>
+                        <th>{{ 'tool.config.order'|trans({}, 'statistic') }}</th>
+                        <th>{{ 'tool.config.position'|trans({}, 'statistic') }}</th>
+                        {{ safe_hook('order-status.table-header') }}
+                        <th class="actions">{{ 'tool.config.action'|trans({}, 'statistic') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for status in order_statuses %}
+                        <tr>
+                            <td>
+                                <a href="{{ '/admin/configuration/order-status/update/' ~ status.id }}">{{ status.id }}</a>
+                            </td>
+                            <td>
+                                <a href="{{ '/admin/configuration/order-status/update/' ~ status.id }}">{{ status.code }}</a>
+                            </td>
+                            <td>
+                                <a class="badge text-decoration-none" style="background-color: {{ status.color }};"
+                                   href="{{ '/admin/configuration/order-status/update/' ~ status.id }}">{{ status.title }}</a>
+                            </td>
+                            <td>
+                                <a href="{{ path('admin.order.list') ~ '?status=' ~ status.id }}">{{ status.order_count }}</a>
+                            </td>
+                            <td>{{ status.position }}</td>
+                            {{ safe_hook('order-status.table-row', {'order_status_id': status.id}) }}
+                            <td class="actions">
+                                {% if is_granted('UPDATE', 'admin.order-status') %}
+                                    <a title="{{ 'tool.config.edit_order_status'|trans({}, 'statistic') }}"
+                                       href="{{ '/admin/configuration/order-status/update/' ~ status.id }}">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

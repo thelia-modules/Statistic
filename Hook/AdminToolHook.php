@@ -24,6 +24,15 @@ use Thelia\Tools\URL;
  */
 class AdminToolHook extends BaseHook
 {
+    public static function getSubscribedHooks(): array
+    {
+        return [
+            'main.top-menu-tools' => [
+                ['type' => 'back', 'method' => 'onMainTopMenuTools'],
+            ],
+        ];
+    }
+
     public function onMainTopMenuTools(HookRenderBlockEvent $event): void
     {
         $event->add(array(

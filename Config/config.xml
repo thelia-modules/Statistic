@@ -4,32 +4,4 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://thelia.net/schema/dic/config http://thelia.net/schema/dic/config/thelia-1.0.xsd">
 
-    <hooks>
-        <hook id="statistic.hook" class="Statistic\Hook\AdminToolHook" scope="request">
-            <tag name="hook.event_listener" event="main.top-menu-tools" type="back" method="onMainTopMenuTools" />
-        </hook>
-
-        <hook id="statistic.hook.statistic" class="Statistic\Hook\AdminStatisticHook" scope="request">
-            <tag name="hook.event_listener" event="statistic.tab" type="back" method="onStatisticTab" />
-            <tag name="hook.event_listener" event="statistic.footer.js" type="back" method="insertionJS" />
-        </hook>
-
-        <hook id="statistic.configuration.hook" class="Statistic\Hook\ConfigHook" scope="request">
-            <tag name="hook.event_listener" event="module.configuration" type="back" method="onModuleConfiguration"/>
-        </hook>
-
-        <hook id="statistic.hook.admin.home" class="Statistic\Hook\AdminHomeHook" scope="request">
-            <tag name="hook.event_listener" event="hook_home_stats" type="back"  method="onMainHomeAdmin" />
-        </hook>
-
-        <hook id="statistic.product.module" class="Statistic\Hook\ProductModuleHook" scope="request">
-            <tag name="hook.event_listener" event="product.tab-content" type="back"  method="onProductTabContent" />
-            <tag name="hook.event_listener" event="product.edit-js" type="back"  method="insertJS" />
-        </hook>
-    </hooks>
-
-    <forms>
-        <form name="statistic_configuration" class="Statistic\Form\Configuration" />
-    </forms>
-
 </config>

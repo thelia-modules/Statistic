@@ -1,0 +1,87 @@
+<div class="card dashboard">
+    <div class="card-body">
+        <div class="card-title clearfix">
+            <div class="col-sm-4 input-group Statistic-float">
+                <select id="category-select-tab" class="form-control">
+                    <option value="">{{ 'tool.panel.product.selectCategory'|trans({}, 'statistic') }}</option>
+                    {% for category in categories %}
+                        <option value="{{ category.id }}">{{ category.label }}</option>
+                    {% endfor %}
+                </select>
+                <a class="js-btn-search-category-tab btn btn-info" href="#"
+                   data-title="{{ 'search.category.title'|trans({}, 'statistic') }}"
+                   data-placeholder="{{ 'search.category.placeholder'|trans({}, 'statistic') }}">
+                    <i class="bi bi-search"></i>
+                </a>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="col-md-3 float-end">
+                <div class="input-group">
+                    <span class="input-group-text">{{ 'tool.from'|trans({}, 'statistic') }}</span>
+                    <input id="selectedDate" type="text" class="form-control category-date-picker"/>
+                    <span class="input-group-text">{{ 'tool.to'|trans({}, 'statistic') }}</span>
+                    <input id="selectedDate2" type="text" class="form-control category-date-picker2"/>
+                    <button class="btn btn-secondary" id="add-ghost-curve-category"><i class="bi bi-plus-lg"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center clearfix">
+            <div class="btn-group">
+                <button type="button" class="btn btn-primary category-graph-select"
+                        data-type="jqplot" data-toggle="jqplot-category"
+                        data-url="{{ path('statistic.tool.category.turnover') }}"
+                        data-target="turnover-category">
+                    <i class="bi bi-currency-euro"></i> {{ 'tool.panel.product.turnover.title'|trans({}, 'statistic') }}
+                </button>
+                <button type="button" class="btn btn-success category-graph-select"
+                        data-type="jqplot" data-toggle="jqplot-category"
+                        data-url="{{ path('statistic.tool.category.sale') }}"
+                        data-target="sales-category">
+                    <i class="bi bi-credit-card"></i> {{ 'tool.panel.product.sale.title'|trans({}, 'statistic') }}
+                </button>
+            </div>
+            <hr/>
+            <div class="jqplot-content">
+                <div id="jqplot-category"></div>
+            </div>
+        </div>
+
+        <div class="total">
+            <h1 class="d-none">Total : <span id="total-category"></span></h1>
+        </div>
+
+        <div class="modal fade js-modal-search-category" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title"></h3>
+                        <button type="button" class="btn-close js-btn-dismiss-modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <div class="js-form-search">
+                            <div class="mb-3">
+                                <div class="input-group">
+                                    <span class="input-group-text">{{ 'Search'|trans({}, 'statistic') }}</span>
+                                    <input name="search" class="js-input-search form-control" type="text"/>
+                                </div>
+                            </div>
+                            <div class="js-loader text-center d-none">{{ 'Please wait, loading'|trans({}, 'statistic') }}</div>
+                            <div class="alert alert-warning text-center d-none js-alert-no-result">
+                                {{ 'No results found for your search.'|trans({}, 'statistic') }}
+                            </div>
+                            <div class="mb-3 js-block-search-result d-none">
+                                <select class="form-control" size="10"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#" class="js-btn-dismiss-modal btn btn-secondary">{{ 'Close'|trans({}, 'statistic') }}</a>
+                        <a href="#" class="js-modal-btn-select btn btn-primary">{{ 'Select'|trans({}, 'statistic') }}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

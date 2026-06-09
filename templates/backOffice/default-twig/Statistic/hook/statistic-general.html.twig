@@ -1,0 +1,95 @@
+<div class="card dashboard">
+    <div class="card-body">
+        <div class="text-center clearfix">
+            <div class="btn-group">
+                <button type="button" class="btn btn-secondary general-graph-select active" role="group"
+                        data-type="jqplot" data-toggle="jqplot-general"
+                        data-url="{{ path('statistic.tool.general.revenue') }}"
+                        data-target="revenue"><i class="bi bi-currency-euro"></i> {{ 'tool.panel.general.revenue.title'|trans({}, 'statistic') }}
+                </button>
+                <button type="button" class="btn btn-primary general-graph-select" role="group"
+                        data-type="jqplot" data-toggle="jqplot-general"
+                        data-url="{{ path('statistic.tool.customer.stat') }}"
+                        data-target="registration"><i class="bi bi-person"></i> {{ 'tool.panel.customer.newCustomer'|trans({}, 'statistic') }}
+                </button>
+                <button type="button" class="btn btn-danger general-graph-select" role="group"
+                        data-type="jqplot" data-toggle="jqplot-general"
+                        data-url="{{ path('statistic.tool.general.orders') }}"
+                        data-target="orders"><i class="bi bi-credit-card"></i> {{ 'tool.panel.general.order'|trans({}, 'statistic') }}
+                </button>
+                <button type="button" class="btn btn-success general-graph-select" role="group"
+                        data-type="jqplot" data-toggle="jqplot-general"
+                        data-url="{{ path('statistic.tool.general.average_quart') }}"
+                        data-target="average-cart"><i class="bi bi-cart"></i> {{ 'tool.panel.general.averageCart'|trans({}, 'statistic') }}
+                </button>
+                <button type="button" class="btn btn-success general-graph-select" role="group"
+                        data-type="table" data-toggle="table-general"
+                        data-url="{{ path('statistic.tool.general.best_sales') }}"
+                        data-target="best-sales"><i class="bi bi-hand-thumbs-up"></i> {{ 'tool.panel.general.bestSales.title'|trans({}, 'statistic') }}
+                </button>
+                <button type="button" class="btn btn-success general-graph-select" role="group"
+                        data-type="table" data-toggle="table-general"
+                        data-url="{{ path('statistic.tool.general.discount_code') }}"
+                        data-target="discount-code"><i class="bi bi-asterisk"></i> {{ 'tool.panel.general.discountCode.title'|trans({}, 'statistic') }}
+                </button>
+                <button type="button" class="btn btn-info general-graph-select" role="group"
+                        data-type="table" data-toggle="table-general"
+                        data-url="{{ path('statistic.tool.general.means_transport') }}"
+                        data-target="means-transport"><i class="bi bi-truck"></i> {{ 'tool.panel.general.meansTransport.title'|trans({}, 'statistic') }}
+                </button>
+                <button type="button" class="btn btn-info general-graph-select" role="group"
+                        data-type="table" data-toggle="table-general"
+                        data-url="{{ path('statistic.tool.general.means_payment') }}"
+                        data-target="means-payement"><i class="bi bi-currency-euro"></i> {{ 'tool.panel.general.meansPayment.title'|trans({}, 'statistic') }}
+                </button>
+            </div>
+        </div>
+        <div class="row Statistic-dateSelector">
+            <div class="col-md-4 float-start btn-group">
+                <button class="btn btn-secondary" id="select-day-scale">{{ 'tool.day'|trans({}, 'statistic') }}</button>
+                <button class="btn btn-secondary" id="select-month-scale">{{ 'tool.month'|trans({}, 'statistic') }}</button>
+                <button class="btn btn-secondary" id="select-year-scale">{{ 'tool.year'|trans({}, 'statistic') }}</button>
+                <button class="btn btn-secondary" id="select-last-day-scale">{{ 'tool.day'|trans({}, 'statistic') }}-1</button>
+                <button class="btn btn-secondary" id="select-last-month-scale">{{ 'tool.month'|trans({}, 'statistic') }}-1</button>
+                <button class="btn btn-secondary" id="select-last-year-scale">{{ 'tool.year'|trans({}, 'statistic') }}-1</button>
+            </div>
+            <div class="col-md-3 float-end">
+                <div class="input-group">
+                    <span class="input-group-text">{{ 'tool.from'|trans({}, 'statistic') }}</span>
+                    <input id="selectedDate" type="text" class="form-control date-picker"/>
+                    <span class="input-group-text">{{ 'tool.to'|trans({}, 'statistic') }}</span>
+                    <input id="selectedEndDate" type="text" class="form-control end-date-picker"/>
+                    <button class="btn btn-secondary" id="add-ghost-curve"><i class="bi bi-plus-lg"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <hr/>
+        <div class="jqplot-content">
+            <div id="jqplot-general"></div>
+        </div>
+        <div class="total">
+            <h1 class="d-none">Total : <span id="total"></span></h1>
+        </div>
+        <div class="table-content">
+            <div id="best-sales-tool-div" hidden>
+                <div class="mb-3 col-md-3">
+                    <label for="best-sale-brand" class="form-label">{{ 'Filter by brand :'|trans({}, 'statistic') }}</label>
+                    <select id="best-sale-brand" class="form-control js-refresh-table" data-default="">
+                        <option value="">{{ 'No filter'|trans({}, 'statistic') }}</option>
+                        {% for brand in brands %}
+                            <option value="{{ brand.id }}">{{ brand.title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3 col-md-3">
+                    <label for="best-sale-search" class="form-label">{{ 'Search'|trans({}, 'statistic') }}</label>
+                    <input type="text" id="best-sale-search" class="form-control">
+                </div>
+            </div>
+
+            <h2 id="table-title" class="text-center"></h2>
+            <table id="table-general" class="table"></table>
+        </div>
+    </div>
+</div>

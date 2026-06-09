@@ -1,0 +1,88 @@
+<div class="card dashboard">
+    <div class="card-body">
+        <div class="card-title clearfix">
+            <div class="col-sm-4 input-group Statistic-float">
+                <select id="brand-select" class="form-control">
+                    <option value="">{{ 'tool.panel.brand.selectBrand'|trans({}, 'statistic') }}</option>
+                    {% for brand in brands %}
+                        <option value="{{ brand.id }}">{{ brand.title }}</option>
+                    {% endfor %}
+                </select>
+                <a class="js-btn-search-brand btn btn-info" href="#"
+                   data-title="{{ 'search.brand.title'|trans({}, 'statistic') }}"
+                   data-placeholder="{{ 'search.brand.placeholder'|trans({}, 'statistic') }}">
+                    <i class="bi bi-search"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="col-md-12">
+            <div class="col-md-3 float-end">
+                <div class="input-group">
+                    <span class="input-group-text">{{ 'tool.from'|trans({}, 'statistic') }}</span>
+                    <input id="brand-date-picker" type="text" class="form-control"/>
+                    <span class="input-group-text">{{ 'tool.to'|trans({}, 'statistic') }}</span>
+                    <input id="brand-date-picker2" type="text" class="form-control"/>
+                    <button class="btn btn-secondary" id="add-ghost-curve-brand"><i class="bi bi-plus-lg"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center clearfix">
+            <div class="btn-group">
+                <button type="button" class="btn btn-primary brand-graph-select"
+                        data-type="jqplot" data-toggle="jqplot-brand"
+                        data-url="{{ path('statistic.tool.brand.turnover') }}"
+                        data-target="turnover-brand">
+                    <i class="bi bi-currency-euro"></i> {{ 'tool.panel.brand.turnover.title'|trans({}, 'statistic') }}
+                </button>
+                <button type="button" class="btn btn-success brand-graph-select"
+                        data-type="jqplot" data-toggle="jqplot-brand"
+                        data-url="{{ path('statistic.tool.brand.sale') }}"
+                        data-target="sales-brand">
+                    <i class="bi bi-credit-card"></i> {{ 'tool.panel.brand.sale.title'|trans({}, 'statistic') }}
+                </button>
+            </div>
+            <hr/>
+            <div class="jqplot-content">
+                <div id="jqplot-brand"></div>
+            </div>
+        </div>
+
+        <div class="total">
+            <h1 class="d-none">Total : <span id="total-brand"></span></h1>
+        </div>
+
+        <div class="modal fade js-modal-search-brand" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title"></h3>
+                        <button type="button" class="btn-close js-btn-dismiss-modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <div class="js-form-search">
+                            <div class="mb-3">
+                                <div class="input-group">
+                                    <span class="input-group-text">{{ 'Search'|trans({}, 'statistic') }}</span>
+                                    <input name="search" class="js-input-search form-control" type="text"/>
+                                </div>
+                            </div>
+                            <div class="js-loader text-center d-none">{{ 'Please wait, loading'|trans({}, 'statistic') }}</div>
+                            <div class="alert alert-warning text-center d-none js-alert-no-result">
+                                {{ 'No results found for your search.'|trans({}, 'statistic') }}
+                            </div>
+                            <div class="mb-3 js-block-search-result d-none">
+                                <select class="form-control" size="10"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#" class="js-btn-dismiss-modal btn btn-secondary">{{ 'Close'|trans({}, 'statistic') }}</a>
+                        <a href="#" class="js-modal-btn-select btn btn-primary">{{ 'Select'|trans({}, 'statistic') }}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

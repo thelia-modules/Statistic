@@ -15,6 +15,7 @@ use Statistic\Statistic;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Thelia\Controller\Admin\BaseAdminController;
+use Thelia\Tools\URL;
 
 class ConfigController extends BaseAdminController
 {
@@ -25,9 +26,8 @@ class ConfigController extends BaseAdminController
         $configForm = $this->validateForm($form);
         Statistic::setConfigValue('order_types', $configForm->get('order')->getData(), true, true);
 
-        return $this->render(
-            'module-configure',
-            ['module_code' => 'Statistic']
+        return new RedirectResponse(
+            URL::getInstance()->absoluteUrl('/admin/module/Statistic')
         );
     }
 
@@ -39,9 +39,8 @@ class ConfigController extends BaseAdminController
 
         Statistic::setConfigValue(Statistic::INCLUDE_SHIPPING, $configForm->get('include_shipping')->getData());
 
-        return $this->render(
-            'module-configure',
-            ['module_code' => 'Statistic']
+        return new RedirectResponse(
+            URL::getInstance()->absoluteUrl('/admin/module/Statistic')
         );
     }
 }
