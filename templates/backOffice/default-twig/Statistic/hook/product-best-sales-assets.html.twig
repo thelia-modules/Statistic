@@ -1,13 +1,4 @@
-{# product.edit-js asset stack for the best-sales tab. CDN-hosted vendor libs only;
-   the module's own stats.css and product-best-sales.js are appended by
-   ProductModuleHook::insertJS via addCSS()/addJS(), so Thelia resolves and publishes
-   them under the correct /assets/backOffice/<template>/Statistic URL. #}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/css/bootstrap-datepicker3.min.css">
-
-<script>
-    if (typeof jQuery === 'undefined') {
-        document.write('<script src="https://code.jquery.com/jquery-3.7.1.min.js"><\/script>');
-    }
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/js/bootstrap-datepicker.min.js"></script>
+{# Deprecated. The product Statistics tab no longer loads jQuery / DataTables /
+   bootstrap-datepicker: product-best-sales.js is now vanilla JS and uses a native
+   <input type="date">. Local assets are served from ProductModuleHook::insertJS via
+   addCSS()/addJS(). This template is no longer rendered and can be removed. #}
