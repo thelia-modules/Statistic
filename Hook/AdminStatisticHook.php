@@ -126,5 +126,19 @@ class AdminStatisticHook extends BaseHook
     public function insertionJS(HookRenderEvent $event): void
     {
         $event->add($this->render('Statistic/hook/statistic-assets.html.twig'));
+
+        $event->add($this->addCSS('assets/css/stats.css'));
+
+        foreach ([
+            'blocksit.min.js',
+            'modalSearch.js',
+            'statistic.js',
+            'statistic-product.js',
+            'statistic-category.js',
+            'statistic-brand.js',
+            'statistic-annual.js',
+        ] as $script) {
+            $event->add($this->addJS('assets/js/'.$script));
+        }
     }
 }

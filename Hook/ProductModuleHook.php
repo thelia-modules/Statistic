@@ -29,5 +29,7 @@ class ProductModuleHook extends BaseHook
     public function insertJS(HookRenderEvent $event): void
     {
         $event->add($this->render('Statistic/hook/product-best-sales-assets.html.twig'));
+        $event->add($this->addCSS('assets/css/stats.css'));
+        $event->add($this->addJS('assets/js/product-best-sales.js'));
     }
 }
