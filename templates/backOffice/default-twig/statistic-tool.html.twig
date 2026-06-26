@@ -3,13 +3,26 @@
 {% block title %}{{ 'tool.title'|trans({}, 'statistic') }}{% endblock %}
 
 {% block breadcrumb %}
-    <li class="breadcrumb-item"><a href="{{ path('admin.home') }}">{{ 'Home'|trans({}, 'statistic') }}</a></li>
-    <li class="breadcrumb-item"><a href="{{ path('admin.tools.index') }}">{{ 'Tools'|trans({}, 'statistic') }}</a></li>
-    <li class="breadcrumb-item active">{{ 'tool.title'|trans({}, 'statistic') }}</li>
+    <nav aria-label="breadcrumb" class="mb-1">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="{{ path('admin.home') }}">{{ 'Home'|trans({}, 'statistic') }}</a></li>
+            <li class="breadcrumb-item"><a href="{{ path('admin.tools.index') }}">{{ 'Tools'|trans({}, 'statistic') }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ 'tool.title'|trans({}, 'statistic') }}</li>
+        </ol>
+    </nav>
 {% endblock %}
 
 {% block content %}
-    {% if is_granted('VIEW', {resource: 'admin.module', module: 'Statistic'}) %}
-        {% include '@StatisticModule/backOffice/default-twig/Statistic/statistic-content-tool.html.twig' %}
-    {% endif %}
+    <div class="container-fluid">
+        <div class="bo-page-header d-flex flex-wrap justify-content-between align-items-center gap-3 my-3">
+            <h1 class="h4 mb-0 d-flex align-items-center gap-2">
+                {{ 'tool.title'|trans({}, 'statistic') }}
+            </h1>
+        </div>
+        {% if is_granted('VIEW', {resource: 'admin.module', module: 'Statistic'}) %}
+            {% include
+                '@StatisticModule/backOffice/default-twig/Statistic/statistic-content-tool.html.twig'
+            %}
+        {% endif %}
+    </div>
 {% endblock %}
