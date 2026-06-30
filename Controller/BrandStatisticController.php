@@ -20,7 +20,7 @@ class BrandStatisticController extends BaseAdminController
      */
     public function brandTurnoverAction(Request $request, BrandStatisticHandler $brandStatisticHandler): Response
     {
-        $brandId = $request->get('brandId');
+        $brandId = $request->attributes->get('brandId', $request->query->get('brandId', $request->request->get('brandId')));
 
         $ghost = $request->query->get('ghost');
 
@@ -92,7 +92,7 @@ class BrandStatisticController extends BaseAdminController
      */
     public function brandSalesAction(Request $request, BrandStatisticHandler $brandStatisticHandler): Response
     {
-        $brandId = $request->get('brandId');
+        $brandId = $request->attributes->get('brandId', $request->query->get('brandId', $request->request->get('brandId')));
 
         $ghost = $request->query->get('ghost');
 

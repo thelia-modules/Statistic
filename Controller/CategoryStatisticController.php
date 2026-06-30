@@ -206,7 +206,8 @@ class CategoryStatisticController extends BaseAdminController
 
     protected function getDataFromRequest(&$categories, &$startDate, &$endDate, &$ghost): void
     {
-        $categoryId = $this->getRequest()->get('categoryId');
+        $request = $this->getRequest();
+        $categoryId = $request->attributes->get('categoryId', $request->query->get('categoryId', $request->request->get('categoryId')));
 
         $categories = $this->getCategoryChildren($categoryId, []);
 

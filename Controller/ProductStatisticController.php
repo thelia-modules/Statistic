@@ -45,7 +45,7 @@ class ProductStatisticController extends BaseAdminController
         $kernelEnvironment
     ): JsonResponse
     {
-        $category = $request->get('category');
+        $category = $request->attributes->get('category', $request->query->get('category', $request->request->get('category')));
 
         $loop = new Product($taxEngine);
         $loop->init($this->container, $requestStack, $eventDispatcher, $securityContext, $translator, $theliaParserLoops, $kernelEnvironment);
