@@ -133,7 +133,8 @@ class StatisticController extends BaseAdminController
 
         $productRef = null;
         if ($productId = $request->query->get('productId')) {
-            $productRef = ProductQuery::create()->findOneById($productId)->getRef();
+            $product = ProductQuery::create()->findPk($productId);
+            $productRef = $product?->getRef();
         }
 
         $dateDiff = date_diff($startDate, (new DateTime($endDate->format("Y-m-d"))));
@@ -406,14 +407,16 @@ class StatisticController extends BaseAdminController
     {
         $session->save();
 
-        setlocale(LC_TIME, 'fr_FR.utf8', 'fra');
-
         // récupération des paramètres
+
+        $locale = $request->hasSession()
+            ? $request->getSession()->getLang()->getLocale()
+            : (\Thelia\Model\LangQuery::create()->findOneByByDefault(true)?->getLocale() ?? 'en_US');
 
         $startYear = $request->query->get('startYear', date('Y'));
         $endYear = $request->query->get('endYear', date('Y'));
 
-        $result[$startYear] = $statisticHandler->getTurnoverYear($startYear);
+        $result[$startYear] = $statisticHandler->getTurnoverYear($startYear, $locale);
 
         $turnoverStart = new stdClass();
 
@@ -434,7 +437,7 @@ class StatisticController extends BaseAdminController
         );
 
         if ($startYear !== $endYear) {
-            $result[$endYear] = $statisticHandler->getTurnoverYear($endYear);
+            $result[$endYear] = $statisticHandler->getTurnoverYear($endYear, $locale);
 
             $turnoverEnd = new stdClass();
 
