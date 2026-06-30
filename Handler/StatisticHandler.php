@@ -528,15 +528,25 @@ class StatisticHandler
      * @throws Exception
      * @throws PropelException
      */
-    public function getTurnoverYear(string $year): array
+    public function getTurnoverYear(string $year, string $locale = 'en_US'): array
     {
         $result = $this->turnover($year);
+
+        $monthFormatter = new \IntlDateFormatter(
+            str_replace('_', '-', $locale),
+            \IntlDateFormatter::NONE,
+            \IntlDateFormatter::NONE,
+            null,
+            null,
+            'MMM'
+        );
 
         $table = array();
         $graph = array();
         $month = array();
         for ($i = 1; $i <= 12; ++$i) {
             $date = new DateTime($year . '-' . $i);
+            $monthLabel = $monthFormatter->format($date);
             if (!isset($result[$date->format('Y-n')])) {
                 $table[$i] = array(
                     'TTCWithShippping' => 0,
@@ -586,8 +596,8 @@ class StatisticHandler
                     (int)($tmp['TOTAL'] - $discount) //intval($tmp['TOTAL']+$tmp['TAX'] - $discount)
                 );
             }
-            $month[] = array($i - 1, $date->format('M'));
-            $table[$i]['month'] = $date->format('M');
+            $month[] = array($i - 1, $monthLabel);
+            $table[$i]['month'] = $monthLabel;
         }
         $result['graph'] = $graph;
         $result['month'] = $month;
