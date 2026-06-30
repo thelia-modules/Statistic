@@ -48,7 +48,10 @@ class ConfigHook extends BaseHook
      */
     private function getOrderStatuses(): array
     {
-        $locale = $this->getRequest()->getSession()?->getLang()?->getLocale() ?? 'en_US';
+        $request = $this->getRequest();
+        $locale = $request->hasSession()
+            ? $request->getSession()->getLang()?->getLocale() ?? 'en_US'
+            : (\Thelia\Model\LangQuery::create()->findOneByByDefault(true)?->getLocale() ?? 'en_US');
 
         $statuses = [];
 

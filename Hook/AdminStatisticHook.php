@@ -40,7 +40,10 @@ class AdminStatisticHook extends BaseHook
 
     public function onStatisticTab(HookRenderBlockEvent $event): void
     {
-        $locale = $this->getRequest()->getSession()?->getLang()?->getLocale() ?? 'en_US';
+        $request = $this->getRequest();
+        $locale = $request->hasSession()
+            ? $request->getSession()->getLang()?->getLocale() ?? 'en_US'
+            : (\Thelia\Model\LangQuery::create()->findOneByByDefault(true)?->getLocale() ?? 'en_US');
 
         $brands = $this->getBrands($locale);
         $categories = $this->getCategoryTree($locale);

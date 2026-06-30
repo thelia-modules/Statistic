@@ -138,7 +138,9 @@ class StatisticController extends BaseAdminController
 
         $dateDiff = date_diff($startDate, (new DateTime($endDate->format("Y-m-d"))));
         $table = [];
-        $locale = $request->getSession()->getLang()->getLocale();
+        $locale = $request->hasSession()
+            ? $request->getSession()->getLang()->getLocale()
+            : (\Thelia\Model\LangQuery::create()->findOneByByDefault(true)?->getLocale() ?? 'en_US');
         $results = $statisticHandler->bestSales($startDate, $endDate, $locale, $productRef);
         $results2 = $statisticHandler->bestSales(
             (clone($startDate))->sub($dateDiff),
@@ -273,7 +275,9 @@ class StatisticController extends BaseAdminController
         $startDate = new DateTime($startYear . '-' . $startMonth . '-' . $startDay);
         $endDate = new DateTime($endYear . '-' . $endMonth . '-' . $endDay);
 
-        $locale = $request->getSession()->getLang()->getLocale();
+        $locale = $request->hasSession()
+            ? $request->getSession()->getLang()->getLocale()
+            : (\Thelia\Model\LangQuery::create()->findOneByByDefault(true)?->getLocale() ?? 'en_US');
 
         $result = $statisticHandler->productDetails($startDate, $endDate, $productId, $locale);
 
@@ -337,7 +341,9 @@ class StatisticController extends BaseAdminController
         $startDate = new DateTime($startYear . '-' . $startMonth . '-' . $startDay);
         $endDate = new DateTime($endYear . '-' . $endMonth . '-' . $endDay);
 
-        $local = $request->getSession()->getLang()->getLocale();
+        $local = $request->hasSession()
+            ? $request->getSession()->getLang()->getLocale()
+            : (\Thelia\Model\LangQuery::create()->findOneByByDefault(true)?->getLocale() ?? 'en_US');
 
         $transport = new stdClass();
         $transport->table = $statisticHandler->meansTransport($startDate, $endDate, $local);
@@ -372,7 +378,9 @@ class StatisticController extends BaseAdminController
         $startDate = new DateTime($startYear . '-' . $startMonth . '-' . $startDay);
         $endDate = new DateTime($endYear . '-' . $endMonth . '-' . $endDay);
 
-        $local = $request->getSession()->getLang()->getLocale();
+        $local = $request->hasSession()
+            ? $request->getSession()->getLang()->getLocale()
+            : (\Thelia\Model\LangQuery::create()->findOneByByDefault(true)?->getLocale() ?? 'en_US');
 
         $payment = new stdClass();
         $payment->table = $statisticHandler->meansPayment($startDate, $endDate, $local);
@@ -528,8 +536,8 @@ class StatisticController extends BaseAdminController
      */
     public function statOrdersAction(Request $request, StatisticHandler $statisticHandler): Response
     {
-        if ($session = $request->getSession()) {
-            $session->save();
+        if ($request->hasSession()) {
+            $request->getSession()->save();
         }
         $ghost = $request->query->get('ghost');
 
