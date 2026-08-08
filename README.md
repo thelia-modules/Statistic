@@ -3,6 +3,10 @@ Show statistic of customer, sales and products. It also provides the Hook to ins
 
 ## Installation
 
+```bash
+composer require thelia/statistic-module:~2.0.2
+```
+
 ### Manually
 * Copy the module into <thelia_root>/local/modules directory and be surethat the name of the module is `Statistic`.
 * Activate it in your thelia administration.
@@ -35,7 +39,11 @@ statistiques.
 
 ## Installation
 
-### Manuellement 
+```bash
+composer require thelia/statistic-module:~2.0.2
+```
+
+### Manuellement
 * Copier le module dans le dossier <thelia_root>/local/modules et s'assurer que le nom du module soit bien `Statistic`,
 * Activer le module dans le paneau d'administration Thelia.
 
