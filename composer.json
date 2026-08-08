@@ -1,5 +1,6 @@
 {
     "name": "thelia/statistic-module",
+    "license": "GPL-3.0-or-later",
     "type": "thelia-module",
     "authors": [
         {
@@ -7,6 +8,9 @@
             "email": "dgros@openstudio.fr"
         }
     ],
+    "require": {
+        "thelia/installer": "^1.6"
+    },
     "extra": {
         "installer-name": "Statistic"
     }
