@@ -6,6 +6,7 @@ use DateInterval;
 use DateTime;
 use PDO;
 use Propel\Runtime\Propel;
+use Statistic\Query\OrderAmountSql;
 use Statistic\Statistic;
 use stdClass;
 use Symfony\Component\HttpFoundation\Response;
@@ -171,8 +172,11 @@ class CategoryStatisticController extends BaseAdminController
     {
         $con = Propel::getConnection();
 
-        $sql = "SELECT 
-	            SUM(ROUND(order_product.quantity * IF(order_product.was_in_promo = 1, order_product.promo_price, order_product.price), 2) ) AS TOTAL,
+        // The untaxed line total has to follow the rounding rule its order was
+        // invoiced with, otherwise a category adds up to something the customers
+        // were never charged. See OrderAmountSql.
+        $sql = "SELECT
+	            SUM(".OrderAmountSql::untaxedLineTotal().") AS TOTAL,
 	            CONCAT(YEAR(`order`.`created_at`),'-',MONTH(`order`.`created_at`),'-',DAY(`order`.`created_at`)) AS date 
                 FROM `order` 
                 INNER JOIN `order_product` ON (`order`.`id`=`order_product`.`order_id`) 

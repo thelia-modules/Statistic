@@ -3,49 +3,35 @@
 namespace Statistic\Query;
 
 use Propel\Runtime\ActiveQuery\Criteria;
-use Propel\Runtime\ActiveQuery\Join;
 use Propel\Runtime\Exception\PropelException;
 use Statistic\Statistic;
 use Thelia\Model\OrderQuery;
-use Thelia\Model\Map\OrderProductTableMap;
-use Thelia\Model\Map\OrderProductTaxTableMap;
 
 
 class StatsOrderQuery extends OrderQuery
 {
     /**
+     * Daily revenue, one entry per day that carries an order.
+     *
+     * Each order is totalled on its own, by OrderAmountSql, and the day is the sum
+     * of its orders. Totalling the joined order lines instead, as this used to do,
+     * both applied one rounding rule to every order and counted `order`.`discount`
+     * and `order`.`postage` once per joined line rather than once per order.
+     *
      * @throws PropelException
      */
     public static function getStatisticSaleStats(\DateTime $startDate, \DateTime $endDate, bool $includeShipping): array
     {
-        $orderTaxJoin = new Join();
-        $orderTaxJoin->addExplicitCondition(OrderProductTableMap::TABLE_NAME, 'ID', null, OrderProductTaxTableMap::TABLE_NAME, 'ORDER_PRODUCT_ID', null);
-        $orderTaxJoin->setJoinType(Criteria::LEFT_JOIN);
-        $query = self::baseSaleStats($startDate, $endDate, 'o')
-            ->innerJoinOrderProduct()
-            ->addJoinObject($orderTaxJoin)
+        $arrayResults = self::baseSaleStats($startDate, $endDate, 'o')
             ->withColumn( 'CONCAT(YEAR(`order`.`invoice_date`),"-",MONTH(`order`.`invoice_date`),"-",DAY(`order`.`invoice_date`))', 'DATE')
-            ->withColumn("SUM(ROUND(`order_product`.QUANTITY * IF(`order_product`.WAS_IN_PROMO,`order_product`.PROMO_PRICE,`order_product`.PRICE), 2))", 'TOTAL')
-            ->withColumn("SUM(ROUND(`order_product`.QUANTITY * IF(`order_product`.WAS_IN_PROMO,`order_product_tax`.PROMO_AMOUNT,`order_product_tax`.AMOUNT), 2))", 'TAX')
-            ->withColumn("SUM(`order`.discount)", 'DISCOUNT')
-            ->withColumn("SUM(`order`.postage)", 'POSTAGE')
+            ->withColumn('SUM('.OrderAmountSql::orderTotal($includeShipping).')', 'AMOUNT')
             ->groupBy('DATE')
-            ->select(['TOTAL', 'TAX', 'DATE', 'DISCOUNT', 'POSTAGE']);
-        $arrayResults = $query->find();
+            ->select(['AMOUNT', 'DATE'])
+            ->find();
 
         $results = [];
         foreach ($arrayResults as $arrayAmount){
-            $amount = $arrayAmount['TOTAL'] + $arrayAmount['TAX'] - $arrayAmount['DISCOUNT'] ? : 0;
-
-            if (null === $amount) {
-                $amount = 0;
-            }
-
-            if ($includeShipping) {
-                $amount += $arrayAmount['POSTAGE'];
-            }
-
-            $results[$arrayAmount['DATE']] = round($amount, 2);
+            $results[$arrayAmount['DATE']] = round((float) $arrayAmount['AMOUNT'], 2);
         }
 
         return $results;
