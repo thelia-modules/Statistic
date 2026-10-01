@@ -92,9 +92,13 @@ class StatisticHandler
                     ->findOne();
             }
 
+            // A product deleted since the order keeps its row, without product, brand or link.
+            $pse['brand_id'] = null;
+            $pse['brand_title'] = '';
+            $pse['product_id'] = null;
+
             if (null !== $product) {
                 $pse['brand_id'] = $product->getBrandId();
-                $pse['brand_title'] = '';
                 if ($brand = $product->getBrand()) {
                     $pse['brand_title'] = $brand->setLocale($locale)->getTitle();
                 }
@@ -114,6 +118,19 @@ class StatisticHandler
      */
     public function productDetails(DateTime $startDate, DateTime $endDate, int $productId, string $locale): array
     {
+        return $this->productDetailsWithDeclinations($startDate, $endDate, $productId, $locale)['lines'];
+    }
+
+    /**
+     * The sales of the product grouped by attribute value, and for each group the product sale
+     * elements its first line was sold as.
+     *
+     * @return array{lines: array<string, list<string>>, declinations: array<string, int|null>}
+     *
+     * @throws PropelException
+     */
+    public function productDetailsWithDeclinations(DateTime $startDate, DateTime $endDate, int $productId, string $locale): array
+    {
         $product = ProductQuery::create()->filterById($productId)->findOne();
         $productRef = $product->getRef();
         $query = OrderProductQuery::create()
@@ -129,6 +146,7 @@ class StatisticHandler
             ->where(array('start', 'end', 'product_ref'), Criteria::LOGICAL_AND)
             ->find();
         $result = [];
+        $declinations = [];
         /** @var OrderProduct $orderProduct */
         foreach ($queryResult as $orderProduct) {
             $pse = null;
@@ -140,9 +158,14 @@ class StatisticHandler
                 $title = $attributeAv;
             }
 
+            if (!\array_key_exists((string) $title, $declinations)) {
+                $declinations[(string) $title] = $pse?->getId();
+            }
+
             $result[$title][] = $orderProduct->getOrder()->getCreatedAt()->format('d/m/Y') . $quantity;
         }
-        return $result;
+
+        return ['lines' => $result, 'declinations' => $declinations];
     }
 
     /**
@@ -310,7 +333,9 @@ class StatisticHandler
                 "total_ht"
             )
             ->useOrderProductQuery()
-            ->useOrderProductTaxQuery()
+            // A line sold without tax has no order_product_tax row: an inner join would drop it
+            // from the best sales, its quantity and untaxed amount included.
+            ->useOrderProductTaxQuery(null, Criteria::LEFT_JOIN)
             ->withColumn("SUM((`order_product`.QUANTITY * IF(`order_product`.WAS_IN_PROMO,`order_product_tax`.PROMO_AMOUNT,`order_product_tax`.AMOUNT)))", 'tax')
             ->endUse()
             ->endUse()

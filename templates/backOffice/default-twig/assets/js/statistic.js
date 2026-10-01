@@ -339,10 +339,13 @@ var bestSales;
             var head = table.createTHead();
             keys = [];
             var mhead = json.series[0].mhead;
+            var titles = json.series[0].thead;
+            // Columns a module adds (StatisticEvents::BEST_SALES_TABLE) come before the product title.
+            var offset = Object.keys(titles).indexOf('title');
             var row = head.insertRow(0);
             var cell = row.insertCell(-1);
             cell.innerHTML = '';
-            cell.colSpan = 3;
+            cell.colSpan = 3 + offset;
             for (var index in mhead){
                 cell = row.insertCell(-1);
                 cell.innerHTML = mhead[index];
@@ -350,11 +353,11 @@ var bestSales;
                 cell.classList.add('text-center');
             }
             row = head.insertRow(1);
-            var titles = json.series[0].thead;
             for (var key in titles) {
                 keys.push(key);
                 cell = row.insertCell(-1);
                 cell.innerHTML = titles[key];
+                cell.dataset.key = key;
             }
             cell = row.insertCell(-1);
             cell.innerHTML = "";
@@ -368,12 +371,12 @@ var bestSales;
                     key = keys[k];
                     cell = row.insertCell(-1);
                     cell.innerHTML = line[key];
-                    if(k <= 1){
+                    if(k >= offset && k <= offset + 1){
                         var productUrl = baseAdminUrl + "/products/update?product_id=" + line['product_id'];
                         cell.innerHTML = "<a href='" + productUrl + "'>" + line[key] + "</a>";
                         cell.setAttribute("data-sort", line[key].normalize("NFD").replace(/[\u0300-\u036f]/g, ""));
                     }
-                    if(k >= 6 && k <= 8){
+                    if(k >= offset + 6 && k <= offset + 8){
                         var dataSort = line[key].toString().replace(",", ".");
                         dataSort = Number(dataSort.replace(/[^0-9.-]+/g, ""));
                         cell.setAttribute("data-sort", dataSort.toString());
@@ -387,11 +390,11 @@ var bestSales;
             dt = tableJQ.DataTable({
                 "lengthChange": false,
                 "pageLength": 30,
-                "order":[[3, "desc"]],
+                "order":[[offset + 3, "desc"]],
                 "columnDefs": [
-                    {"width": "40%", "targets":0},
+                    {"width": "40%", "targets":offset},
                     {
-                        "targets": 9,
+                        "targets": offset + 9,
                         "className": 'best-sales-details',
                         "orderable": false
                     }
@@ -404,14 +407,14 @@ var bestSales;
                         cell.innerHTML = totalData[i];
                         let api = this.api();
 
-                        if(i>2 && i<6){
+                        if(i>offset+2 && i<offset+6){
                             cell.innerHTML = api.column(i, {filter:'applied'}).data().reduce( function (a, b) {
                                 return parseFloat(a.toString().replace(/\s/g, ''))
                                   + parseFloat(b.toString().replace(/\s/g, ''));
                             }, 0 );
                         }
 
-                        if(i>5 && i<9){
+                        if(i>offset+5 && i<offset+9){
                             cell.innerHTML = api.column(i, {filter:'applied'}).data().reduce( function (a, b) {
                                 return (parseFloat(a.toString()
                                                         .replace(/\s/g, '')
@@ -448,7 +451,8 @@ var bestSales;
             if(this.value === ""){
                 brand = this.value
             }
-            dt.columns(2).search(brand, true, false, true).draw();
+            var brandColumn = $('#table-general thead tr:last-child td[data-key="brand_title"]').index();
+            dt.columns(brandColumn).search(brand, true, false, true).draw();
         });
 
         $("#best-sale-search").keyup(function() {

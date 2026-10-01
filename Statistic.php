@@ -50,6 +50,17 @@ class Statistic extends BaseModule
             ),
             array(
                 'type' => TemplateDefinition::BACK_OFFICE,
+                'code' => 'statistic.best-sales.toolbar',
+                'title' => array(
+                    'fr_FR' => 'Module de statistiques, actions des meilleures ventes.',
+                    'en_US' => 'Statistic module, best sales actions.'
+                ),
+                'active' => true,
+                'block' => false,
+                'module' => false
+            ),
+            array(
+                'type' => TemplateDefinition::BACK_OFFICE,
                 'code' => 'statistic.footer.js',
                 'title' => array(
                     'fr_FR' => 'Module de statistiques, insertion des JS.',

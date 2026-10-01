@@ -27,8 +27,22 @@ This module provides two hooks to insert statistic tab and JS file :
 
     $jsFile = $this->addJS('path_to_file.js');
     $event->add($jsFile);
-       
-    
+
+`statistic.best-sales.toolbar` type `back`, event is `HookRenderEvent`: actions shown beside the brand filter and the
+search of the best sales table. Each header cell of the table carries `data-key`, so a script can read the rows left
+after filtering through the DataTables API (`$('#table-general').DataTable()`).
+
+## Events
+
+`Statistic\Event\StatisticEvents::BEST_SALES_TABLE` (`BestSalesTableEvent`): the best sales table before it is sent.
+`addColumn($key, $title)` adds a column before the product title, `getRows()` / `setRows()` fill it (a row without a
+value shows an empty cell). Titles and values are written as HTML: escape text. A key of the module's own columns is
+refused.
+
+`Statistic\Event\StatisticEvents::PRODUCT_DETAILS` (`ProductDetailsEvent`): the sales of a product shown under its row,
+grouped by attribute value. `getLines()` / `setLines()` change the lines, `getProductSaleElementsId($label)` gives the
+product sale elements the first line of a group was sold as.
+
 # Statistic
 Affichage de statistique sur les client, les ventes et les produits. Il fournit aussi les Hook pour insérer d'autre 
 statistiques.

@@ -16,10 +16,14 @@ use DateInterval;
 use DateTime;
 use Exception;
 use Propel\Runtime\Exception\PropelException;
+use Statistic\Event\BestSalesTableEvent;
+use Statistic\Event\ProductDetailsEvent;
+use Statistic\Event\StatisticEvents;
 use Statistic\Handler\StatisticHandler;
 use Statistic\Statistic;
 use stdClass;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Core\HttpFoundation\Request;
 use Thelia\Core\HttpFoundation\Session\Session;
@@ -117,7 +121,7 @@ class StatisticController extends BaseAdminController
      * @throws Exception
      * @throws PropelException
      */
-    public function statBestSalesAction(Request $request, StatisticHandler $statisticHandler): Response
+    public function statBestSalesAction(Request $request, StatisticHandler $statisticHandler, EventDispatcherInterface $dispatcher): Response
     {
         // récupération des paramètres
         $startDay = $request->query->get('startDay', date('d'));
@@ -218,6 +222,14 @@ class StatisticController extends BaseAdminController
             }
         }
 
+        $tableEvent = new BestSalesTableEvent($table, clone $startDate, clone $endDate, $locale);
+        $dispatcher->dispatch($tableEvent, StatisticEvents::BEST_SALES_TABLE);
+        $extraColumns = $tableEvent->getColumns();
+        $table = array_map(
+            static fn (array $row): array => $row + array_fill_keys(array_keys($extraColumns), ''),
+            $tableEvent->getRows()
+        );
+
         $bestSales = new stdClass();
         $bestSales->color = '#5cb85c';
         $bestSales->mhead = [
@@ -225,7 +237,7 @@ class StatisticController extends BaseAdminController
             $this->getTranslator()->trans('tool.panel.general.bestSales.totalTTC', [], Statistic::MESSAGE_DOMAIN),
         ];
 
-        $bestSales->thead = array(
+        $bestSales->thead = $extraColumns + array(
             'title' => $this->getTranslator()->trans('tool.panel.general.bestSales.name', [], Statistic::MESSAGE_DOMAIN),
             'product_ref' => $this->getTranslator()->trans('tool.panel.general.bestSales.reference', [], Statistic::MESSAGE_DOMAIN),
             'brand_title' => $this->getTranslator()->trans('tool.panel.general.bestSales.brand', [], Statistic::MESSAGE_DOMAIN),
@@ -239,6 +251,7 @@ class StatisticController extends BaseAdminController
         $bestSales->table = $table;
 
         $bestSales->totals = [
+            ...array_fill(0, \count($extraColumns), ''),
             $this->getTranslator()->trans('TOTALS', [], Statistic::MESSAGE_DOMAIN),
             '', '',
             'total_sold',
@@ -261,7 +274,7 @@ class StatisticController extends BaseAdminController
     /**
      * @throws PropelException
      */
-    public function getProductDetails(Request $request, StatisticHandler $statisticHandler): Response
+    public function getProductDetails(Request $request, StatisticHandler $statisticHandler, EventDispatcherInterface $dispatcher): Response
     {
         $productId = $request->query->get('productId');
 
@@ -280,9 +293,11 @@ class StatisticController extends BaseAdminController
             ? $request->getSession()->getLang()->getLocale()
             : (\Thelia\Model\LangQuery::create()->findOneByByDefault(true)?->getLocale() ?? 'en_US');
 
-        $result = $statisticHandler->productDetails($startDate, $endDate, $productId, $locale);
+        $details = $statisticHandler->productDetailsWithDeclinations($startDate, $endDate, (int) $productId, $locale);
+        $detailsEvent = new ProductDetailsEvent((int) $productId, $details['lines'], $details['declinations']);
+        $dispatcher->dispatch($detailsEvent, StatisticEvents::PRODUCT_DETAILS);
 
-        return $this->jsonResponse(json_encode($result));
+        return $this->jsonResponse(json_encode($detailsEvent->getLines()));
     }
 
     /**
