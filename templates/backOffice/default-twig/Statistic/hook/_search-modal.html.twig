@@ -1,0 +1,22 @@
+{# Search dialog of a statistics tab (category, product, brand), opened by a [data-stat-search] button of the tab. #}
+<div class="modal fade" tabindex="-1" aria-hidden="true" data-stat-search-modal>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title h5" data-stat-search-title></h3>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ 'Close'|trans({}, 'statistic') }}"></button>
+            </div>
+            <div class="modal-body">
+                <label class="form-label visually-hidden" for="statistic-{{ panel }}-search">{{ 'Search'|trans({}, 'statistic') }}</label>
+                <input type="search" class="form-control mb-3" id="statistic-{{ panel }}-search" data-stat-search-input autocomplete="off">
+                <p class="text-muted small mb-0" data-stat-search-loading hidden>{{ 'Please wait, loading'|trans({}, 'statistic') }}</p>
+                <div class="alert alert-warning mb-0" role="alert" data-stat-search-empty hidden>{{ 'No results found for your search.'|trans({}, 'statistic') }}</div>
+                <select class="form-select" size="10" data-stat-search-results hidden aria-label="{{ 'Select'|trans({}, 'statistic') }}"></select>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">{{ 'Close'|trans({}, 'statistic') }}</button>
+                <button type="button" class="btn btn-primary" data-stat-search-select>{{ 'Select'|trans({}, 'statistic') }}</button>
+            </div>
+        </div>
+    </div>
+</div>

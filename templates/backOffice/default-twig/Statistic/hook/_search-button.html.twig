@@ -1,0 +1,7 @@
+{# Opens the search dialog of the tab. Context: url, target (selector of the select it fills, within the tab), title,
+   placeholder, filter (optional: selector of the category select that narrows a product search). #}
+<button type="button" class="btn btn-outline-secondary" data-stat-search data-url="{{ url }}" data-target="{{ target }}"
+        data-title="{{ title }}" data-placeholder="{{ placeholder }}"{% if filter is defined %} data-filter="{{ filter }}"{% endif %}
+        title="{{ title }}">
+    <i class="bi bi-search" aria-hidden="true"></i><span class="visually-hidden">{{ title }}</span>
+</button>

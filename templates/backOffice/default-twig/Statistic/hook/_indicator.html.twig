@@ -1,0 +1,9 @@
+{# One indicator of a statistics tab, a button of the dashboard selector style. Context: panel, key, url, icon, label,
+   kind (chart | table | best-sales), format (currency | number), active, total (false: the sum of the points means
+   nothing, an average for instance). #}
+<button type="button" class="btn btn-sm {{ active|default(false) ? 'btn-primary' : 'btn-outline-secondary' }}"
+        data-stat-indicator="{{ key }}" data-kind="{{ kind|default('chart') }}" data-format="{{ format|default('number') }}"
+        data-url="{{ url }}"{% if total is defined and not total %} data-no-total{% endif %} aria-pressed="{{ active|default(false) ? 'true' : 'false' }}"
+        data-testid="statistic-{{ panel }}-indicator-{{ key }}">
+    <i class="bi {{ icon }} me-1" aria-hidden="true"></i>{{ label }}
+</button>

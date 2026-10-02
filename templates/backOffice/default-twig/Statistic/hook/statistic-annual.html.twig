@@ -1,27 +1,14 @@
-<div class="card dashboard">
-    <div class="card-body">
-        <div class="text-center clearfix">
-            <div class="btn-group">
-                <button type="button" class="btn btn-secondary annual-graph-select" role="group"
-                        data-type="jqplot" data-toggle="jqplot-annual"
-                        data-url="{{ path('statistic.tool.annual.turnover') }}"
-                        data-target="turnover">
-                    <i class="bi bi-currency-euro"></i> {{ 'tool.panel.general.turnover.title'|trans({}, 'statistic') }}
-                </button>
-            </div>
+{# "Annual statistics" tab: the turnover month by month of two years, drawn as soon as the tab shows. #}
+{% set partials = '@StatisticModule/backOffice/default-twig/Statistic/hook/' %}
+{% set panel = 'annual' %}
+<div data-statistic-panel="annual" data-currency="{{ currency }}" data-legend="years" data-testid="statistic-annual">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+        <div class="d-flex flex-wrap gap-1" role="group" aria-label="{{ 'tool.indicator'|trans({}, 'statistic') }}">
+            {% include partials ~ '_indicator.html.twig' with {panel: panel, key: 'turnover', url: path('statistic.tool.annual.turnover'), icon: 'bi-currency-euro',
+                label: 'tool.panel.general.turnover.title'|trans({}, 'statistic'), format: 'currency', active: true} only %}
         </div>
-        <div class="col-sm-2 input-group float-end">
-            <span class="input-group-text"><i class="bi bi-calendar"></i></span>
-            <input id="annualSelectedDate" type="text" class="form-control annual-date-picker"/>
-            <input id="annualSelectedDate2" type="text" class="form-control annual-date-picker2"/>
-        </div>
-
-        <hr/>
-        <div class="jqplot-content">
-            <div id="jqplot-annual"></div>
-        </div>
-        <div class="total">
-            <h1 class="d-none">Total : <span id="total-annual"></span></h1>
-        </div>
+        {% include partials ~ '_years.html.twig' with {panel: panel, first: 'startYear', second: 'endYear'} only %}
     </div>
+
+    {% include partials ~ '_chart.html.twig' with {panel: panel} only %}
 </div>

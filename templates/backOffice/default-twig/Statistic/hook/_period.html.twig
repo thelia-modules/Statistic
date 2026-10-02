@@ -1,0 +1,32 @@
+{# Period of a statistics tab, laid out as the period selector of the default-twig dashboard:
+   the shortcuts on the left, the dates on the right. Context: panel (tab key), ghost (compare button). #}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <div class="d-flex flex-wrap gap-1" role="group" aria-label="{{ 'tool.period'|trans({}, 'statistic') }}">
+        {% for preset, label in {
+            'day': 'tool.day'|trans({}, 'statistic'),
+            'month': 'tool.month'|trans({}, 'statistic'),
+            'year': 'tool.year'|trans({}, 'statistic'),
+            'last-day': 'tool.day'|trans({}, 'statistic') ~ '-1',
+            'last-month': 'tool.month'|trans({}, 'statistic') ~ '-1',
+            'last-year': 'tool.year'|trans({}, 'statistic') ~ '-1',
+        } %}
+            <button type="button" class="btn btn-sm btn-outline-secondary" data-stat-preset="{{ preset }}"
+                    aria-pressed="false" data-testid="statistic-{{ panel }}-preset-{{ preset }}">{{ label }}</button>
+        {% endfor %}
+    </div>
+    <div class="input-group input-group-sm w-auto">
+        <label class="input-group-text" for="statistic-{{ panel }}-start">{{ 'tool.from'|trans({}, 'statistic') }}</label>
+        <input type="date" class="form-control" id="statistic-{{ panel }}-start" data-stat-start required
+               data-testid="statistic-{{ panel }}-start">
+        <label class="input-group-text" for="statistic-{{ panel }}-end">{{ 'tool.to'|trans({}, 'statistic') }}</label>
+        <input type="date" class="form-control" id="statistic-{{ panel }}-end" data-stat-end required
+               data-testid="statistic-{{ panel }}-end">
+        {% if ghost|default(false) %}
+            <button type="button" class="btn btn-outline-secondary" data-stat-ghost aria-pressed="false"
+                    title="{{ 'tool.compare'|trans({}, 'statistic') }}" data-testid="statistic-{{ panel }}-compare">
+                <i class="bi bi-plus-lg" aria-hidden="true"></i>
+                <span class="visually-hidden">{{ 'tool.compare'|trans({}, 'statistic') }}</span>
+            </button>
+        {% endif %}
+    </div>
+</div>

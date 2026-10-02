@@ -1,22 +1,3 @@
-{# Statistic dashboard front-end stack. The default-twig BO ships no jQuery; the legacy dashboard
-   is built on jQuery + jqplot + DataTables + bootstrap-datepicker. jqplot has no maintained CDN, so
-   it is loaded from a pinned CDN mirror; jQuery/DataTables/datepicker likewise. The module's own
-   stats.css and behaviour scripts are appended by AdminStatisticHook::insertionJS via addCSS()/addJS(),
-   so Thelia resolves and publishes them under the correct /assets/backOffice/<template>/Statistic URL. #}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqplot/1.0.9/jquery.jqplot.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/css/bootstrap-datepicker3.min.css">
-
-<script>
-    if (typeof jQuery === 'undefined') {
-        document.write('<script src="https://code.jquery.com/jquery-3.7.1.min.js"><\/script>');
-    }
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jqplot/1.0.9/jquery.jqplot.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jqplot/1.0.9/plugins/jqplot.highlighter.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jqplot/1.0.9/plugins/jqplot.barRenderer.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jqplot/1.0.9/plugins/jqplot.pieRenderer.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jqplot/1.0.9/plugins/jqplot.canvasTextRenderer.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jqplot/1.0.9/plugins/jqplot.dateAxisRenderer.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jqplot/1.0.9/plugins/jqplot.canvasAxisTickRenderer.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.10.0/js/bootstrap-datepicker.min.js"></script>
+{# Script of the statistics tabs: an ES module drawing with chart.js and bootstrap from the back-office importmap,
+   so the module loads no library of its own. #}
+<script type="module" src="{{ module_asset('Statistic', 'assets/js/statistic.js') }}"></script>

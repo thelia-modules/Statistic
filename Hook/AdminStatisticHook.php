@@ -18,6 +18,7 @@ use Thelia\Core\Event\Hook\HookRenderEvent;
 use Thelia\Core\Hook\BaseHook;
 use Thelia\Model\BrandQuery;
 use Thelia\Model\CategoryQuery;
+use Thelia\Model\Currency;
 
 /**
  * Class AdminStatisticHook
@@ -47,32 +48,33 @@ class AdminStatisticHook extends BaseHook
 
         $brands = $this->getBrands($locale);
         $categories = $this->getCategoryTree($locale);
+        $currency = Currency::getDefaultCurrency()->getCode();
 
         $event
             ->add([
                 'tab_id' => 'general-statistic',
                 'tab_nav_title' => $this->trans('tool.panel.general.title', [], Statistic::MESSAGE_DOMAIN),
-                'content' => $this->render('Statistic/hook/statistic-general.html.twig', ['brands' => $brands]),
+                'content' => $this->render('Statistic/hook/statistic-general.html.twig', ['brands' => $brands, 'currency' => $currency]),
             ])
             ->add([
                 'tab_id' => 'product-statistic',
                 'tab_nav_title' => $this->trans('tool.panel.product.title', [], Statistic::MESSAGE_DOMAIN),
-                'content' => $this->render('Statistic/hook/statistic-product.html.twig', ['categories' => $categories]),
+                'content' => $this->render('Statistic/hook/statistic-product.html.twig', ['categories' => $categories, 'currency' => $currency]),
             ])
             ->add([
                 'tab_id' => 'category-statistic',
                 'tab_nav_title' => $this->trans('tool.panel.category.title', [], Statistic::MESSAGE_DOMAIN),
-                'content' => $this->render('Statistic/hook/statistic-category.html.twig', ['categories' => $categories]),
+                'content' => $this->render('Statistic/hook/statistic-category.html.twig', ['categories' => $categories, 'currency' => $currency]),
             ])
             ->add([
                 'tab_id' => 'brand-statistic',
                 'tab_nav_title' => $this->trans('tool.panel.brand.title', [], Statistic::MESSAGE_DOMAIN),
-                'content' => $this->render('Statistic/hook/statistic-brand.html.twig', ['brands' => $brands]),
+                'content' => $this->render('Statistic/hook/statistic-brand.html.twig', ['brands' => $brands, 'currency' => $currency]),
             ])
             ->add([
                 'tab_id' => 'anual-statistic',
                 'tab_nav_title' => $this->trans('tool.panel.annual.title', [], Statistic::MESSAGE_DOMAIN),
-                'content' => $this->render('Statistic/hook/statistic-annual.html.twig'),
+                'content' => $this->render('Statistic/hook/statistic-annual.html.twig', ['currency' => $currency]),
             ])
         ;
     }
@@ -129,19 +131,5 @@ class AdminStatisticHook extends BaseHook
     public function insertionJS(HookRenderEvent $event): void
     {
         $event->add($this->render('Statistic/hook/statistic-assets.html.twig'));
-
-        $event->add($this->addCSS('assets/css/stats.css'));
-
-        foreach ([
-            'blocksit.min.js',
-            'modalSearch.js',
-            'statistic.js',
-            'statistic-product.js',
-            'statistic-category.js',
-            'statistic-brand.js',
-            'statistic-annual.js',
-        ] as $script) {
-            $event->add($this->addJS('assets/js/'.$script));
-        }
     }
 }
