@@ -59,6 +59,8 @@ return array(
     'tool.config.order' => 'Commande',
     'tool.config.order_status' => 'Status de commande',
     'tool.config.order_types' => 'Types de commande',
+    'tool.config.order_types.invalid' => 'Saisir des identifiants de statuts de commande séparés par des virgules, par exemple 2,3,4.',
+    'tool.config.order_types.saved' => 'Les statuts de commande pris en compte dans les statistiques ont été enregistrés.',
     'tool.config.position' => 'Position',
     'tool.config.title' => 'Titre',
     'tool.day' => 'Jour',
