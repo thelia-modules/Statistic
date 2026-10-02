@@ -82,5 +82,17 @@ return array(
     'tool.panel.product.selectCategory' => 'Sélectionnez une catégorie',
     'tool.panel.product.turnover.title' => 'Chiffre d\'affaires',
     'tool.to' => 'Au',
-    'tool.year' => 'Année'
+    'tool.year' => 'Année',
+    'tool.chart' => 'Graphique des statistiques',
+    'tool.compare' => 'Comparer avec l\'année précédente',
+    'tool.compared_year' => 'Année comparée',
+    'tool.details' => 'Détail des ventes',
+    'tool.empty' => 'Aucune donnée sur cette période',
+    'tool.error' => 'Les statistiques n\'ont pas pu être lues, rechargez la page et réessayez',
+    'tool.indicator' => 'Indicateur',
+    'tool.pagination' => 'Pages du tableau',
+    'tool.period' => 'Période',
+    'tool.total' => 'Total',
+    'tool.panel.general.bestSales.salesCount' => 'ventes',
+    'tool.panel.product.selectProduct' => 'Sélectionnez un produit',
 );

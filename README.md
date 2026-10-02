@@ -29,8 +29,22 @@ This module provides two hooks to insert statistic tab and JS file :
     $event->add($jsFile);
 
 `statistic.best-sales.toolbar` type `back`, event is `HookRenderEvent`: actions shown beside the brand filter and the
-search of the best sales table. Each header cell of the table carries `data-key`, so a script can read the rows left
-after filtering through the DataTables API (`$('#table-general').DataTable()`).
+search of the best sales table. Each header cell of the table carries `data-key`. Every row of the table is rendered:
+`#table-general tbody tr[data-ref][data-match]` are the rows left by the search and the brand filter (all pages),
+`data-ref` holding the product reference. The period of the tab is on its root,
+`[data-statistic-panel="general"]`, as `data-period-start` and `data-period-end` (`YYYY-MM-DD`).
+
+### Look and scripts (default-twig back office)
+
+The tabs follow the default-twig dashboard (`BoDashboard`): selector buttons, cards with a `bg-body-tertiary`
+header, charts drawn with chart.js from the back-office importmap. The module loads no library of its own (no
+jQuery, jqPlot, DataTables or date picker): `assets/js/statistic.js` is an ES module. A tab added through
+`statistic.tab` draws its charts with the same look by importing it:
+
+    <script type="module">
+        import { createChart } from '{{ module_asset('Statistic', 'assets/js/statistic.js') }}';
+        createChart(canvas, { type: 'bar', labels, datasets: [{ label, data }], format: 'currency', currency: 'EUR' });
+    </script>
 
 ## Events
 

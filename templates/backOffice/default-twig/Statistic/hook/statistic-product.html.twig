@@ -1,89 +1,40 @@
-<div class="card dashboard">
-    <div class="card-body">
-        <div class="card-title clearfix">
-            <div class="col-sm-3 input-group Statistic-float">
-                <select id="category-select" class="form-control">
+{# "Statistics by product" tab: turnover or number of sales of one product, month by month, for two years. #}
+{% set partials = '@StatisticModule/backOffice/default-twig/Statistic/hook/' %}
+{% set panel = 'product' %}
+<div data-statistic-panel="product" data-currency="{{ currency }}" data-legend="years" data-testid="statistic-product">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+        <div class="d-flex flex-wrap gap-2">
+            <div class="input-group input-group-sm w-auto">
+                <select class="form-select" data-stat-category aria-label="{{ 'tool.panel.product.selectCategory'|trans({}, 'statistic') }}"
+                        data-products-url="{{ path('statistic.tool.product.list') }}" data-testid="statistic-product-category">
                     <option value="">{{ 'tool.panel.product.selectCategory'|trans({}, 'statistic') }}</option>
                     {% for category in categories %}
                         <option value="{{ category.id }}">{{ category.label }}</option>
                     {% endfor %}
                 </select>
-                <a class="js-btn-search-category btn btn-info" href="#"
-                   data-title="{{ 'search.category.title'|trans({}, 'statistic') }}"
-                   data-placeholder="{{ 'search.category.placeholder'|trans({}, 'statistic') }}">
-                    <i class="bi bi-search"></i>
-                </a>
+                {% include partials ~ '_search-button.html.twig' with {url: path('statistic.category.search'), target: '[data-stat-category]',
+                    title: 'search.category.title'|trans({}, 'statistic'), placeholder: 'search.category.placeholder'|trans({}, 'statistic')} only %}
             </div>
-            <div class="col-sm-3 input-group">
-                <select id="product-select" class="form-control" data-url="{{ path('statistic.tool.product.list') }}"></select>
-                <a class="js-btn-search-product btn btn-info" href="#"
-                   data-title="{{ 'search.product.title'|trans({}, 'statistic') }}"
-                   data-placeholder="{{ 'search.product.placeholder'|trans({}, 'statistic') }}">
-                    <i class="bi bi-search"></i>
-                </a>
-            </div>
-            <div class="col-sm-2 input-group float-end">
-                <span class="input-group-text"><i class="bi bi-calendar"></i></span>
-                <input type="text" class="form-control product-date-picker" id="selectedDate"/>
-                <input type="text" class="form-control product-date-picker2" id="selectedDate2"/>
+            <div class="input-group input-group-sm w-auto">
+                <select class="form-select" data-stat-param="ref" data-stat-required data-stat-products
+                        aria-label="{{ 'tool.panel.product.selectProduct'|trans({}, 'statistic') }}" data-testid="statistic-product-product">
+                    <option value="">{{ 'tool.panel.product.selectProduct'|trans({}, 'statistic') }}</option>
+                </select>
+                {% include partials ~ '_search-button.html.twig' with {url: path('statistic.products.search'), target: '[data-stat-products]',
+                    filter: '[data-stat-category]', title: 'search.product.title'|trans({}, 'statistic'),
+                    placeholder: 'search.product.placeholder'|trans({}, 'statistic')} only %}
             </div>
         </div>
-
-        <div class="text-center clearfix">
-            <div class="btn-group">
-                <button type="button" class="btn btn-primary product-graph-select"
-                        data-type="jqplot" data-toggle="jqplot-product"
-                        data-url="{{ path('statistic.tool.product.turnover') }}"
-                        data-target="turnover-product">
-                    <i class="bi bi-currency-euro"></i> {{ 'tool.panel.product.turnover.title'|trans({}, 'statistic') }}
-                </button>
-                <button type="button" class="btn btn-success product-graph-select"
-                        data-type="jqplot" data-toggle="jqplot-product"
-                        data-url="{{ path('statistic.tool.product.sale') }}"
-                        data-target="sales-product">
-                    <i class="bi bi-credit-card"></i> {{ 'tool.panel.product.sale.title'|trans({}, 'statistic') }}
-                </button>
-            </div>
-            <hr/>
-            <div class="jqplot-content">
-                <div id="jqplot-product"></div>
-            </div>
-        </div>
-
-        <div class="total">
-            <h1 class="d-none">Total : <span id="total-prod"></span></h1>
-        </div>
-
-        <div class="modal fade js-modal-search-product" tabindex="-1" role="dialog" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h3 class="modal-title"></h3>
-                        <button type="button" class="btn-close js-btn-dismiss-modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body text-center">
-                        <div class="js-form-search">
-                            <div class="mb-3">
-                                <div class="input-group">
-                                    <span class="input-group-text">{{ 'Search'|trans({}, 'statistic') }}</span>
-                                    <input name="search" class="js-input-search form-control" type="text"/>
-                                </div>
-                            </div>
-                            <div class="js-loader text-center d-none">{{ 'Please wait, loading'|trans({}, 'statistic') }}</div>
-                            <div class="alert alert-warning text-center d-none js-alert-no-result">
-                                {{ 'No results found for your search.'|trans({}, 'statistic') }}
-                            </div>
-                            <div class="mb-3 js-block-search-result d-none">
-                                <select class="form-control" size="10"></select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <a href="#" class="js-btn-dismiss-modal btn btn-secondary">{{ 'Close'|trans({}, 'statistic') }}</a>
-                        <a href="#" class="js-modal-btn-select btn btn-primary">{{ 'Select'|trans({}, 'statistic') }}</a>
-                    </div>
-                </div>
-            </div>
-        </div>
+        {% include partials ~ '_years.html.twig' with {panel: panel, first: 'year', second: 'year2'} only %}
     </div>
+
+    <div class="d-flex flex-wrap gap-1 mb-3" role="group" aria-label="{{ 'tool.indicator'|trans({}, 'statistic') }}">
+        {% include partials ~ '_indicator.html.twig' with {panel: panel, key: 'turnover', url: path('statistic.tool.product.turnover'), icon: 'bi-currency-euro',
+            label: 'tool.panel.product.turnover.title'|trans({}, 'statistic'), format: 'currency', active: true} only %}
+        {% include partials ~ '_indicator.html.twig' with {panel: panel, key: 'sales', url: path('statistic.tool.product.sale'), icon: 'bi-credit-card',
+            label: 'tool.panel.product.sale.title'|trans({}, 'statistic')} only %}
+    </div>
+
+    {% include partials ~ '_chart.html.twig' with {panel: panel, placeholder: 'tool.panel.product.selectProduct'|trans({}, 'statistic')} only %}
+    {% include partials ~ '_search-modal.html.twig' with {panel: panel} only %}
 </div>
