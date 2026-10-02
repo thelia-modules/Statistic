@@ -7,6 +7,8 @@ return array(
     'Stats on %startYear' => 'Statistics for %startYear',
     'Stats on %startYear and %endYear' => 'Statistics for %startYear and %endYear',
     'TOTALS' => 'TOTALS',
+    'tool.config.order_types.invalid' => 'Enter order status identifiers separated by commas, for example 2,3,4.',
+    'tool.config.order_types.saved' => 'Order statuses used by the statistics have been saved.',
     'tool.panel.annual.title' => 'Annual stats',
     'tool.panel.brand.title' => 'Brand stats',
     'tool.panel.category.title' => 'Category stats',

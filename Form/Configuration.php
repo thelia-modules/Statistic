@@ -11,6 +11,8 @@ namespace Statistic\Form;
 
 use Statistic\Statistic;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Regex;
 use Thelia\Form\BaseForm;
 
 class Configuration extends BaseForm
@@ -20,7 +22,11 @@ class Configuration extends BaseForm
         $form = $this->formBuilder;
 
         $form->add('order', TextType::class, [
-            'data' => Statistic::getConfigValue('order_types')
+            'data' => Statistic::getConfigValue('order_types'),
+            'constraints' => [
+                new NotBlank(),
+                new Regex('/^\d+(,\d+)*$/'),
+            ],
         ]);
     }
 
