@@ -16,16 +16,16 @@ use DateTime;
 use Statistic\Handler\ProductStatisticHandler;
 use Statistic\Statistic;
 use stdClass;
+use Propel\Runtime\ActiveQuery\Criteria;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
-use Symfony\Contracts\Translation\TranslatorInterface;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Core\HttpFoundation\Request;
-use Thelia\Core\Security\SecurityContext;
-use Thelia\Core\Template\Loop\Product;
-use Thelia\Domain\Taxation\TaxEngine\TaxEngine;
+use Thelia\Core\Security\AccessManager;
+use Thelia\Core\Security\Resource\AdminResources;
+use Thelia\Model\CategoryQuery;
+use Thelia\Model\Lang;
+use Thelia\Model\ProductQuery;
 
 /**
  * Class ProductController
@@ -34,29 +34,38 @@ use Thelia\Domain\Taxation\TaxEngine\TaxEngine;
  */
 class ProductStatisticController extends BaseAdminController
 {
-    public function listProductAction(
-        Request $request,
-        RequestStack $requestStack,
-        EventDispatcherInterface $eventDispatcher,
-        SecurityContext $securityContext,
-        TranslatorInterface $translator,
-        TaxEngine $taxEngine,
-        $theliaParserLoops,
-        $kernelEnvironment
-    ): JsonResponse
+    private const CATEGORY_DEPTH = 10;
+
+    /**
+     * Visible products of a category and of its sub-categories, by title: the product select of the product tab.
+     */
+    public function listProductAction(Request $request): Response
     {
-        $category = $request->attributes->get('category', $request->query->get('category', $request->request->get('category')));
+        if (null !== $response = $this->checkAuth(AdminResources::MODULE, Statistic::MESSAGE_DOMAIN, AccessManager::VIEW)) {
+            return $response;
+        }
 
-        $loop = new Product($taxEngine);
-        $loop->init($this->container, $requestStack, $eventDispatcher, $securityContext, $translator, $theliaParserLoops, $kernelEnvironment);
-        $loop->initializeArgs([
-            "category" => $category,
-            "depth" => "10"
-        ]);
+        $categoryId = (int) $request->query->get('category');
+        if ($categoryId <= 0) {
+            return new JsonResponse([]);
+        }
 
+        $locale = $request->getSession()?->getLang()?->getLocale() ?? Lang::getDefaultLanguage()->getLocale();
 
-        $query = $loop->buildModelCriteria();
-        $result = $query->find()->toArray();
+        $products = ProductQuery::create()
+            ->filterByVisible(1)
+            ->useProductCategoryQuery()
+                ->filterByCategoryId(CategoryQuery::getCategoryTreeIds($categoryId, self::CATEGORY_DEPTH), Criteria::IN)
+            ->endUse()
+            ->joinWithI18n($locale)
+            ->distinct()
+            ->find();
+
+        $result = [];
+        foreach ($products as $product) {
+            $result[] = ['Ref' => $product->getRef(), 'i18n_TITLE' => (string) $product->setLocale($locale)->getTitle()];
+        }
+        usort($result, static fn (array $first, array $second): int => strcasecmp($first['i18n_TITLE'], $second['i18n_TITLE']));
 
         return new JsonResponse($result);
     }
