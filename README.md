@@ -46,6 +46,8 @@ jQuery, jqPlot, DataTables or date picker): `assets/js/statistic.js` is an ES mo
         createChart(canvas, { type: 'bar', labels, datasets: [{ label, data }], format: 'currency', currency: 'EUR' });
     </script>
 
+`format` is `number` (default), `currency` (amounts in `currency`) or `percent` (a value of 12.5 is shown as 12.5 %).
+
 ## Events
 
 `Statistic\Event\StatisticEvents::BEST_SALES_TABLE` (`BestSalesTableEvent`): the best sales table before it is sent.

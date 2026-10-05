@@ -36,15 +36,17 @@ const parseIsoDate = (value) => {
 };
 
 /**
- * Number formatter of an indicator: amounts in the shop currency, counts as plain numbers.
+ * Number formatter of an indicator: amounts in the shop currency, shares as percentages (12.5 is 12.5 %), counts as
+ * plain numbers.
  */
 export function numberFormatter(format, currency = 'EUR', fractionDigits = 2) {
     const options = format === 'currency'
         ? { style: 'currency', currency, minimumFractionDigits: fractionDigits, maximumFractionDigits: fractionDigits }
         : { maximumFractionDigits: fractionDigits };
-    const formatter = new Intl.NumberFormat(LOCALE, options);
+    const formatter = new Intl.NumberFormat(LOCALE, format === 'percent' ? { ...options, style: 'percent' } : options);
+    const scale = format === 'percent' ? 0.01 : 1;
 
-    return (value) => formatter.format(Number(value) || 0);
+    return (value) => formatter.format((Number(value) || 0) * scale);
 }
 
 /**
@@ -52,7 +54,7 @@ export function numberFormatter(format, currency = 'EUR', fractionDigits = 2) {
  * (`statistic.tab`): import it from the URL of this file.
  *
  * @param {HTMLCanvasElement} canvas
- * @param {{type?: 'line'|'bar', labels: string[], datasets: {label?: string, data: number[]}[], format?: string, currency?: string}} definition
+ * @param {{type?: 'line'|'bar', labels: string[], datasets: {label?: string, data: number[]}[], format?: 'number'|'currency'|'percent', currency?: string}} definition
  */
 export function createChart(canvas, { type = 'line', labels, datasets, format = 'number', currency = 'EUR' }) {
     const axis = numberFormatter(format, currency, 0);
