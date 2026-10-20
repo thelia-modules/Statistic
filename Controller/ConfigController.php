@@ -42,7 +42,10 @@ class ConfigController extends BaseAdminController
             return $this->redirectToConfiguration();
         }
 
-        Statistic::setConfigValue('order_types', $configForm->get('order')->getData());
+        $statusIds = array_map('intval', $configForm->get('order')->getData());
+        sort($statusIds);
+
+        Statistic::setConfigValue('order_types', implode(',', $statusIds));
         $this->flash('success', $this->getTranslator()->trans('tool.config.order_types.saved', [], Statistic::MESSAGE_DOMAIN));
 
         return $this->redirectToConfiguration();

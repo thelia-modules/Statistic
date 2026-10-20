@@ -12,19 +12,23 @@
 
             <div class="mb-3 row">
                 <div class="col-md-6">
-                    <div class="input-group">
-                        <input type="text"
-                               name="{{ configuration_form.order.vars.full_name }}"
-                               class="form-control{% if configuration_form.order.vars.errors|length > 0 %} is-invalid{% endif %}"
-                               value="{{ configuration_form.order.vars.value }}">
-                        <button type="submit" class="btn btn-secondary">{{ 'Set'|trans({}, 'statistic') }}</button>
-                    </div>
+                    <label class="visually-hidden" for="{{ configuration_form.order.vars.id }}">{{ 'tool.config.order_types'|trans({}, 'statistic') }}</label>
+                    <select multiple
+                            size="{{ min(configuration_form.order.vars.choices|length, 10) }}"
+                            id="{{ configuration_form.order.vars.id }}"
+                            name="{{ configuration_form.order.vars.full_name }}"
+                            class="form-select{% if configuration_form.order.vars.errors|length > 0 %} is-invalid{% endif %}">
+                        {% for choice in configuration_form.order.vars.choices %}
+                            <option value="{{ choice.value }}"{% if choice.value in configuration_form.order.vars.value %} selected{% endif %}>{{ choice.label }}</option>
+                        {% endfor %}
+                    </select>
                     {{ form_errors(configuration_form.order) }}
+                    <p class="form-text">{{ 'tool.config.help'|trans({}, 'statistic') }}</p>
                 </div>
             </div>
+            <button type="submit" class="btn btn-secondary mb-3">{{ 'Set'|trans({}, 'statistic') }}</button>
             {% do configuration_form.order.setRendered %}
         </form>
-        <p class="form-text">{{ 'tool.config.help'|trans({}, 'statistic') }}</p>
 
         <form method="POST" action="{{ path('statistic.include_shipping') }}">
             {{ form_widget(include_shipping_form._token) }}
