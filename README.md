@@ -4,7 +4,7 @@ Show statistic of customer, sales and products. It also provides the Hook to ins
 ## Installation
 
 ```bash
-composer require thelia/statistic-module:~2.0.2
+composer require thelia/statistic-module:~3.3
 ```
 
 ### Manually
@@ -40,7 +40,7 @@ statistiques.
 ## Installation
 
 ```bash
-composer require thelia/statistic-module:~2.0.2
+composer require thelia/statistic-module:~3.3
 ```
 
 ### Manuellement
