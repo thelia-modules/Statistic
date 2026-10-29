@@ -9,16 +9,18 @@
          'product.period.previous'|trans({}, 'statistic'),
          'product.period.lastYear'|trans({}, 'statistic'),
      ]|json_encode }}">
-    <div class="d-flex justify-content-end mb-3">
-        <div class="input-group w-auto">
+    <div class="d-flex flex-wrap justify-content-sm-end gap-2 mb-3">
+        <div class="input-group input-group-sm w-auto">
             <span class="input-group-text">{{ 'tool.from'|trans({}, 'statistic') }}</span>
             <input id="bestSalesStartDate" type="date" class="form-control" aria-label="{{ 'tool.from'|trans({}, 'statistic') }}"/>
+        </div>
+        <div class="input-group input-group-sm w-auto">
             <span class="input-group-text">{{ 'tool.to'|trans({}, 'statistic') }}</span>
             <input id="bestSalesEndDate" type="date" class="form-control" aria-label="{{ 'tool.to'|trans({}, 'statistic') }}"/>
         </div>
     </div>
 
-    <div class="row g-4">
+    <div class="row g-4 mb-3">
         <div class="col-lg-6">
             <div class="card">
                 <div class="card-header d-flex align-items-center">

@@ -54,7 +54,25 @@ document.addEventListener('DOMContentLoaded', () => {
     startInput.addEventListener('change', load);
     endInput.addEventListener('change', load);
 
-    load();
+    // The statistics are read when the tab is first shown, not on every product page: right away when
+    // the tab is already the active one (?current_tab=statistic), otherwise on its first opening.
+    let loadedOnce = false;
+    const loadOnce = () => {
+        if (loadedOnce) {
+            return;
+        }
+
+        loadedOnce = true;
+        load();
+    };
+    const pane = root.closest('.tab-pane');
+    const trigger = null === pane ? null : document.querySelector(`[data-bs-toggle="tab"][data-bs-target="#${pane.id}"]`);
+
+    if (null === pane || null === trigger || pane.classList.contains('active')) {
+        loadOnce();
+    } else {
+        trigger.addEventListener('shown.bs.tab', loadOnce, { once: true });
+    }
 
     function buildUrl(path) {
         const [startYear, startMonth, startDay] = startInput.value.split('-');
@@ -139,10 +157,15 @@ document.addEventListener('DOMContentLoaded', () => {
         Object.keys(serie.thead)
             .filter((key) => !ownKeys.includes(key))
             .forEach((key) => {
+                // A column with no value for this product is not shown: its title alone says nothing.
+                if ('' === String(line[key] ?? '').trim()) {
+                    return;
+                }
+
                 // Titles and values of an added column are HTML (see README).
                 const added = item('', '');
                 added.firstElementChild.innerHTML = serie.thead[key];
-                added.lastElementChild.innerHTML = line[key] ?? '';
+                added.lastElementChild.innerHTML = line[key];
                 salesList.appendChild(added);
             });
     }

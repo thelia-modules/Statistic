@@ -12,10 +12,13 @@
 
 namespace Statistic\Hook;
 
+use Statistic\Security\StatisticAccess;
 use Statistic\Statistic;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Thelia\Core\Event\Hook\HookRenderBlockEvent;
 use Thelia\Core\Event\Hook\HookRenderEvent;
 use Thelia\Core\Hook\BaseHook;
+use Thelia\Core\Template\Parser\ParserResolver;
 use Thelia\Model\BrandQuery;
 use Thelia\Model\CategoryQuery;
 use Thelia\Model\Currency;
@@ -27,6 +30,14 @@ use Thelia\Model\Currency;
  */
 class AdminStatisticHook extends BaseHook
 {
+    public function __construct(
+        private readonly StatisticAccess $statisticAccess,
+        ?EventDispatcherInterface $dispatcher = null,
+        ?ParserResolver $parserResolver = null,
+    ) {
+        parent::__construct($dispatcher, $parserResolver);
+    }
+
     public static function getSubscribedHooks(): array
     {
         return [
@@ -41,6 +52,10 @@ class AdminStatisticHook extends BaseHook
 
     public function onStatisticTab(HookRenderBlockEvent $event): void
     {
+        if (!$this->statisticAccess->canView()) {
+            return;
+        }
+
         $request = $this->getRequest();
         $locale = $request->hasSession()
             ? $request->getSession()->getLang()?->getLocale() ?? 'en_US'
@@ -130,6 +145,10 @@ class AdminStatisticHook extends BaseHook
 
     public function insertionJS(HookRenderEvent $event): void
     {
+        if (!$this->statisticAccess->canView()) {
+            return;
+        }
+
         $event->add($this->render('Statistic/hook/statistic-assets.html.twig'));
     }
 }
