@@ -11,6 +11,8 @@ use Statistic\Statistic;
 use stdClass;
 use Symfony\Component\HttpFoundation\Response;
 use Thelia\Controller\Admin\BaseAdminController;
+use Thelia\Core\Security\AccessManager;
+use Thelia\Core\Security\Resource\AdminResources;
 use Thelia\Model\Base\CategoryQuery;
 use Thelia\Model\OrderQuery;
 
@@ -18,6 +20,10 @@ class CategoryStatisticController extends BaseAdminController
 {
     public function categorySalesAction(): Response
     {
+        if (null !== $response = $this->checkAuth(AdminResources::MODULE, Statistic::MESSAGE_DOMAIN, AccessManager::VIEW)) {
+            return $response;
+        }
+
         $this->getDataFromRequest($categories, $startDate, $endDate, $ghost);
         $plot = new stdClass();
         $data = new stdClass();
@@ -72,6 +78,10 @@ class CategoryStatisticController extends BaseAdminController
 
     public function categoryTurnoverAction(): Response
     {
+        if (null !== $response = $this->checkAuth(AdminResources::MODULE, Statistic::MESSAGE_DOMAIN, AccessManager::VIEW)) {
+            return $response;
+        }
+
         $this->getDataFromRequest($categories, $startDate, $endDate, $ghost);
         $plot = new stdClass();
         $data = new stdClass();

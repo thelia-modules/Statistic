@@ -27,6 +27,8 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Core\HttpFoundation\Request;
 use Thelia\Core\HttpFoundation\Session\Session;
+use Thelia\Core\Security\AccessManager;
+use Thelia\Core\Security\Resource\AdminResources;
 use Thelia\Domain\Promotion\Coupon\Type\CouponInterface;
 use Thelia\Model\Base\ProductQuery;
 use Thelia\Tools\MoneyFormat;
@@ -48,6 +50,10 @@ class StatisticController extends BaseAdminController
      */
     public function toolShow(\Twig\Environment $twig): Response
     {
+        if (null !== $response = $this->checkAuth(AdminResources::MODULE, Statistic::MESSAGE_DOMAIN, AccessManager::VIEW)) {
+            return $response;
+        }
+
         return new Response(
             $twig->render('@StatisticModule/backOffice/default-twig/statistic-tool.html.twig')
         );
@@ -58,6 +64,10 @@ class StatisticController extends BaseAdminController
      */
     public function statAverageCartAction(Request $request, Session $session, StatisticHandler $statisticHandler): Response
     {
+        if (null !== $response = $this->checkAuth(AdminResources::MODULE, Statistic::MESSAGE_DOMAIN, AccessManager::VIEW)) {
+            return $response;
+        }
+
         $session->save();
 
         $ghost = $request->query->get('ghost');
@@ -123,6 +133,10 @@ class StatisticController extends BaseAdminController
      */
     public function statBestSalesAction(Request $request, StatisticHandler $statisticHandler, EventDispatcherInterface $dispatcher): Response
     {
+        if (null !== $response = $this->checkAuth(AdminResources::MODULE, Statistic::MESSAGE_DOMAIN, AccessManager::VIEW)) {
+            return $response;
+        }
+
         // récupération des paramètres
         $startDay = $request->query->get('startDay', date('d'));
         $startMonth = $request->query->get('startMonth', date('m'));
@@ -276,6 +290,10 @@ class StatisticController extends BaseAdminController
      */
     public function getProductDetails(Request $request, StatisticHandler $statisticHandler, EventDispatcherInterface $dispatcher): Response
     {
+        if (null !== $response = $this->checkAuth(AdminResources::MODULE, Statistic::MESSAGE_DOMAIN, AccessManager::VIEW)) {
+            return $response;
+        }
+
         $productId = $request->query->get('productId');
 
         $startDay = $request->query->get('startDay', date('d'));
@@ -305,6 +323,10 @@ class StatisticController extends BaseAdminController
      */
     public function statDiscountCodeAction(Request $request, StatisticHandler $statisticHandler): Response
     {
+        if (null !== $response = $this->checkAuth(AdminResources::MODULE, Statistic::MESSAGE_DOMAIN, AccessManager::VIEW)) {
+            return $response;
+        }
+
         // Get Parameters
         $startDay = $request->query->get('startDay', date('d'));
         $startMonth = $request->query->get('startMonth', date('m'));
@@ -345,6 +367,10 @@ class StatisticController extends BaseAdminController
      */
     public function statMeansTransportAction(Request $request, StatisticHandler $statisticHandler): Response
     {
+        if (null !== $response = $this->checkAuth(AdminResources::MODULE, Statistic::MESSAGE_DOMAIN, AccessManager::VIEW)) {
+            return $response;
+        }
+
         // récupération des paramètres
         $startDay = $request->query->get('startDay', date('d'));
         $startMonth = $request->query->get('startMonth', date('m'));
@@ -382,6 +408,10 @@ class StatisticController extends BaseAdminController
      */
     public function statMeansPaymentAction(Request $request, StatisticHandler $statisticHandler): Response
     {
+        if (null !== $response = $this->checkAuth(AdminResources::MODULE, Statistic::MESSAGE_DOMAIN, AccessManager::VIEW)) {
+            return $response;
+        }
+
         // récupération des paramètres
         $startDay = $request->query->get('startDay', date('d'));
         $startMonth = $request->query->get('startMonth', date('m'));
@@ -420,6 +450,10 @@ class StatisticController extends BaseAdminController
      */
     public function statTurnoverAction(Request $request, Session $session, StatisticHandler $statisticHandler): Response
     {
+        if (null !== $response = $this->checkAuth(AdminResources::MODULE, Statistic::MESSAGE_DOMAIN, AccessManager::VIEW)) {
+            return $response;
+        }
+
         $session->save();
 
         // récupération des paramètres
@@ -480,6 +514,10 @@ class StatisticController extends BaseAdminController
      */
     public function statRevenueAction(Request $request, Session $session, StatisticHandler $statisticHandler): Response
     {
+        if (null !== $response = $this->checkAuth(AdminResources::MODULE, Statistic::MESSAGE_DOMAIN, AccessManager::VIEW)) {
+            return $response;
+        }
+
         $session->save();
 
         $ghost = $request->query->get('ghost');
@@ -554,6 +592,10 @@ class StatisticController extends BaseAdminController
      */
     public function statOrdersAction(Request $request, StatisticHandler $statisticHandler): Response
     {
+        if (null !== $response = $this->checkAuth(AdminResources::MODULE, Statistic::MESSAGE_DOMAIN, AccessManager::VIEW)) {
+            return $response;
+        }
+
         if ($request->hasSession()) {
             $request->getSession()->save();
         }

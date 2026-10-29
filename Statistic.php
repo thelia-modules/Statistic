@@ -73,7 +73,7 @@ class Statistic extends BaseModule
         );
     }
 
-    public function postActivation(ConnectionInterface $con = null): void
+    public function postActivation(?ConnectionInterface $con = null): void
     {
         self::setConfigValue('order_types', '2,3,4');
     }

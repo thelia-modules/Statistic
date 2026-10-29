@@ -72,6 +72,10 @@ class ProductStatisticController extends BaseAdminController
 
     public function statTurnoverAction(ProductStatisticHandler $productStatisticHandler, Request $request): Response
     {
+        if (null !== $response = $this->checkAuth(AdminResources::MODULE, Statistic::MESSAGE_DOMAIN, AccessManager::VIEW)) {
+            return $response;
+        }
+
         // récupération des paramètres
         $productRef = $request->query->get('ref', '141_4_91359672');
 
@@ -92,6 +96,10 @@ class ProductStatisticController extends BaseAdminController
 
     public function statSaleAction(ProductStatisticHandler $productStatisticHandler, Request $request): Response
     {
+        if (null !== $response = $this->checkAuth(AdminResources::MODULE, Statistic::MESSAGE_DOMAIN, AccessManager::VIEW)) {
+            return $response;
+        }
+
         // récupération des paramètres
         $productId = $request->query->get('ref', '141_4_91359672');
 

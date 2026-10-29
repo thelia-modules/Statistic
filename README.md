@@ -15,6 +15,8 @@ It includes 3 tabs :
  Means of payment and Annual turnover -,
 * Product details, product statistics -  Share of turnover and Sales number -.
 
+The statistics need the `VIEW` access to the module: without it the controllers answer 403, and the product tab, the home block, the Tools menu entry and the statistic tabs are not shown.
+
 ## Hook 
 This module provides two hooks to insert statistic tab and JS file :
 
@@ -78,6 +80,8 @@ Il comporte 3 onglets :
 * Ventes et produits, statistiques générales sur les ventes et produits - Panier moyen, Meilleurs ventes, Code promotionnel,
  Moyen de transport, Moyen de paiement et Chiffre d'affaire annuel -,
 * Détail par produit, statistiques par produits - Part du chiffre d'affaire et Nombre de vente.
+
+Les statistiques exigent le droit `VIEW` sur le module : sans lui, les contrôleurs répondent 403, et l'onglet produit, le bloc d'accueil, l'entrée du menu Outils et les onglets de statistiques ne s'affichent pas.
 
 ## Hook
 Ce module fournit deux Hooks pour insérer un onglet de statistiques et son fichier JS associé :

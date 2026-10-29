@@ -12,9 +12,12 @@
 
 namespace Statistic\Hook;
 
+use Statistic\Security\StatisticAccess;
 use Statistic\Statistic;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Thelia\Core\Event\Hook\HookRenderBlockEvent;
 use Thelia\Core\Hook\BaseHook;
+use Thelia\Core\Template\Parser\ParserResolver;
 use Thelia\Tools\URL;
 
 /**
@@ -24,6 +27,14 @@ use Thelia\Tools\URL;
  */
 class AdminToolHook extends BaseHook
 {
+    public function __construct(
+        private readonly StatisticAccess $statisticAccess,
+        ?EventDispatcherInterface $dispatcher = null,
+        ?ParserResolver $parserResolver = null,
+    ) {
+        parent::__construct($dispatcher, $parserResolver);
+    }
+
     public static function getSubscribedHooks(): array
     {
         return [
@@ -35,6 +46,10 @@ class AdminToolHook extends BaseHook
 
     public function onMainTopMenuTools(HookRenderBlockEvent $event): void
     {
+        if (!$this->statisticAccess->canView()) {
+            return;
+        }
+
         $event->add(array(
             "url" => URL::getInstance()->absoluteUrl("/admin/module/statistic/tool"),
             "title" => $this->trans("tool.title", [], Statistic::MESSAGE_DOMAIN)

@@ -11,6 +11,8 @@ use stdClass;
 use Symfony\Component\HttpFoundation\Response;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Core\HttpFoundation\Request;
+use Thelia\Core\Security\AccessManager;
+use Thelia\Core\Security\Resource\AdminResources;
 use Thelia\Model\Base\OrderQuery;
 
 class BrandStatisticController extends BaseAdminController
@@ -20,6 +22,10 @@ class BrandStatisticController extends BaseAdminController
      */
     public function brandTurnoverAction(Request $request, BrandStatisticHandler $brandStatisticHandler): Response
     {
+        if (null !== $response = $this->checkAuth(AdminResources::MODULE, Statistic::MESSAGE_DOMAIN, AccessManager::VIEW)) {
+            return $response;
+        }
+
         $brandId = $request->attributes->get('brandId', $request->query->get('brandId', $request->request->get('brandId')));
 
         $ghost = $request->query->get('ghost');
@@ -92,6 +98,10 @@ class BrandStatisticController extends BaseAdminController
      */
     public function brandSalesAction(Request $request, BrandStatisticHandler $brandStatisticHandler): Response
     {
+        if (null !== $response = $this->checkAuth(AdminResources::MODULE, Statistic::MESSAGE_DOMAIN, AccessManager::VIEW)) {
+            return $response;
+        }
+
         $brandId = $request->attributes->get('brandId', $request->query->get('brandId', $request->request->get('brandId')));
 
         $ghost = $request->query->get('ghost');
