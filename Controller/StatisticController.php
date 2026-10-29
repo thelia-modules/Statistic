@@ -147,18 +147,14 @@ class StatisticController extends BaseAdminController
             ? $request->getSession()->getLang()->getLocale()
             : (\Thelia\Model\LangQuery::create()->findOneByByDefault(true)?->getLocale() ?? 'en_US');
         $results = $statisticHandler->bestSales($startDate, $endDate, $locale, $productRef);
-        $results2 = $statisticHandler->bestSales(
-            (clone($startDate))->sub($dateDiff),
-            (clone($endDate))->sub($dateDiff),
-            $locale,
-            $productRef
-        );
-        $results3 = $statisticHandler->bestSales(
-            (clone($startDate))->sub(new DateInterval('P1Y')),
-            (clone($endDate))->sub(new DateInterval('P1Y')),
-            $locale,
-            $productRef
-        );
+        // The period before the chosen one, then the same period a year earlier.
+        $periods = [
+            [$startDate, $endDate],
+            [(clone($startDate))->sub($dateDiff), (clone($endDate))->sub($dateDiff)],
+            [(clone($startDate))->sub(new DateInterval('P1Y')), (clone($endDate))->sub(new DateInterval('P1Y'))],
+        ];
+        $results2 = $statisticHandler->bestSales($periods[1][0], $periods[1][1], $locale, $productRef);
+        $results3 = $statisticHandler->bestSales($periods[2][0], $periods[2][1], $locale, $productRef);
 
         /** @var 'N (Période)' $result */
         foreach ($results as $result) {
@@ -249,6 +245,10 @@ class StatisticController extends BaseAdminController
             'total_ttc3' => $this->getTranslator()->trans('tool.panel.general.bestSales.periodeN-1', [], Statistic::MESSAGE_DOMAIN),
         );
         $bestSales->table = $table;
+        $bestSales->periods = array_map(
+            static fn (array $period): array => ['start' => $period[0]->format('Y-m-d'), 'end' => $period[1]->format('Y-m-d')],
+            $periods
+        );
 
         $bestSales->totals = [
             ...array_fill(0, \count($extraColumns), ''),

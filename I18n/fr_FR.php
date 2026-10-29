@@ -95,4 +95,12 @@ return array(
     'tool.total' => 'Total',
     'tool.panel.general.bestSales.salesCount' => 'ventes',
     'tool.panel.product.selectProduct' => 'Sélectionnez un produit',
+    'product.byCombination' => 'Par déclinaison',
+    'product.noCombination' => 'Sans déclinaison',
+    'product.noSales' => 'Aucune vente sur cette période',
+    'product.period.current' => 'Période sélectionnée',
+    'product.period.previous' => 'Période précédente',
+    'product.period.lastYear' => 'Même période, année précédente',
+    'product.loadError' => 'Impossible de charger les statistiques',
+    'product.saleCount.one' => 'vente',
 );

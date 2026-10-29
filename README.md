@@ -53,11 +53,13 @@ jQuery, jqPlot, DataTables or date picker): `assets/js/statistic.js` is an ES mo
 `Statistic\Event\StatisticEvents::BEST_SALES_TABLE` (`BestSalesTableEvent`): the best sales table before it is sent.
 `addColumn($key, $title)` adds a column before the product title, `getRows()` / `setRows()` fill it (a row without a
 value shows an empty cell). Titles and values are written as HTML: escape text. A key of the module's own columns is
-refused.
+refused. On the Statistics tab of the product sheet, an added column is shown as one more line of the sales list.
 
 `Statistic\Event\StatisticEvents::PRODUCT_DETAILS` (`ProductDetailsEvent`): the sales of a product shown under its row,
-grouped by attribute value. `getLines()` / `setLines()` change the lines, `getProductSaleElementsId($label)` gives the
-product sale elements the first line of a group was sold as.
+and in the "By combination" list of the Statistics tab of the product sheet, grouped by attribute value. `getLines()` /
+`setLines()` change the lines, `getProductSaleElementsId($label)` gives the product sale elements the first line of a
+group was sold as. A line reads `dd/mm/yyyy`, followed by ` xN` when more than one unit was sold: the Statistics tab
+sorts and counts by it, and shows a line of another shape as it is, for one unit.
 
 # Statistic
 Affichage de statistique sur les client, les ventes et les produits. Il fournit aussi les Hook pour insérer d'autre 
