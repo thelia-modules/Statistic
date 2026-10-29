@@ -58,4 +58,13 @@ return array(
     'tool.total' => 'Total',
     'tool.panel.general.bestSales.salesCount' => 'sales',
     'tool.panel.product.selectProduct' => 'Select a product',
+    'product.byCombination' => 'By combination',
+    'product.noCombination' => 'No combination',
+    'product.noSales' => 'No sale in this period',
+    'product.period.current' => 'Selected period',
+    'product.period.previous' => 'Previous period',
+    'product.period.lastYear' => 'Same period, previous year',
+    'Statistics' => 'Statistics',
+    'product.loadError' => 'Unable to load the statistics',
+    'product.saleCount.one' => 'sale',
 );

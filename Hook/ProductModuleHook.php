@@ -2,6 +2,8 @@
 
 namespace Statistic\Hook;
 
+use Statistic\Statistic;
+use Thelia\Core\Event\Hook\HookRenderBlockEvent;
 use Thelia\Core\Event\Hook\HookRenderEvent;
 use Thelia\Core\Hook\BaseHook;
 
@@ -10,8 +12,8 @@ class ProductModuleHook extends BaseHook
     public static function getSubscribedHooks(): array
     {
         return [
-            'product.tab-content' => [
-                ['type' => 'back', 'method' => 'onProductTabContent'],
+            'product.tab' => [
+                ['type' => 'back', 'method' => 'onProductTab'],
             ],
             'product.edit-js' => [
                 ['type' => 'back', 'method' => 'insertJS'],
@@ -19,11 +21,15 @@ class ProductModuleHook extends BaseHook
         ];
     }
 
-    public function onProductTabContent(HookRenderEvent $event): void
+    public function onProductTab(HookRenderBlockEvent $event): void
     {
-        $event->add($this->render('Statistic/hook/best-sale-product.html.twig', [
-            'product_id' => $event->getArgument('product_id'),
-        ]));
+        $event->add([
+            'id' => 'statistic',
+            'title' => $this->trans('Statistics', [], Statistic::MESSAGE_DOMAIN),
+            'content' => $this->render('Statistic/hook/best-sale-product.html.twig', [
+                'product_id' => $event->getArgument('id'),
+            ]),
+        ]);
     }
 
     public function insertJS(HookRenderEvent $event): void

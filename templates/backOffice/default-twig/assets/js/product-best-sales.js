@@ -2,20 +2,42 @@
  * Best-sales statistics for the product edit page (Statistics tab).
  *
  * Vanilla JS — no jQuery, no DataTables, no bootstrap-datepicker. The markup it
- * builds follows the default-twig back-office conventions (Bootstrap 5 tables and
- * buttons, Bootstrap Icons). Date selection uses native <input type="date">.
+ * builds follows the lists of the default-twig dashboard (Bootstrap 5 list groups,
+ * Bootstrap Icons). Date selection uses native <input type="date">.
  */
 document.addEventListener('DOMContentLoaded', () => {
-    const table = document.getElementById('table-best-sale-statistic');
+    const root = document.getElementById('product-best-sales');
 
-    if (null === table) {
+    if (null === root) {
         return;
     }
 
     const startInput = document.getElementById('bestSalesStartDate');
     const endInput = document.getElementById('bestSalesEndDate');
-    const productId = table.getAttribute('data-product_id');
+    const salesList = root.querySelector('[data-product-best-sales="sales"]');
+    const combinationsList = root.querySelector('[data-product-best-sales="combinations"]');
+    const productId = root.dataset.product_id;
+    const labels = {
+        soldOne: root.dataset.labelSoldOne,
+        soldOther: root.dataset.labelSoldOther,
+        empty: root.dataset.labelEmpty,
+        error: root.dataset.labelError,
+        noCombination: root.dataset.labelNoCombination,
+        periods: JSON.parse(root.dataset.labelPeriods),
+    };
+    const locale = document.documentElement.lang || undefined;
+    const pluralRules = new Intl.PluralRules(locale);
     const baseAdminUrl = window.baseAdminUrl || '';
+    let lastRequest = 0;
+
+    // The keys the module fills itself; any other key of the best sales table was added
+    // through StatisticEvents::BEST_SALES_TABLE and is shown as one more line.
+    const ownKeys = ['title', 'product_ref', 'brand_title', 'total_sold', 'total_sold2', 'total_sold3', 'total_ttc', 'total_ttc2', 'total_ttc3'];
+    const periods = [
+        ['total_sold', 'total_ttc'],
+        ['total_sold2', 'total_ttc2'],
+        ['total_sold3', 'total_ttc3'],
+    ];
 
     const toInputValue = (date) => {
         const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -29,12 +51,12 @@ document.addEventListener('DOMContentLoaded', () => {
     startInput.value = toInputValue(defaultStart);
     endInput.value = toInputValue(new Date());
 
-    startInput.addEventListener('change', loadBestSales);
-    endInput.addEventListener('change', loadBestSales);
+    startInput.addEventListener('change', load);
+    endInput.addEventListener('change', load);
 
-    loadBestSales();
+    load();
 
-    function buildUrl(path, overrideProductId) {
+    function buildUrl(path) {
         const [startYear, startMonth, startDay] = startInput.value.split('-');
         const [endYear, endMonth, endDay] = endInput.value.split('-');
 
@@ -45,146 +67,194 @@ document.addEventListener('DOMContentLoaded', () => {
             endDay: String(Number(endDay)),
             endMonth: String(Number(endMonth)),
             endYear: endYear,
-            productId: overrideProductId ?? productId,
+            productId: productId,
         });
 
         return `${baseAdminUrl}${path}?${params.toString()}`;
     }
 
-    async function loadBestSales() {
+    async function fetchJson(path) {
+        const response = await fetch(buildUrl(path), {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        });
+
+        return response.json();
+    }
+
+    async function load() {
         if ('' === startInput.value || '' === endInput.value) {
             return;
         }
 
+        // Only the answer to the last change of dates is drawn: an earlier one may arrive later.
+        const request = ++lastRequest;
+
         try {
-            const response = await fetch(buildUrl('/module/statistic/bestSales'), {
-                headers: { 'X-Requested-With': 'XMLHttpRequest' },
-            });
-            renderTable(await response.json());
+            const [bestSales, details] = await Promise.all([
+                fetchJson('/module/statistic/bestSales'),
+                fetchJson('/module/statistic/getProductDetails'),
+            ]);
+
+            if (request !== lastRequest) {
+                return;
+            }
+
+            renderSales(bestSales.series[0], bestSales.series[0].periods ?? []);
+            renderCombinations(details);
         } catch (error) {
             console.error('Unable to load best-sales statistics', error);
+
+            if (request === lastRequest) {
+                [salesList, combinationsList].forEach((list) => list.replaceChildren(messageItem(labels.error)));
+            }
         }
     }
 
-    function renderTable(json) {
-        table.innerHTML = '';
+    function renderSales(serie, ranges) {
+        salesList.innerHTML = '';
 
-        const serie = json.series[0];
-        const keys = Object.keys(serie.thead);
-        const columnCount = keys.length + 1;
+        const line = serie.table[0];
 
-        const head = table.createTHead();
-        head.classList.add('table-light');
-
-        const groupRow = head.insertRow();
-        groupRow.appendChild(headerCell('', 3));
-        serie.mhead.forEach((label) => groupRow.appendChild(headerCell(label, 3, 'text-center')));
-        groupRow.appendChild(headerCell(''));
-
-        const titleRow = head.insertRow();
-        keys.forEach((key) => titleRow.appendChild(headerCell(serie.thead[key])));
-        titleRow.appendChild(headerCell(''));
-
-        const body = table.createTBody();
-        serie.table.forEach((line) => {
-            const row = body.insertRow();
-
-            keys.forEach((key, index) => {
-                const cell = row.insertCell();
-
-                if (index <= 1) {
-                    const link = document.createElement('a');
-                    link.href = `${baseAdminUrl}/products/update?product_id=${line.product_id}`;
-                    link.textContent = line[key];
-                    cell.appendChild(link);
-
-                    return;
-                }
-
-                cell.textContent = line[key];
-            });
-
-            const actionCell = row.insertCell();
-            actionCell.className = 'text-end';
-            actionCell.appendChild(detailsButton(row, line.product_id, columnCount));
-        });
-    }
-
-    function headerCell(label, colSpan = 1, className = '') {
-        const th = document.createElement('th');
-        th.textContent = label;
-        th.colSpan = colSpan;
-
-        if ('' !== className) {
-            th.className = className;
-        }
-
-        return th;
-    }
-
-    function detailsButton(row, rowProductId, columnCount) {
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.className = 'btn btn-sm btn-outline-secondary button-details';
-        button.innerHTML = '<i class="bi bi-chevron-down"></i>';
-
-        button.addEventListener('click', () => toggleDetails(button, row, rowProductId, columnCount));
-
-        return button;
-    }
-
-    async function toggleDetails(button, row, rowProductId, columnCount) {
-        const icon = button.querySelector('i');
-        const next = row.nextElementSibling;
-
-        if (null !== next && next.classList.contains('best-sales-detail-row')) {
-            next.remove();
-            icon.classList.replace('bi-chevron-up', 'bi-chevron-down');
+        if (undefined === line) {
+            salesList.appendChild(emptyItem());
 
             return;
         }
 
-        try {
-            const response = await fetch(buildUrl('/module/statistic/getProductDetails', rowProductId), {
-                headers: { 'X-Requested-With': 'XMLHttpRequest' },
-            });
-            const json = await response.json();
+        periods.forEach(([soldKey, amountKey], index) => {
+            const sold = Number(line[soldKey]);
+            // No amount for a period without sales: the server sends it as a bare 0.
+            const row = item(labels.periods[index], soldLabel(sold), sold > 0 ? String(line[amountKey]) : null);
 
-            const detailRow = document.createElement('tr');
-            detailRow.className = 'best-sales-detail-row';
-            const cell = detailRow.insertCell();
-            cell.colSpan = columnCount;
-            cell.appendChild(buildDetailTable(json));
+            if (undefined !== ranges[index]) {
+                const range = document.createElement('div');
+                range.className = 'text-muted fw-normal';
+                range.textContent = `${formatDate(ranges[index].start)} – ${formatDate(ranges[index].end)}`;
+                row.firstElementChild.appendChild(range);
+            }
 
-            row.parentNode.insertBefore(detailRow, row.nextSibling);
-            icon.classList.replace('bi-chevron-down', 'bi-chevron-up');
-        } catch (error) {
-            console.error('Unable to load product details', error);
-        }
-    }
-
-    function buildDetailTable(json) {
-        const detailTable = document.createElement('table');
-        detailTable.className = 'table table-sm mb-0';
-        const body = detailTable.createTBody();
-
-        Object.keys(json).forEach((size) => {
-            const values = json[size];
-
-            values.forEach((value, index) => {
-                const tr = body.insertRow();
-
-                if (0 === index) {
-                    const sizeCell = tr.insertCell();
-                    sizeCell.rowSpan = values.length;
-                    sizeCell.className = 'align-top fw-medium';
-                    sizeCell.textContent = size;
-                }
-
-                tr.insertCell().textContent = value;
-            });
+            salesList.appendChild(row);
         });
 
-        return detailTable;
+        Object.keys(serie.thead)
+            .filter((key) => !ownKeys.includes(key))
+            .forEach((key) => {
+                // Titles and values of an added column are HTML (see README).
+                const added = item('', '');
+                added.firstElementChild.innerHTML = serie.thead[key];
+                added.lastElementChild.innerHTML = line[key] ?? '';
+                salesList.appendChild(added);
+            });
+    }
+
+    function renderCombinations(details) {
+        combinationsList.innerHTML = '';
+
+        const groups = Object.keys(details);
+
+        if (0 === groups.length) {
+            combinationsList.appendChild(emptyItem());
+
+            return;
+        }
+
+        const combinations = groups
+            .map((group) => {
+                const sales = details[group].map(parseSale);
+
+                return {
+                    title: group.replace(/\s*:\s*$/, '') || labels.noCombination,
+                    sales: sales.sort((a, b) => (b.date?.getTime() ?? -Infinity) - (a.date?.getTime() ?? -Infinity)),
+                    quantity: sales.reduce((total, sale) => total + sale.quantity, 0),
+                };
+            })
+            .sort((a, b) => b.quantity - a.quantity);
+
+        combinations.forEach((combination) => {
+            const row = item(combination.title, soldLabel(combination.quantity));
+            row.classList.replace('align-items-center', 'align-items-start');
+
+            const dates = document.createElement('div');
+            dates.className = 'text-muted fw-normal';
+            combination.sales.forEach((sale, index) => {
+                const day = null === sale.date ? sale.text : sale.date.toLocaleDateString(locale);
+                dates.append(0 === index ? day : `, ${day}`);
+
+                if (sale.quantity > 1) {
+                    const units = document.createElement('small');
+                    units.textContent = `\u00a0×${sale.quantity}`;
+                    dates.appendChild(units);
+                }
+            });
+            row.firstElementChild.appendChild(dates);
+
+            combinationsList.appendChild(row);
+        });
+    }
+
+    // "yyyy-mm-dd" from the server, shown in the language of the back office.
+    function formatDate(isoDate) {
+        const [year, month, day] = isoDate.split('-').map(Number);
+
+        return new Date(year, month - 1, day).toLocaleDateString(locale);
+    }
+
+    // The module writes a sale as "dd/mm/yyyy", followed by " xN" when the line held more than
+    // one unit. A line rewritten in another shape through StatisticEvents::PRODUCT_DETAILS is
+    // shown as it is and counts for one unit.
+    function parseSale(sale) {
+        const match = /^(\d{2})\/(\d{2})\/(\d{4})(?: x(\d+))?$/.exec(sale);
+
+        if (null === match) {
+            return { date: null, text: sale, quantity: 1 };
+        }
+
+        const [, day, month, year, quantity] = match;
+
+        return { date: new Date(Number(year), Number(month) - 1, Number(day)), text: sale, quantity: undefined === quantity ? 1 : Number(quantity) };
+    }
+
+    function item(title, value, secondary = null) {
+        const li = document.createElement('li');
+        li.className = 'list-group-item d-flex align-items-center justify-content-between gap-2';
+
+        const label = document.createElement('div');
+        label.className = 'fw-semibold';
+        label.textContent = title;
+
+        const figures = document.createElement('div');
+        figures.className = 'text-end text-nowrap flex-shrink-0';
+
+        const main = document.createElement('div');
+        main.className = 'fw-semibold';
+        main.textContent = value;
+        figures.appendChild(main);
+
+        if (null !== secondary) {
+            const sub = document.createElement('div');
+            sub.className = 'text-muted';
+            sub.textContent = secondary;
+            figures.appendChild(sub);
+        }
+
+        li.append(label, figures);
+
+        return li;
+    }
+
+    function soldLabel(count) {
+        return `${count} ${'one' === pluralRules.select(count) ? labels.soldOne : labels.soldOther}`;
+    }
+
+    function emptyItem() {
+        return messageItem(labels.empty);
+    }
+
+    function messageItem(message) {
+        const li = document.createElement('li');
+        li.className = 'list-group-item text-muted text-center';
+        li.textContent = message;
+
+        return li;
     }
 });
