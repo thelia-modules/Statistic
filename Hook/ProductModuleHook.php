@@ -22,7 +22,7 @@ class ProductModuleHook extends BaseHook
     public function onProductTabContent(HookRenderEvent $event): void
     {
         $event->add($this->render('Statistic/hook/best-sale-product.html.twig', [
-            'product_id' => $event->getArgument('product_id'),
+            'product_id' => $event->getArgument('product'),
         ]));
     }
 
